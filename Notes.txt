@@ -1,0 +1,3 @@
+Notes:
+- SS withdraw amount could be assumed, or calculated
+  - Should also have an override for if SS is assumed at all upon retirement
