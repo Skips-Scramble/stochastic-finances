@@ -1,6 +1,9 @@
 from datetime import date, datetime, timedelta
+from dateutil.relativedelta import relativedelta
 import json
 from pyspark.sql import SparkSession
+import pyspark.sql.functions as spark_funcs
+from pyspark.sql.types import StringType
 
 import numpy_financial as npf
 
@@ -32,6 +35,25 @@ def calc_final_month(birthdate):
 
     return datetime(final_year, final_month, final_day)
 
+def create_initial_df(spark, final_month):
+    current_date = date.today()
+    start_month = current_date.replace(day=1)
+    delta = relativedelta(start_month, final_month)
+    months_between = (delta.years * 12) + delta.months
+
+    months_list = []
+
+    for i in range(months_between):
+        next_month = start_month + timedelta(days = 31 * i)
+        first_day_next_month = next_month.replace(day=1)
+        months_list.append(first_day_next_month) 
+
+    month_df = spark.createDataFrame([(month,) for month in months_list], ["month"])
+
+    formatted_month_df = month_df.withColumn("month", spark_funcs.col('month').cast(StringType()))
+
+    return formatted_month_df
+
 
 def main():
     spark = SparkSession.builder.appName("stochastic_finances").getOrCreate()
@@ -42,5 +64,9 @@ def main():
     birthdate = datetime.strptime(assumptions["birthday"], "%m/%d/%Y").date()
 
     final_month = calc_final_month(birthdate)
+
+    initial_df = create_initial_df(spark, final_month)
+
+
 
     current_age_yrs, current_age_mos = calculate_current_age(birthdate)
