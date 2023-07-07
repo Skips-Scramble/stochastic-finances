@@ -1,4 +1,5 @@
 import findspark
+
 findspark.init()
 
 import json
@@ -10,10 +11,6 @@ import pyspark.sql.functions as spark_funcs
 from pyspark.sql.types import DateType, StructType, StructField, TimestampType
 from datetime import date, datetime, timedelta
 from dateutil.relativedelta import relativedelta
-
-
-
-
 
 
 def calculate_current_age(birthdate):
