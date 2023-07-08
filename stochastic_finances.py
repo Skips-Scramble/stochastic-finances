@@ -3,36 +3,42 @@ import findspark
 findspark.init()
 
 import json
-from pyspark.sql import SparkSession
+from pyspark.sql import SparkSession, DataFrame
 
 import numpy_financial as npf
 import pyspark.sql.functions as spark_funcs
 
-from pyspark.sql.types import DateType, StructType, StructField, TimestampType
+from pyspark.sql.types import DateType, StructType, StructField, IntegerType
 from datetime import date, datetime, timedelta
 from dateutil.relativedelta import relativedelta
 
+import typing
 
-def calculate_current_age(birthdate):
+def dummy_func(month_1, month_2):
+    return month_1 - month_2
+
+
+def calculate_age(
+    birthdate: datetime.date, base_date: datetime.date
+) -> tuple(int, int):
     """Calculate how old a person is in yrs and months based on birthdate"""
-    today = date.today()
-    current_age_yrs = today.year - birthdate.year
+    age_yrs = base_date.year - birthdate.year
 
     # Check if the birthday has already occurred this year
-    if today.month < birthdate.month or (
-        today.month == birthdate.month and today.day < birthdate.day
+    if base_date.month < birthdate.month or (
+        base_date.month == birthdate.month and base_date.day < birthdate.day
     ):
-        current_age_yrs -= 1
+        age_yrs -= 1
 
-    current_age_mos = (today.month - birthdate.month) % 12
+    age_mos = (base_date.month - birthdate.month) % 12
 
-    if today.day < birthdate.day:
-        current_age_mos -= 1
+    if base_date.day < birthdate.day:
+        age_mos -= 1
 
-    return current_age_yrs, current_age_mos
+    return age_yrs, age_mos
 
 
-def calc_final_month(birthdate):
+def calc_final_month(birthdate: datetime.date) -> datetime.date:
     """Go up to 120 years for thoroughness"""
     final_year = birthdate.year + 120
     final_month = birthdate.month
@@ -41,7 +47,10 @@ def calc_final_month(birthdate):
     return datetime(final_year, final_month, final_day)
 
 
-def create_initial_df(spark, final_month):
+def create_initial_df(
+    spark: SparkSession, birthdate: datetime.date, final_month: datetime.date
+) -> DataFrame:
+    """Create an initial df with just birthdate and month columns"""
     current_date = date.today()
     start_month = current_date.replace(day=1)
     delta = relativedelta(start_month, final_month)
@@ -57,11 +66,24 @@ def create_initial_df(spark, final_month):
     schema = StructType([StructField("month", DateType(), nullable=False)])
 
     month_df = spark.createDataFrame([(x,) for x in months_list], schema)
+    month_w_bday_df = month_df.withColumn(
+        "birthdate", spark_funcs.lit(birthdate).cast(DateType())
+    )
 
-    return month_df
+    return month_w_bday_df
 
 
-def main():
+def add_age(initial_df: DataFrame) -> DataFrame:
+    calculate_age_udf = spark_funcs.udf(dummy_func)
+
+    age_df = initial_df.withColumn(
+        "age_yrs", calculate_age_udf("birthdate", "month")
+    )
+
+    return age_df
+
+
+def main() -> None:
     spark = SparkSession.builder.appName("stochastic_finances").getOrCreate()
 
     with open("input_assumptions.json") as json_data:
@@ -71,6 +93,7 @@ def main():
 
     final_month = calc_final_month(birthdate)
 
-    initial_df = create_initial_df(spark, final_month)
+    initial_df = create_initial_df(spark, birthdate, final_month)
+    initial_w_age = add_age(initial_df)
 
-    current_age_yrs, current_age_mos = calculate_current_age(birthdate)
+    age_yrs, age_mos = calculate_age(birthdate, date.today())
