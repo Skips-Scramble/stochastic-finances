@@ -9,6 +9,7 @@ import numpy_financial as npf
 import pyspark.sql.functions as spark_funcs
 
 from pyspark.sql.types import DateType, StructType, StructField, IntegerType
+from pyspark.sql.window import Window
 from datetime import date, datetime, timedelta
 from dateutil.relativedelta import relativedelta
 
@@ -19,22 +20,17 @@ def calc_age_yrs(
     birthdate: datetime.date, base_date: datetime.date
 ) -> typing.Tuple[int, int]:
     """Calculate how old a person is in yrs and months based on birthdate"""
-    age_yrs = base_date.year - birthdate.year
+    age_yrs = base_date.year - birthdate.year - 1
 
     # Check if the birthday has already occurred this year
-    if base_date.month < birthdate.month or (
-        base_date.month == birthdate.month and base_date.day < birthdate.day
-    ):
-        age_yrs -= 1
+    if base_date.month == birthdate.month:
+        age_yrs += 1
 
     return age_yrs
 
 
 def calc_age_mos(birthdate: datetime.date, base_date: datetime.date) -> int:
     age_mos = (base_date.month - birthdate.month) % 12
-
-    # if base_date.day < birthdate.day:
-    #     age_mos -= 1
 
     return age_mos
 
@@ -54,15 +50,15 @@ def create_initial_df(
     """Create an initial df with just birthdate and month columns"""
     current_date = date.today()
     start_month = current_date.replace(day=1)
-    delta = relativedelta(start_month, final_month)
-    months_between = ((delta.years * 12) + delta.months) * -1
+    delta = relativedelta(final_month, start_month)
+    months_between = ((delta.years * 12) + delta.months)
 
     months_list = []
 
-    for i in range(months_between):
-        next_month = start_month + timedelta(days=31 * i)
-        first_day_next_month = next_month.replace(day=1)
-        months_list.append(first_day_next_month)
+    for _ in range(months_between):
+        start_month = start_month + timedelta(days=31)
+        start_month = start_month.replace(day=1)
+        months_list.append(start_month)
 
     schema = StructType([StructField("month", DateType(), nullable=False)])
 
@@ -84,6 +80,12 @@ def add_age(initial_df: DataFrame) -> DataFrame:
 
     return age_df
 
+def count_months(df_w_months: DataFrame) -> DataFrame:
+    w = Window().orderBy(spark_funcs.lit('A'))
+    count_months_df = df_w_months.withColumn("month_count", spark_funcs.row_number().over(w)-1)
+
+    return count_months_df
+
 
 def main() -> None:
     spark = SparkSession.builder.appName("stochastic_finances").getOrCreate()
@@ -97,3 +99,5 @@ def main() -> None:
 
     initial_df = create_initial_df(spark, birthdate, final_month)
     initial_w_age = add_age(initial_df)
+
+    initial_w_count = count_months(initial_w_age)
