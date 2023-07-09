@@ -5,7 +5,6 @@ findspark.init()
 import json
 from pyspark.sql import SparkSession, DataFrame
 
-import numpy_financial as npf
 import pyspark.sql.functions as spark_funcs
 
 from pyspark.sql.types import DateType, StructType, StructField, IntegerType
@@ -13,7 +12,7 @@ from pyspark.sql.window import Window
 from datetime import date, datetime, timedelta
 from dateutil.relativedelta import relativedelta
 
-import math
+import numpy as np
 import typing
 
 
@@ -95,19 +94,35 @@ def add_interest(initial_w_age: DataFrame, assumed_yrly_interest: float) -> Data
     initial_w_interest = initial_w_age.withColumn(
         "interest_rate",
         spark_funcs.round(
-            spark_funcs.lit(((1 + (assumed_yrly_interest/100)) ** (1 / 12)) - 1), 6
+            spark_funcs.lit(((1 + (assumed_yrly_interest / 100)) ** (1 / 12)) - 1), 6
         ),
     )
     return initial_w_interest
 
 
-def add_savings(initial_w_count: DataFrame, initial_savings: float):
+def add_savings(initial_w_count: DataFrame, initial_savings: float) -> DataFrame:
+    """Add a column with a savings amount for each month based on an initial amount and assumed interest rate"""
     initial_w_savings = initial_w_count.withColumn(
         "savings",
-        spark_funcs.format_number(spark_funcs.round(initial_savings
-        * (1 + spark_funcs.col("interest_rate")) ** spark_funcs.col("month_count"),2),2),
+        spark_funcs.format_number(
+            spark_funcs.round(
+                initial_savings
+                * (1 + spark_funcs.col("interest_rate"))
+                ** spark_funcs.col("month_count"),
+                2,
+            ),
+            2,
+        ),
     )
     return initial_w_savings
+
+
+def add_random_interest(initial_w_savings: DataFrame, mean: float) -> DataFrame:
+    """Calculate interest rate based on a normal distribution"""
+    w_random_interest = initial_w_savings.withColumn(
+        "rand_interest", spark_funcs.round(mean + spark_funcs.randn(), 6)
+    )
+    return w_random_interest
 
 
 def main() -> None:
@@ -131,4 +146,8 @@ def main() -> None:
 
     initial_w_savings = add_savings(
         initial_w_interest_rate, assumptions["current_savings"]
+    )
+
+    initial_w_variable_interest = add_random_interest(
+        initial_w_savings, assumptions["mean_interest_per_yr"]
     )
