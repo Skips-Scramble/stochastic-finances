@@ -3,3 +3,5 @@ Notes:
   - Should also have an override for if SS is assumed at all upon retirement
 - Need to make rent more dynamic (start, stop, multiple)
 - Need to make car payment more dynamic (start, stop, multiple occurances)
+- Have it do an assumed savings increase per month as a flat amount, or a percent
+  - Allow it to have a variable increase per time period (month, year, quarter, etc)
