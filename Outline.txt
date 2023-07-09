@@ -1,0 +1,16 @@
+Outline
+
+- Create initial script to set up basic df
+  - "current" month
+  - birthdate
+  - age in yrs
+  - age in months
+  - month count (from start)
+- Calculate months projected savings based on:
+  - assumed interest rate
+  - assumed saved per month
+  - assumed saved per month increase (%)
+- Calculate months projected savings based on:
+  - assumed interest rate spread by normal distribution
+  - run 1,000 sims to see where you land
+  
