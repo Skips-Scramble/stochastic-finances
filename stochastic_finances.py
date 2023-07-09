@@ -14,13 +14,10 @@ from dateutil.relativedelta import relativedelta
 
 import typing
 
-def dummy_func(month_1, month_2):
-    return month_1 - month_2
 
-
-def calculate_age(
+def calc_age_yrs(
     birthdate: datetime.date, base_date: datetime.date
-) -> tuple(int, int):
+) -> typing.Tuple[int, int]:
     """Calculate how old a person is in yrs and months based on birthdate"""
     age_yrs = base_date.year - birthdate.year
 
@@ -30,12 +27,16 @@ def calculate_age(
     ):
         age_yrs -= 1
 
+    return age_yrs
+
+
+def calc_age_mos(birthdate: datetime.date, base_date: datetime.date) -> int:
     age_mos = (base_date.month - birthdate.month) % 12
 
-    if base_date.day < birthdate.day:
-        age_mos -= 1
+    # if base_date.day < birthdate.day:
+    #     age_mos -= 1
 
-    return age_yrs, age_mos
+    return age_mos
 
 
 def calc_final_month(birthdate: datetime.date) -> datetime.date:
@@ -74,11 +75,12 @@ def create_initial_df(
 
 
 def add_age(initial_df: DataFrame) -> DataFrame:
-    calculate_age_udf = spark_funcs.udf(dummy_func)
+    calc_age_yrs_udf = spark_funcs.udf(calc_age_yrs)
+    calc_age_mos_udf = spark_funcs.udf(calc_age_mos)
 
     age_df = initial_df.withColumn(
-        "age_yrs", calculate_age_udf("birthdate", "month")
-    )
+        "age_yrs", calc_age_yrs_udf("birthdate", "month")
+    ).withColumn("age_mos", calc_age_mos_udf("birthdate", "month"))
 
     return age_df
 
@@ -95,5 +97,3 @@ def main() -> None:
 
     initial_df = create_initial_df(spark, birthdate, final_month)
     initial_w_age = add_age(initial_df)
-
-    age_yrs, age_mos = calculate_age(birthdate, date.today())
