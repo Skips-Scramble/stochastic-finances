@@ -51,7 +51,7 @@ def create_initial_df(
     current_date = date.today()
     start_month = current_date.replace(day=1)
     delta = relativedelta(final_month, start_month)
-    months_between = ((delta.years * 12) + delta.months)
+    months_between = (delta.years * 12) + delta.months
 
     months_list = []
 
@@ -80,9 +80,12 @@ def add_age(initial_df: DataFrame) -> DataFrame:
 
     return age_df
 
+
 def count_months(df_w_months: DataFrame) -> DataFrame:
-    w = Window().orderBy(spark_funcs.lit('A'))
-    count_months_df = df_w_months.withColumn("month_count", spark_funcs.row_number().over(w)-1)
+    w = Window().orderBy(spark_funcs.lit("A"))
+    count_months_df = df_w_months.withColumn(
+        "month_count", spark_funcs.row_number().over(w) - 1
+    )
 
     return count_months_df
 
