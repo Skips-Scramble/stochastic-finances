@@ -13,6 +13,7 @@ from pyspark.sql.window import Window
 from datetime import date, datetime, timedelta
 from dateutil.relativedelta import relativedelta
 
+import math
 import typing
 
 
@@ -90,6 +91,25 @@ def count_months(df_w_months: DataFrame) -> DataFrame:
     return count_months_df
 
 
+def add_interest(initial_w_age: DataFrame, assumed_yrly_interest: float) -> DataFrame:
+    initial_w_interest = initial_w_age.withColumn(
+        "interest_rate",
+        spark_funcs.round(
+            spark_funcs.lit(((1 + (assumed_yrly_interest/100)) ** (1 / 12)) - 1), 6
+        ),
+    )
+    return initial_w_interest
+
+
+def add_savings(initial_w_count: DataFrame, initial_savings: float):
+    initial_w_savings = initial_w_count.withColumn(
+        "savings",
+        spark_funcs.format_number(spark_funcs.round(initial_savings
+        * (1 + spark_funcs.col("interest_rate")) ** spark_funcs.col("month_count"),2),2),
+    )
+    return initial_w_savings
+
+
 def main() -> None:
     spark = SparkSession.builder.appName("stochastic_finances").getOrCreate()
 
@@ -104,3 +124,11 @@ def main() -> None:
     initial_w_age = add_age(initial_df)
 
     initial_w_count = count_months(initial_w_age)
+
+    initial_w_interest_rate = add_interest(
+        initial_w_count, assumptions["mean_interest_per_yr"]
+    )
+
+    initial_w_savings = add_savings(
+        initial_w_interest_rate, assumptions["current_savings"]
+    )
