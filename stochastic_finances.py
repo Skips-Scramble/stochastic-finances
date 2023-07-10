@@ -7,8 +7,9 @@ from pyspark.sql import SparkSession, DataFrame
 
 import pyspark.sql.functions as spark_funcs
 
-from pyspark.sql.types import DateType, StructType, StructField, IntegerType
+from pyspark.sql.types import DateType, StructType, StructField, FloatType
 from pyspark.sql.window import Window
+from pyspark.sql import SQLContext
 from datetime import date, datetime, timedelta
 from dateutil.relativedelta import relativedelta
 
@@ -117,12 +118,56 @@ def add_savings(initial_w_count: DataFrame, initial_savings: float) -> DataFrame
     return initial_w_savings
 
 
-def add_random_interest(initial_w_savings: DataFrame, mean: float) -> DataFrame:
+def add_random_interest(
+    spark: SparkSession,
+    initial_w_savings: DataFrame,
+    mean: float,
+    initial_savings: float,
+) -> DataFrame:
     """Calculate interest rate based on a normal distribution"""
     w_random_interest = initial_w_savings.withColumn(
-        "rand_interest", spark_funcs.round(mean + spark_funcs.randn(), 6)
+        "rand_interest",
+        spark_funcs.round(
+            ((1 + ((mean + mean * spark_funcs.randn()) / 100)) ** (1 / 12)) - 1, 6
+        ),
     )
-    return w_random_interest
+
+    rand_interest_list = [row["rand_interest"] for row in w_random_interest.collect()]
+
+    savings_rand_interest = []
+    for index, interest_val in enumerate(rand_interest_list):
+        if index == 0:
+            savings_rand_interest.append(initial_savings)
+        else:
+            savings_rand_interest.append(
+                round(savings_rand_interest[index - 1] * (1 + interest_val), 2)
+            )
+
+    schema = StructType(
+        [StructField("savings_rand_interest", FloatType(), nullable=False)]
+    )
+
+    savings_rand_interst_df = spark.createDataFrame(
+        [(float(l),) for l in savings_rand_interest], schema
+    )
+
+    w = Window().orderBy(spark_funcs.lit("A"))
+    savings_rand_interst_count_df = savings_rand_interst_df.withColumn(
+        "month_count", spark_funcs.row_number().over(w) - 1
+    )
+
+    w_random_savings = w_random_interest.join(
+        savings_rand_interst_count_df.select(
+            spark_funcs.col("month_count"),
+            spark_funcs.format_number(
+                spark_funcs.col("savings_rand_interest"), 2
+            ).alias("savings_rand_interest"),
+        ),
+        on="month_count",
+        how="left",
+    )
+
+    return w_random_savings
 
 
 def main() -> None:
@@ -149,5 +194,8 @@ def main() -> None:
     )
 
     initial_w_variable_interest = add_random_interest(
-        initial_w_savings, assumptions["mean_interest_per_yr"]
+        spark,
+        initial_w_savings,
+        assumptions["mean_interest_per_yr"],
+        assumptions["current_savings"],
     )
