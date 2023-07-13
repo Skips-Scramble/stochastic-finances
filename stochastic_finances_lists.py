@@ -17,25 +17,6 @@ import numpy as np
 import typing
 
 
-def calc_age_yrs(
-    birthdate: datetime.date, base_date: datetime.date
-) -> typing.Tuple[int, int]:
-    """Calculate how old a person is in yrs and months based on birthdate"""
-    age_yrs = base_date.year - birthdate.year - 1
-
-    # Check if the birthday has already occurred this year
-    if base_date.month == birthdate.month:
-        age_yrs += 1
-
-    return age_yrs
-
-
-def calc_age_mos(birthdate: datetime.date, base_date: datetime.date) -> int:
-    age_mos = (base_date.month - birthdate.month) % 12
-
-    return age_mos
-
-
 def calc_final_month(birthdate: datetime.date) -> datetime.date:
     """Go up to 120 years for thoroughness"""
     final_year = birthdate.year + 120
@@ -72,6 +53,39 @@ def calc_age_yrs(months: list, birthdate: datetime.date) -> list:
     return age_yrs_list
 
 
+def calc_age_mos(months: list, birthdate: datetime.date) -> list:
+    age_mos_list = [(x.month - birthdate.month) % 12 for x in months]
+    return age_mos_list
+
+
+def calc_savings(tot_months: int, savings: float, interest_rate: float) -> list:
+    monthly_interest = round(((1 + interest_rate / 100) ** (1 / 12)) - 1, 4)
+    savings_list = []
+    for i in range(tot_months):
+        savings_list.append(round(savings * (1 + monthly_interest) ** i), 2)
+    return savings_list
+
+
+def calc_variable_savings(
+    tot_months: int, savings: float, interest_rate: float
+) -> list:
+    var_interest_list = np.random.normal(interest_rate, 1, tot_months)
+    var_savings_list = []
+    for i in range(tot_months):
+        if i == 0:
+            var_savings_list.append(savings)
+            prev_savings = savings
+        else:
+            monthly_interest = round(
+                (1 + (var_interest_list[i] / 100)) ** (1 / 12) - 1, 4
+            )
+            # print(f'monthly_interest is {monthly_interest}')
+            prev_savings = round(prev_savings * (1 + monthly_interest), 2)
+            # print(f'prev_savings is {prev_savings}')
+            var_savings_list.append(prev_savings)
+    return var_savings_list
+
+
 def main() -> None:
     spark = SparkSession.builder.appName("stochastic_finances").getOrCreate()
 
@@ -83,4 +97,17 @@ def main() -> None:
     final_month = calc_final_month(birthdate)
 
     months_list = calc_months(birthdate, final_month)
+    tot_months = len(months_list)
     age_yrs_list = calc_age_yrs(months_list, birthdate)
+    age_mos_list = calc_age_mos(months_list, birthdate)
+    savings_list = calc_savings(
+        tot_months, assumptions["current_savings"], assumptions["mean_interest_per_yr"]
+    )
+    for _ in range(100):
+        var_savings_master_list = []
+        variable_savings_list = calc_variable_savings(
+            tot_months,
+            assumptions["current_savings"],
+            assumptions["mean_interest_per_yr"],
+        )
+        var_savings_master_list.append(variable_savings_list)
