@@ -62,7 +62,7 @@ def calc_savings(tot_months: int, savings: float, interest_rate: float) -> list:
     monthly_interest = round(((1 + interest_rate / 100) ** (1 / 12)) - 1, 4)
     savings_list = []
     for i in range(tot_months):
-        savings_list.append(round(savings * (1 + monthly_interest) ** i), 2)
+        savings_list.append(round(savings * (1 + monthly_interest) ** i, 2))
     return savings_list
 
 
@@ -73,8 +73,8 @@ def calc_variable_savings(
     var_savings_list = []
     for i in range(tot_months):
         if i == 0:
-            var_savings_list.append(savings)
-            prev_savings = savings
+            var_savings_list.append(round(float(savings), 2))
+            prev_savings = round(float(savings), 2)
         else:
             monthly_interest = round(
                 (1 + (var_interest_list[i] / 100)) ** (1 / 12) - 1, 4
@@ -86,6 +86,18 @@ def calc_variable_savings(
     return var_savings_list
 
 
+def make_as_df(
+    spark: SparkSession, columns: list, tot_months: int, *col_names: str
+) -> DataFrame:
+    for col in columns:
+        assert len(col) == tot_months
+
+    cols_transposed = list(map(list, zip(*columns)))
+    col_names = [x for x in col_names]
+    output_df = spark.createDataFrame(cols_transposed, col_names)
+    return output_df
+
+
 def main() -> None:
     spark = SparkSession.builder.appName("stochastic_finances").getOrCreate()
 
@@ -94,7 +106,8 @@ def main() -> None:
 
     birthdate = datetime.strptime(assumptions["birthday"], "%m/%d/%Y").date()
 
-    final_month = calc_final_month(birthdate)
+    # final_month = calc_final_month(birthdate)
+    final_month = datetime(2023, 12, 1)
 
     months_list = calc_months(birthdate, final_month)
     tot_months = len(months_list)
@@ -103,11 +116,28 @@ def main() -> None:
     savings_list = calc_savings(
         tot_months, assumptions["current_savings"], assumptions["mean_interest_per_yr"]
     )
-    for _ in range(100):
-        var_savings_master_list = []
+
+    all_columns = [months_list, age_yrs_list, age_mos_list, savings_list]
+
+    var_savings_master_list = []
+
+    for _ in range(1):
         variable_savings_list = calc_variable_savings(
             tot_months,
             assumptions["current_savings"],
             assumptions["mean_interest_per_yr"],
         )
         var_savings_master_list.append(variable_savings_list)
+        all_columns.append(var_savings_master_list[0])
+
+    savings_to_df = make_as_df(
+        spark,
+        all_columns,
+        tot_months,
+        "month",
+        "age_yrs",
+        "age_mos",
+        "savings",
+        "rand_savings",
+        # *", ".join("rand_savings" for _ in range(1)).split(" ")
+    )
