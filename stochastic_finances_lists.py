@@ -94,14 +94,14 @@ def calc_variable_savings(
 
 
 def make_as_df(
-    spark: SparkSession, number_scenarios: int, columns: list, tot_months: int, *col_names: str
+    spark: SparkSession, number_of_scenarios: int, columns: list, tot_months: int, *col_names: str
 ) -> DataFrame:
     for col in columns:
         assert len(col) == tot_months
 
     cols_transposed = list(map(list, zip(*columns)))
     schema_rand_savings = [
-        StructField("rand_savings", FloatType(), True) for _ in range(number_scenarios)
+        StructField("rand_savings", FloatType(), True) for _ in range(number_of_scenarios)
     ]
     schema_list = [
         StructField("month", DateType(), True),
@@ -139,9 +139,9 @@ def main() -> None:
 
     var_savings_master_list = []
 
-    number_scenarios = 1000
+    number_of_scenarios = assumptions['number_of_scenarios']
 
-    for i in range(number_scenarios):
+    for i in range(number_of_scenarios):
         variable_savings_list = calc_variable_savings(
             tot_months,
             assumptions["current_savings"],
@@ -152,12 +152,12 @@ def main() -> None:
 
     savings_to_df = make_as_df(
         spark,
-        number_scenarios,
+        number_of_scenarios,
         all_columns,
         tot_months,
         "month",
         "age_yrs",
         "age_mos",
         "savings",
-        *", ".join("rand_savings" for _ in range(number_scenarios)).split(" ")
+        *", ".join("rand_savings" for _ in range(number_of_scenarios)).split(" ")
     )
