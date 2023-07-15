@@ -7,7 +7,14 @@ from pyspark.sql import SparkSession, DataFrame
 
 import pyspark.sql.functions as spark_funcs
 
-from pyspark.sql.types import DateType, StructType, StructField, FloatType
+from pyspark.sql.types import (
+    DateType,
+    StructType,
+    StructField,
+    FloatType,
+    StringType,
+    IntegerType,
+)
 from pyspark.sql.window import Window
 from pyspark.sql import SQLContext
 from datetime import date, datetime, timedelta
@@ -59,10 +66,10 @@ def calc_age_mos(months: list, birthdate: datetime.date) -> list:
 
 
 def calc_savings(tot_months: int, savings: float, interest_rate: float) -> list:
-    monthly_interest = round(((1 + interest_rate / 100) ** (1 / 12)) - 1, 4)
+    monthly_interest = float(round(((1 + interest_rate / 100) ** (1 / 12)) - 1, 4))
     savings_list = []
     for i in range(tot_months):
-        savings_list.append(round(savings * (1 + monthly_interest) ** i, 2))
+        savings_list.append(float(round(savings * (1 + monthly_interest) ** i, 2)))
     return savings_list
 
 
@@ -76,25 +83,36 @@ def calc_variable_savings(
             var_savings_list.append(round(float(savings), 2))
             prev_savings = round(float(savings), 2)
         else:
-            monthly_interest = round(
-                (1 + (var_interest_list[i] / 100)) ** (1 / 12) - 1, 4
+            monthly_interest = float(
+                round((1 + (var_interest_list[i] / 100)) ** (1 / 12) - 1, 4)
             )
             # print(f'monthly_interest is {monthly_interest}')
-            prev_savings = round(prev_savings * (1 + monthly_interest), 2)
+            prev_savings = float(round(prev_savings * (1 + monthly_interest), 2))
             # print(f'prev_savings is {prev_savings}')
             var_savings_list.append(prev_savings)
     return var_savings_list
 
 
 def make_as_df(
-    spark: SparkSession, columns: list, tot_months: int, *col_names: str
+    spark: SparkSession, number_scenarios: int, columns: list, tot_months: int, *col_names: str
 ) -> DataFrame:
     for col in columns:
         assert len(col) == tot_months
 
     cols_transposed = list(map(list, zip(*columns)))
-    col_names = [x for x in col_names]
-    output_df = spark.createDataFrame(cols_transposed, col_names)
+    schema_rand_savings = [
+        StructField("rand_savings", FloatType(), True) for _ in range(number_scenarios)
+    ]
+    schema_list = [
+        StructField("month", DateType(), True),
+        StructField("age_yrs", IntegerType(), True),
+        StructField("age_mos", IntegerType(), True),
+        StructField("savings", FloatType(), True),
+    ]
+    for x in schema_rand_savings:
+        schema_list.append(x)
+    schema = StructType(schema_list)
+    output_df = spark.createDataFrame(cols_transposed, schema)
     return output_df
 
 
@@ -106,8 +124,8 @@ def main() -> None:
 
     birthdate = datetime.strptime(assumptions["birthday"], "%m/%d/%Y").date()
 
-    # final_month = calc_final_month(birthdate)
-    final_month = datetime(2023, 12, 1)
+    final_month = calc_final_month(birthdate)
+    # final_month = datetime(2023, 10, 1)
 
     months_list = calc_months(birthdate, final_month)
     tot_months = len(months_list)
@@ -121,23 +139,25 @@ def main() -> None:
 
     var_savings_master_list = []
 
-    for _ in range(1):
+    number_scenarios = 1000
+
+    for i in range(number_scenarios):
         variable_savings_list = calc_variable_savings(
             tot_months,
             assumptions["current_savings"],
             assumptions["mean_interest_per_yr"],
         )
         var_savings_master_list.append(variable_savings_list)
-        all_columns.append(var_savings_master_list[0])
+        all_columns.append(var_savings_master_list[i])
 
     savings_to_df = make_as_df(
         spark,
+        number_scenarios,
         all_columns,
         tot_months,
         "month",
         "age_yrs",
         "age_mos",
         "savings",
-        "rand_savings",
-        # *", ".join("rand_savings" for _ in range(1)).split(" ")
+        *", ".join("rand_savings" for _ in range(number_scenarios)).split(" ")
     )
