@@ -5,13 +5,6 @@ Notes:
 - Need to make car payment more dynamic (start, stop, multiple occurances)
 - Have it do an assumed savings increase per month as a flat amount, or a percent
   - Allow it to have a variable increase per time period (month, year, quarter, etc)
-Implementation
-- I think I want to have modules that can be mixed at matched
-- You create base data
-	- Age yrs
-	- Age months
-	- Month
-	- Count
-- Then pass in this base data to whatever module you want to investigate
-- You would also be able to create a loop to run everything any number of times and create new instances of that data
-  - So maybe a class then?
+- Can you withdraw SS beginning at any age/month combo?
+- Are interest rates (risk-free and S&P) normally distributed? or Uniform? or What?
+  - Maybe normal with an unusual standard deviation?
