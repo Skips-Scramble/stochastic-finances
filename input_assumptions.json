@@ -9,6 +9,7 @@
     "ss_withdraw_age_mos": 0,
     "ss_withdraw_amt": 0,
 	"current_savings": 100000,
+	"saved_per_month": 1000,
 	"savings_per_year_increase": 2.0,
     "current_monthly_bills": 1500,
     "current_monthly_rent": 1100,
