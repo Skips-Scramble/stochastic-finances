@@ -9,3 +9,4 @@ Notes:
 - Can you withdraw SS beginning at any age/month combo?
 - Are interest rates (risk-free and S&P) normally distributed? or Uniform? or What?
   - Maybe normal with an unusual standard deviation?
+- Need to maybe allow non-variable fields upon request (i.e. don't vary interst, or don't vary savings added per month)
