@@ -23,7 +23,7 @@ from dateutil.relativedelta import relativedelta
 import numpy as np
 import typing
 
-from metrics.savings import calc_variable_savings
+from variable_inputs.savings import calc_base_added_savings
 
 
 def calc_final_month(birthdate: datetime.date) -> datetime.date:
@@ -69,7 +69,7 @@ def calc_age_mos(months: list, birthdate: datetime.date) -> list:
 
 def calc_monthly_interest(assumptions: dict, tot_months: int) -> list:
     monthly_interest = float(
-        round(((1 + assumptions["mean_interest_per_yr"] / 100) ** (1 / 12)) - 1, 4)
+        round(((1 + assumptions["base_interest_per_yr"] / 100) ** (1 / 12)) - 1, 4)
     )
     interest_list = [monthly_interest for _ in range(tot_months)]
     return interest_list
@@ -87,7 +87,7 @@ def calc_savings(
             savings_list.append(savings)
         else:
             savings = float(
-                round((savings + assumptions["saved_per_month"]) * (1 + interest), 2)
+                round((savings + assumptions["base_saved_per_month"]) * (1 + interest), 2)
             )
             savings_list.append(savings)
     return savings_list
@@ -137,6 +137,7 @@ def main() -> None:
     age_mos_list = calc_age_mos(months_list, birthdate)
     interest_list = calc_monthly_interest(assumptions, tot_months)
     savings_list = calc_savings(assumptions, interest_list)
+    var_savings_list = calc_base_added_savings(assumptions, tot_months)
 
     # all_columns = [months_list, age_yrs_list, age_mos_list, savings_list]
 
