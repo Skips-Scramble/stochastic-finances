@@ -3,7 +3,9 @@ import findspark
 findspark.init()
 
 import json
+from pathlib import Path
 from pyspark.sql import SparkSession, DataFrame
+from pyspark.sql.types import StructType, StringType, IntegerType, FloatType, DateType
 
 import pyspark.sql.functions as spark_funcs
 
@@ -24,6 +26,7 @@ import numpy as np
 import typing
 
 from variable_inputs.savings import calc_base_added_savings
+from utils.tools import make_as_df, make_type_schemas
 
 
 def calc_final_month(birthdate: datetime.date) -> datetime.date:
@@ -87,37 +90,39 @@ def calc_savings(
             savings_list.append(savings)
         else:
             savings = float(
-                round((savings + assumptions["base_saved_per_month"]) * (1 + interest), 2)
+                round(
+                    (savings + assumptions["base_saved_per_month"]) * (1 + interest), 2
+                )
             )
             savings_list.append(savings)
     return savings_list
 
 
-def make_as_df(
-    spark: SparkSession,
-    number_of_scenarios: int,
-    columns: list,
-    tot_months: int,
-    *col_names: str
-) -> DataFrame:
-    for col in columns:
-        assert len(col) == tot_months
+# def make_as_df(
+#     spark: SparkSession,
+#     number_of_scenarios: int,
+#     columns: list,
+#     tot_months: int,
+#     *col_names: str
+# ) -> DataFrame:
+#     for col in columns:
+#         assert len(col) == tot_months
 
-    cols_transposed = list(map(list, zip(*columns)))
-    # schema_rand_savings = [
-    #     StructField("rand_savings", FloatType(), True) for _ in range(number_of_scenarios)
-    # ]
-    schema_list = [
-        StructField("month", DateType(), True),
-        StructField("age_yrs", IntegerType(), True),
-        StructField("age_mos", IntegerType(), True),
-        StructField("savings", FloatType(), True),
-    ]
-    # for x in schema_rand_savings:
-    #     schema_list.append(x)
-    schema = StructType(schema_list)
-    output_df = spark.createDataFrame(cols_transposed, schema)
-    return output_df
+#     cols_transposed = list(map(list, zip(*columns)))
+#     # schema_rand_savings = [
+#     #     StructField("rand_savings", FloatType(), True) for _ in range(number_of_scenarios)
+#     # ]
+#     schema_list = [
+#         StructField("month", DateType(), True),
+#         StructField("age_yrs", IntegerType(), True),
+#         StructField("age_mos", IntegerType(), True),
+#         StructField("savings", FloatType(), True),
+#     ]
+#     # for x in schema_rand_savings:
+#     #     schema_list.append(x)
+#     schema = StructType(schema_list)
+#     output_df = spark.createDataFrame(cols_transposed, schema)
+#     return output_df
 
 
 def main() -> None:
@@ -137,31 +142,59 @@ def main() -> None:
     age_mos_list = calc_age_mos(months_list, birthdate)
     interest_list = calc_monthly_interest(assumptions, tot_months)
     savings_list = calc_savings(assumptions, interest_list)
-    var_savings_list = calc_base_added_savings(assumptions, tot_months)
+    (
+        var_interest_yrly_list,
+        var_interest_monthly_list,
+        var_added_savings_list,
+        var_savings_list,
+    ) = calc_base_added_savings(assumptions, tot_months)
 
-    # all_columns = [months_list, age_yrs_list, age_mos_list, savings_list]
+    data = [months_list, age_yrs_list]
+    data_transposed = list(map(list, zip(*data)))
+    cols = StructType(
+        [
+            StructField("month", DateType(), False),
+            StructField("age_yrs", IntegerType(), False),
+        ]
+    )
 
-    # var_savings_master_list = []
+    df = spark.createDataFrame(data_transposed, cols)
 
-    # number_of_scenarios = assumptions['number_of_scenarios']
+    datetype_schemas = make_type_schemas(["months"], [months_list], DateType())
+    inttype_schemas = make_type_schemas(
+        ["age_yrs", "age_mos"], [age_yrs_list, age_mos_list], IntegerType()
+    )
+    floattype_schemas = make_type_schemas(
+        [
+            "interest",
+            "savings",
+            "var_interest_yrly",
+            "var_interest_monthly",
+            "var_added_savings",
+            "var_savings_list",
+        ],
+        [
+            interest_list,
+            savings_list,
+            var_interest_yrly_list,
+            var_interest_monthly_list,
+            var_added_savings_list,
+            var_savings_list,
+        ],
+        FloatType(),
+    )
 
-    # for i in range(number_of_scenarios):
-    #     variable_savings_list = calc_variable_savings(
-    #         tot_months,
-    #         assumptions["current_savings"],
-    #         assumptions["mean_interest_per_yr"],
-    #     )
-    #     var_savings_master_list.append(variable_savings_list)
-    #     all_columns.append(var_savings_master_list[i])
+    all_schemas = StructType(datetype_schemas + inttype_schemas + floattype_schemas)
+    all_columns = [
+        months_list,
+        age_yrs_list,
+        age_mos_list,
+        interest_list,
+        savings_list,
+        var_interest_yrly_list,
+        var_interest_monthly_list,
+        var_added_savings_list,
+        var_savings_list,
+    ]
 
-    # savings_to_df = make_as_df(
-    #     spark,
-    #     number_of_scenarios,
-    #     all_columns,
-    #     tot_months,
-    #     "month",
-    #     "age_yrs",
-    #     "age_mos",
-    #     "savings",
-    #     *", ".join("rand_savings" for _ in range(number_of_scenarios)).split(" ")
-    # )
+    df = make_as_df(spark, all_columns, all_schemas)
