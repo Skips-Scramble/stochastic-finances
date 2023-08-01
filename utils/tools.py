@@ -22,5 +22,6 @@ def make_as_df(
     output_df = spark.createDataFrame(cols_transposed, schema)
     return output_df
 
-def output_df():
-    pass
+def output_df(df_to_output: DataFrame, output_path: Path) -> None:
+    df_to_output.toPandas().to_csv(output_path)
+
