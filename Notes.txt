@@ -10,3 +10,6 @@ Notes:
 - Are interest rates (risk-free and S&P) normally distributed? or Uniform? or What?
   - Maybe normal with an unusual standard deviation?
 - Need to maybe allow non-variable fields upon request (i.e. don't vary interst, or don't vary savings added per month)
+- Right now, there are yearly (base) interest and monthly (base) interest list being generated. But these are static variables,
+so really don't need lists. Only really needed for outputting to csv
+- Make new cars have some chaos variable where it gets destroyed and you need a new one or something
