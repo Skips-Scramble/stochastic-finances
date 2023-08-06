@@ -24,15 +24,32 @@ from utils.tools import make_type_schemas
 from functools import cached_property
 
 
-def calc_retirement_date(
-    birthdate: datetime.date, retirement_age_yrs: int, retirement_age_mos: int
+def calc_date_on_age(
+    birthdate: datetime.date, age_yrs: int, age_mos: int
 ) -> datetime.date:
-    """Go up to 120 years for thoroughness"""
-    retirement_year = birthdate.year + retirement_age_yrs
-    retirement_month = birthdate.month + retirement_age_mos
-    retirement_day = 1
+    """Calculates a date based on a birthdate and a given age in years and months"""
+    if birthdate.month + age_mos <= 12:
+        month = birthdate.month + age_mos
+        spill_over = 0
+    else:
+        month = birthdate.month + age_mos - 12
+        spill_over = 1
 
-    return datetime(retirement_year, retirement_month, retirement_day)
+    year = birthdate.year + age_yrs + spill_over
+    return date(year, month, 1)
+
+
+# def calc_retirement_date(
+#     birthdate: datetime.date, retirement_age_yrs: int, retirement_age_mos: int
+# ) -> datetime.date:
+#     """Calculate retirement age"""
+#     retirement_month = (birthdate.month + retirement_age_mos) % 12 - 1
+#     spill_over = 1 if birthdate.month + retirement_age_mos > 12 else 0
+#     retirement_year = birthdate.year + retirement_age_yrs + spill_over
+
+#     retirement_day = 1
+
+#     return date(retirement_year, retirement_month, retirement_day)
 
 
 def calc_months(retirement_date: datetime.date) -> list:
@@ -112,15 +129,50 @@ def calc_savings(
             savings_list.append(savings)
     return savings_list
 
-def calc_car_payment(assumptions:list, tot_months:int):
+
+def calc_car_dates(assumptions: list, birthdate: datetime.date) -> datetime.date:
     """Docstring"""
-    
+    car_pmt_start_date = calc_date_on_age(
+        birthdate,
+        assumptions["car_pmt_start_age_yrs"],
+        assumptions["car_pmt_start_age_mos"],
+    )
+
+    car_pmt_end_yr = car_pmt_start_date.year + assumptions["car_pmt_length_yrs"]
+    if car_pmt_start_date.month - 1 != 0:
+        car_pmt_end_mo = car_pmt_start_date.month - 1
+    else:
+        car_pmt_end_mo = 12
+
+    return car_pmt_start_date, date(car_pmt_end_yr, car_pmt_end_mo, 1)
+
+
+def calc_car_payment(
+    assumptions: dict,
+    months_list: list,
+    car_pmt_start_date: datetime.date,
+    car_pmt_end_date: datetime.date,
+):
+    """Docstring"""
+    car_pmt_list = []
+    for month in months_list:
+        if month >= car_pmt_start_date and month <= car_pmt_end_date:
+            if month == car_pmt_start_date:
+                car_pmt_list.append(
+                    round(assumptions["car_pmt_monthly"], 2)
+                    + assumptions["car_pmt_down"]
+                )
+            else:
+                car_pmt_list.append(round(assumptions["car_pmt_monthly"], 2))
+        else:
+            car_pmt_list.append(round(0, 2))
+
+    return car_pmt_list
 
 
 class FinancialScenario:
     def __init__(
         self,
-        spark: SparkSession,
         assumptions: dict,
         birthdate: date,
         retirement_date: date,
@@ -132,9 +184,9 @@ class FinancialScenario:
         yrly_rf_interest_list: list,
         monthly_rf_interest_list: list,
         savings_added_list: list,
+        car_pmt_list: list,
         savings_list: list,
     ):
-        self.spark = spark
         self.assumptions = assumptions
         self.birthdate = birthdate
         self.retirement_date = retirement_date
@@ -146,6 +198,7 @@ class FinancialScenario:
         self.yrly_rf_interest_list = yrly_rf_interest_list
         self.monthly_rf_interest_list = monthly_rf_interest_list
         self.savings_added_list = savings_added_list
+        self.car_pmt_list = car_pmt_list
         self.savings_list = savings_list
 
     @cached_property
@@ -212,67 +265,6 @@ class FinancialScenario:
                 var_savings.append(prev_savings)
         return var_savings
 
-    def create_spark_df(self) -> DataFrame:
-        """Docstring"""
-
-        all_columns = [
-            self.month_count_list,
-            self.months_list,
-            self.age_yrs_list,
-            self.age_mos_list,
-            self.yrly_rf_interest_list,
-            self.monthly_rf_interest_list,
-            self.savings_list,
-            self.var_interest_yrly,
-            self.var_interest_monthly,
-            self.var_added_savings,
-            self.var_savings,
-        ]
-
-        cols_transposed = list(map(list, zip(*all_columns)))
-
-        month_count_schemas_base = make_type_schemas(
-            ["month_count"],
-            [self.month_count_list],
-            IntegerType(),
-        )
-        datetype_schemas = make_type_schemas(["month"], [self.months_list], DateType())
-        inttype_schemas_base = make_type_schemas(
-            ["age_yrs", "age_mos"],
-            [self.age_yrs_list, self.age_mos_list],
-            IntegerType(),
-        )
-        floattype_schemas = make_type_schemas(
-            [
-                "yrly_interest",
-                "monthly_interest",
-                "savings",
-                "var_interest_yrly",
-                "var_interest_monthly",
-                "var_added_savings",
-                "var_savings_list",
-            ],
-            [
-                self.yrly_rf_interest_list,
-                self.monthly_rf_interest_list,
-                self.savings_list,
-                self.var_interest_yrly,
-                self.var_interest_monthly,
-                self.var_added_savings,
-                self.var_savings,
-            ],
-            FloatType(),
-        )
-
-        all_schemas = StructType(
-            month_count_schemas_base
-            + datetype_schemas
-            + inttype_schemas_base
-            + floattype_schemas
-        )
-
-        return self.spark.createDataFrame(cols_transposed, all_schemas)
-
     def create_pandas_df(self) -> pd.DataFrame:
         """Docstring"""
         data = {
@@ -283,6 +275,7 @@ class FinancialScenario:
             "yrly_interest": self.yrly_rf_interest_list,
             "monthly_interest": self.monthly_rf_interest_list,
             "savings_added": self.savings_added_list,
+            "car_pmt_list": self.car_pmt_list,
             "savings": self.savings_list,
             "var_interest_yrly": self.var_interest_yrly,
             "var_interest_monthly": self.var_interest_monthly,
@@ -294,14 +287,14 @@ class FinancialScenario:
 
 
 def main() -> None:
-    spark = SparkSession.builder.appName("stochastic_finances").getOrCreate()
+    # spark = SparkSession.builder.appName("stochastic_finances").getOrCreate()
 
     with open("input_assumptions.json") as json_data:
         assumptions = json.load(json_data)
 
     birthdate = datetime.strptime(assumptions["birthday"], "%m/%d/%Y").date()
 
-    retirement_date = calc_retirement_date(
+    retirement_date = calc_date_on_age(
         birthdate,
         assumptions["retirement_age_yrs"],
         assumptions["retirement_age_mos"],
@@ -322,10 +315,12 @@ def main() -> None:
     savings_list = calc_savings(
         assumptions, monthly_rf_interest_list, savings_added_list
     )
-    car_pmt_list = calc_car_payment(assumptions, tot_months)
+    car_pmt_start_date, car_pmt_end_date = calc_car_dates(assumptions, birthdate)
+    car_pmt_list = calc_car_payment(
+        assumptions, months_list, car_pmt_start_date, car_pmt_end_date
+    )
 
     first_class = FinancialScenario(
-        spark,
         assumptions,
         birthdate,
         retirement_date,
@@ -337,13 +332,13 @@ def main() -> None:
         yrly_rf_interest_list,
         monthly_rf_interest_list,
         savings_added_list,
+        car_pmt_list,
         savings_list,
     )
 
     final_list = []
-    for i in range(1000):
+    for i in range(100):
         new_scen = FinancialScenario(
-            spark,
             assumptions,
             birthdate,
             retirement_date,
@@ -355,6 +350,7 @@ def main() -> None:
             yrly_rf_interest_list,
             monthly_rf_interest_list,
             savings_added_list,
+            car_pmt_list,
             savings_list,
         )
         new_scen.create_pandas_df().to_csv(f"./outputs/scen_{i}.csv", index=False)
