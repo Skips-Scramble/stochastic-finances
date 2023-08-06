@@ -15,6 +15,11 @@
 	"base_savings_per_yr_increase": 2.0,
     "base_monthly_bills": 1500,
     "base_monthly_rent": 1100,
+	"car_pmt_start_age_yrs": 40,
+	"car_pmr_start_age_mos": 0,
+	"car_pmt_length_yrs": 3,
+	"car_pmt_down": 15000,
+	"car_pmt_monthly": 450,
     "rent_end_age_yrs": 70,
     "rent_end_age_months": 0
 }

@@ -112,6 +112,10 @@ def calc_savings(
             savings_list.append(savings)
     return savings_list
 
+def calc_car_payment(assumptions:list, tot_months:int):
+    """Docstring"""
+    
+
 
 class FinancialScenario:
     def __init__(
@@ -318,6 +322,7 @@ def main() -> None:
     savings_list = calc_savings(
         assumptions, monthly_rf_interest_list, savings_added_list
     )
+    car_pmt_list = calc_car_payment(assumptions, tot_months)
 
     first_class = FinancialScenario(
         spark,

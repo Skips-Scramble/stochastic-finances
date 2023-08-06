@@ -35,3 +35,4 @@ so really don't need lists. Only really needed for outputting to csv
 ## Car Payment
 - Need to make car payment more dynamic (start, stop, multiple occurrences)
 - Make new cars have some chaos variable where it gets destroyed and you need a new one or something
+- Add in optional TVM calc for payments per month
