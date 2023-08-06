@@ -11,7 +11,8 @@ so really don't need lists. Only really needed for outputting to csv
 ## Savings
 - Do I need to make a new variable for savings interest? Usually lower and less volatile - continuous flow
 - Idea: Have interest rate change every quarter and choose a direction and magnitude between 0.05% and 0.15%?
-  - Floor at 0%, cap at 5.5%?
+  - Floor at 0.1%, cap at 5.5%?
+  - This is essentially adjusted via uniform distribution. Should I change this? Look at historical data and see what's what?
 - Adjust amount saved per month
   - Do this via annual pay raises (actually, should ultimately make this user-generated frequency)
     - This also adjusts for inflation assuming your pay is inflation-adjusted

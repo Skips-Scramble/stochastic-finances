@@ -1,25 +1,11 @@
-Outline
+## Outline
+- Add in adjustments per year (or some variable time period) to salary added per month
+  - Could do flat dollar amount or percent, but maybe that's later?
+  - Could start with just adding pay increase per year
+- Add in car payment start/stop
+  - Do this as a template for a general savings hit (mortgage, other car payment, etc.)
 
-- Create initial script to set up basic df
-  - "current" month
-  - birthdate
-  - age in yrs
-  - age in months
-  - month count (from start)
-- Calculate months projected savings based on:
-  - assumed interest rate
-  - assumed saved per month
-- Calculate months projected savings based on:
-  - assumed interest rate spread by normal distribution
-  - run 1,000 sims to see where you land
-- Calc Full base
-- Add in one variable field and figure out the best way to implement
-  - Class
-    - class per scenario?
-	- Base classs and then add on list of scenarios
-  - list of lists
-    - per scenario?
-	- running total?
+
 
 Implementation
 - I think I want to have modules that can be mixed at matched
