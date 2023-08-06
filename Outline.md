@@ -1,7 +1,4 @@
 ## Outline
-- Add in adjustments per year (or some variable time period) to salary added per month
-  - Could do flat dollar amount or percent, but maybe that's later?
-  - Could start with just adding pay increase per year
 - Add in car payment start/stop
   - Do this as a template for a general savings hit (mortgage, other car payment, etc.)
 

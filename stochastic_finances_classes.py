@@ -75,9 +75,29 @@ def calc_monthly_interest(assumptions: dict, tot_months: int) -> list:
     return interest_list
 
 
+def calc_savings_added(assumptions: dict, tot_months: int):
+    savings_added_list = []
+    for i in range(tot_months):
+        if i == 0:
+            savings_added_list.append(round(assumptions["base_saved_per_mo"], 2))
+        elif i % 12 == 0:
+            savings_added_list.append(
+                round(
+                    savings_added_list[i - 1]
+                    * (1 + assumptions["base_savings_per_yr_increase"] / 100),
+                    2,
+                )
+            )
+        else:
+            savings_added_list.append(savings_added_list[i - 1])
+
+    return savings_added_list
+
+
 def calc_savings(
     assumptions: dict,
     interest_list: list,
+    savings_added_list: list,
 ) -> list:
     """Calculate base savings"""
     savings_list = []
@@ -87,9 +107,7 @@ def calc_savings(
             savings_list.append(savings)
         else:
             savings = float(
-                round(
-                    (savings + assumptions["base_saved_per_month"]) * (1 + interest), 2
-                )
+                round((savings + savings_added_list[index]) * (1 + interest), 2)
             )
             savings_list.append(savings)
     return savings_list
@@ -109,6 +127,7 @@ class FinancialScenario:
         age_mos_list: list,
         yrly_rf_interest_list: list,
         monthly_rf_interest_list: list,
+        savings_added_list: list,
         savings_list: list,
     ):
         self.spark = spark
@@ -122,6 +141,7 @@ class FinancialScenario:
         self.age_mos_list = age_mos_list
         self.yrly_rf_interest_list = yrly_rf_interest_list
         self.monthly_rf_interest_list = monthly_rf_interest_list
+        self.savings_added_list = savings_added_list
         self.savings_list = savings_list
 
     @cached_property
@@ -158,12 +178,16 @@ class FinancialScenario:
     @cached_property
     def var_added_savings(self) -> list:
         """Docstring"""
-        var_savings_array = np.random.normal(
-            self.assumptions["base_saved_per_month"],
-            self.assumptions["base_saved_per_month"] * (0.5),
-            self.tot_months,
-        )
-        return [round(float(x), 2) for x in var_savings_array]
+        return [
+            round(
+                np.random.normal(
+                    x,
+                    x * (0.5),
+                ),
+                2,
+            )
+            for x in self.savings_added_list
+        ]
 
     @cached_property
     def var_savings(self) -> list:
@@ -254,6 +278,7 @@ class FinancialScenario:
             "age_mos": self.age_mos_list,
             "yrly_interest": self.yrly_rf_interest_list,
             "monthly_interest": self.monthly_rf_interest_list,
+            "savings_added": self.savings_added_list,
             "savings": self.savings_list,
             "var_interest_yrly": self.var_interest_yrly,
             "var_interest_monthly": self.var_interest_monthly,
@@ -289,7 +314,10 @@ def main() -> None:
         for _ in range(tot_months)
     ]
     monthly_rf_interest_list = calc_monthly_interest(assumptions, tot_months)
-    savings_list = calc_savings(assumptions, monthly_rf_interest_list)
+    savings_added_list = calc_savings_added(assumptions, tot_months)
+    savings_list = calc_savings(
+        assumptions, monthly_rf_interest_list, savings_added_list
+    )
 
     first_class = FinancialScenario(
         spark,
@@ -303,11 +331,12 @@ def main() -> None:
         age_mos_list,
         yrly_rf_interest_list,
         monthly_rf_interest_list,
+        savings_added_list,
         savings_list,
     )
 
     final_list = []
-    for i in range(100):
+    for i in range(1000):
         new_scen = FinancialScenario(
             spark,
             assumptions,
@@ -320,6 +349,7 @@ def main() -> None:
             age_mos_list,
             yrly_rf_interest_list,
             monthly_rf_interest_list,
+            savings_added_list,
             savings_list,
         )
         new_scen.create_pandas_df().to_csv(f"./outputs/scen_{i}.csv", index=False)

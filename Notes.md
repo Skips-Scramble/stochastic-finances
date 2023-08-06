@@ -7,12 +7,14 @@
 - Need to maybe allow non-variable fields upon request (i.e. don't vary interest, or don't vary savings added per month)
 - Right now, there are yearly (base) interest and monthly (base) interest list being generated. But these are static variables,
 so really don't need lists. Only really needed for outputting to csv
+- Have a thing that calculates total salary for each month (so like money invested + spent + saved) and use as a check
 
 ## Savings
 - Do I need to make a new variable for savings interest? Usually lower and less volatile - continuous flow
 - Idea: Have interest rate change every quarter and choose a direction and magnitude between 0.05% and 0.15%?
   - Floor at 0.1%, cap at 5.5%?
   - This is essentially adjusted via uniform distribution. Should I change this? Look at historical data and see what's what?
+    - Yeah, doesn't look like a ton of variance. But maybe that's OK?
 - Adjust amount saved per month
   - Do this via annual pay raises (actually, should ultimately make this user-generated frequency)
     - This also adjusts for inflation assuming your pay is inflation-adjusted
