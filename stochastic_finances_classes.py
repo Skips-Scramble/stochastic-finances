@@ -111,25 +111,6 @@ def calc_savings_added(assumptions: dict, tot_months: int):
     return savings_added_list
 
 
-def calc_savings(
-    assumptions: dict,
-    interest_list: list,
-    savings_added_list: list,
-) -> list:
-    """Calculate base savings"""
-    savings_list = []
-    for index, interest in enumerate(interest_list):
-        if index == 0:
-            savings = float(round(assumptions["current_savings"], 2))
-            savings_list.append(savings)
-        else:
-            savings = float(
-                round((savings + savings_added_list[index]) * (1 + interest), 2)
-            )
-            savings_list.append(savings)
-    return savings_list
-
-
 def calc_car_dates(assumptions: list, birthdate: datetime.date) -> datetime.date:
     """Docstring"""
     car_pmt_start_date = calc_date_on_age(
@@ -168,6 +149,30 @@ def calc_car_payment(
             car_pmt_list.append(round(0, 2))
 
     return car_pmt_list
+
+
+def calc_savings(
+    assumptions: dict,
+    interest_list: list,
+    savings_added_list: list,
+    car_pmt_list: list,
+) -> list:
+    """Calculate base savings"""
+    savings_list = []
+    for index, interest in enumerate(interest_list):
+        if index == 0:
+            savings = float(round(assumptions["current_savings"], 2))
+            savings_list.append(savings)
+        else:
+            savings = float(
+                round(
+                    (savings + savings_added_list[index] - car_pmt_list[index])
+                    * (1 + interest),
+                    2,
+                )
+            )
+            savings_list.append(savings)
+    return savings_list
 
 
 class FinancialScenario:
@@ -258,7 +263,8 @@ class FinancialScenario:
                 prev_savings = float(
                     round(
                         prev_savings * (1 + self.var_interest_monthly[i])
-                        + self.var_added_savings[i],
+                        + self.var_added_savings[i]
+                        - self.car_pmt_list[i],
                         2,
                     )
                 )
@@ -312,12 +318,12 @@ def main() -> None:
     ]
     monthly_rf_interest_list = calc_monthly_interest(assumptions, tot_months)
     savings_added_list = calc_savings_added(assumptions, tot_months)
-    savings_list = calc_savings(
-        assumptions, monthly_rf_interest_list, savings_added_list
-    )
     car_pmt_start_date, car_pmt_end_date = calc_car_dates(assumptions, birthdate)
     car_pmt_list = calc_car_payment(
         assumptions, months_list, car_pmt_start_date, car_pmt_end_date
+    )
+    savings_list = calc_savings(
+        assumptions, monthly_rf_interest_list, savings_added_list, car_pmt_list
     )
 
     first_class = FinancialScenario(
