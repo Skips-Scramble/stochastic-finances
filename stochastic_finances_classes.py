@@ -39,19 +39,6 @@ def calc_date_on_age(
     return date(year, month, 1)
 
 
-# def calc_retirement_date(
-#     birthdate: datetime.date, retirement_age_yrs: int, retirement_age_mos: int
-# ) -> datetime.date:
-#     """Calculate retirement age"""
-#     retirement_month = (birthdate.month + retirement_age_mos) % 12 - 1
-#     spill_over = 1 if birthdate.month + retirement_age_mos > 12 else 0
-#     retirement_year = birthdate.year + retirement_age_yrs + spill_over
-
-#     retirement_day = 1
-
-#     return date(retirement_year, retirement_month, retirement_day)
-
-
 def calc_months(retirement_date: datetime.date) -> list:
     current_date = date.today()
     start_month = current_date.replace(day=1)
@@ -111,28 +98,28 @@ def calc_savings_added(assumptions: dict, tot_months: int):
     return savings_added_list
 
 
-def calc_car_dates(assumptions: list, birthdate: datetime.date) -> datetime.date:
+def calc_payment_item_dates(assumptions: list, birthdate: datetime.date) -> datetime.date:
     """Docstring"""
-    car_pmt_start_date = calc_date_on_age(
+    pmt_item_start_date = calc_date_on_age(
         birthdate,
-        assumptions["car_pmt_start_age_yrs"],
-        assumptions["car_pmt_start_age_mos"],
+        assumptions["pmt_item_start_age_yrs"],
+        assumptions["pmt_item_start_age_mos"],
     )
 
-    car_pmt_end_yr = car_pmt_start_date.year + assumptions["car_pmt_length_yrs"]
-    if car_pmt_start_date.month - 1 != 0:
-        car_pmt_end_mo = car_pmt_start_date.month - 1
+    pmt_item_end_yr = pmt_item_start_date.year + assumptions["pmt_item_length_yrs"]
+    if pmt_item_start_date.month - 1 != 0:
+        pmt_item_end_mo = pmt_item_start_date.month - 1
     else:
-        car_pmt_end_mo = 12
+        pmt_item_end_mo = 12
 
-    return car_pmt_start_date, date(car_pmt_end_yr, car_pmt_end_mo, 1)
+    return pmt_item_start_date, date(pmt_item_end_yr, pmt_item_end_mo, 1)
 
 
-def calc_car_payment(
+def calc_payment_item_list(
     assumptions: dict,
     months_list: list,
-    car_pmt_start_date: datetime.date,
-    car_pmt_end_date: datetime.date,
+    pmt_item_start_date: datetime.date,
+    pmt_item_end_date: datetime.date,
 ):
     """Docstring"""
     car_pmt_list = []
@@ -149,6 +136,18 @@ def calc_car_payment(
             car_pmt_list.append(round(0, 2))
 
     return car_pmt_list
+
+def calc_payments(
+    assumptions: dict,
+    birthdate: datetime.date,
+    months_list: list,
+) -> list:
+    """Docstring"""
+    payments_list = []
+    for item in assumptions["payment_items"]:
+        payment_list.append(calc_payment_list(birthdate, months_list, item))
+
+    return payment_list
 
 
 def calc_savings(
