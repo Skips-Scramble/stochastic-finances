@@ -32,7 +32,9 @@ so really don't need lists. Only really needed for outputting to csv
 ## Rent/Mortgage
 - Need to make rent more dynamic (start, stop, multiple)
 
-## Car Payment
+## Payments
 - Need to make car payment more dynamic (start, stop, multiple occurrences)
 - Make new cars have some chaos variable where it gets destroyed and you need a new one or something
 - Add in optional TVM calc for payments per month
+- Right now the person has to enter in their information one at a time (like for cars). Should there be a thing to just says, 
+  "buy new car every X years, and just adjust according to inflation?"

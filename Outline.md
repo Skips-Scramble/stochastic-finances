@@ -1,7 +1,8 @@
 ## Outline
 - Add in car payment start/stop
   - Do this as a template for a general savings hit (mortgage, other car payment, etc.)
-
+- Do analysis?
+- Build in Retirement calcs
 
 
 Implementation
