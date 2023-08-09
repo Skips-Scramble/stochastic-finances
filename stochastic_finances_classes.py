@@ -3,15 +3,6 @@ import findspark
 findspark.init()
 
 import json
-from pathlib import Path
-from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.types import (
-    StructType,
-    IntegerType,
-    FloatType,
-    DateType,
-)
-
 import pandas as pd
 
 from datetime import date, datetime, timedelta
@@ -20,7 +11,6 @@ from dateutil.relativedelta import relativedelta
 import numpy as np
 import random
 
-from utils.tools import make_type_schemas
 from functools import cached_property
 
 
@@ -98,44 +88,48 @@ def calc_savings_added(assumptions: dict, tot_months: int):
     return savings_added_list
 
 
-def calc_payment_item_dates(assumptions: list, birthdate: datetime.date) -> datetime.date:
+def calc_payment_item_dates(
+    birthdate: datetime.date,
+    item_pmt_start_age_yrs: int,
+    item_pmt_start_age_mos: int,
+    item_pmt_length_yrs: int,
+) -> (datetime.date, datetime.date):
     """Docstring"""
-    pmt_item_start_date = calc_date_on_age(
+    item_pmt_start_date = calc_date_on_age(
         birthdate,
-        assumptions["pmt_item_start_age_yrs"],
-        assumptions["pmt_item_start_age_mos"],
+        item_pmt_start_age_yrs,
+        item_pmt_start_age_mos,
     )
 
-    pmt_item_end_yr = pmt_item_start_date.year + assumptions["pmt_item_length_yrs"]
-    if pmt_item_start_date.month - 1 != 0:
-        pmt_item_end_mo = pmt_item_start_date.month - 1
+    item_pmt_end_yr = item_pmt_start_date.year + item_pmt_length_yrs
+    if item_pmt_start_date.month - 1 != 0:
+        item_pmt_end_mo = item_pmt_start_date.month - 1
     else:
-        pmt_item_end_mo = 12
+        item_pmt_end_mo = 12
 
-    return pmt_item_start_date, date(pmt_item_end_yr, pmt_item_end_mo, 1)
+    return item_pmt_start_date, date(item_pmt_end_yr, item_pmt_end_mo, 1)
 
 
-def calc_payment_item_list(
-    assumptions: dict,
+def calc_item_monthly_pmt_list(
     months_list: list,
-    pmt_item_start_date: datetime.date,
-    pmt_item_end_date: datetime.date,
+    item_pmt_start_date: datetime.date,
+    item_pmt_end_date: datetime.date,
+    item_down_pmt: int,
+    item_monthly_pmt: float,
 ):
     """Docstring"""
-    car_pmt_list = []
+    item_pmt_list = []
     for month in months_list:
-        if month >= car_pmt_start_date and month <= car_pmt_end_date:
-            if month == car_pmt_start_date:
-                car_pmt_list.append(
-                    round(assumptions["car_pmt_monthly"], 2)
-                    + assumptions["car_pmt_down"]
-                )
+        if month >= item_pmt_start_date and month <= item_pmt_end_date:
+            if month == item_pmt_start_date:
+                item_pmt_list.append(round(item_monthly_pmt, 2) + item_down_pmt)
             else:
-                car_pmt_list.append(round(assumptions["car_pmt_monthly"], 2))
+                item_pmt_list.append(round(item_monthly_pmt, 2))
         else:
-            car_pmt_list.append(round(0, 2))
+            item_pmt_list.append(round(0, 2))
 
-    return car_pmt_list
+    return item_pmt_list
+
 
 def calc_payments(
     assumptions: dict,
@@ -145,18 +139,32 @@ def calc_payments(
     """Docstring"""
     payments_list = []
     for item in assumptions["payment_items"]:
-        payment_list.append(calc_payment_list(birthdate, months_list, item))
-
-    return payment_list
+        item_pmt_start_date, item_pmt_end_date = calc_payment_item_dates(
+            birthdate,
+            item["item_pmt_start_age_yrs"],
+            item["item_pmt_start_age_mos"],
+            item["item_pmt_length_yrs"],
+        )
+        payments_list.append(
+            calc_item_monthly_pmt_list(
+                months_list,
+                item_pmt_start_date,
+                item_pmt_end_date,
+                item["item_down_pmt"],
+                item["item_monthly_pmt"],
+            )
+        )
+    return payments_list
 
 
 def calc_savings(
     assumptions: dict,
     interest_list: list,
     savings_added_list: list,
-    car_pmt_list: list,
+    payments_list: list,
 ) -> list:
     """Calculate base savings"""
+    tot_pmts_list = [sum(sublist) for sublist in zip(*payments_list)]
     savings_list = []
     for index, interest in enumerate(interest_list):
         if index == 0:
@@ -165,7 +173,7 @@ def calc_savings(
         else:
             savings = float(
                 round(
-                    (savings + savings_added_list[index] - car_pmt_list[index])
+                    (savings + savings_added_list[index] - tot_pmts_list[index])
                     * (1 + interest),
                     2,
                 )
@@ -188,7 +196,7 @@ class FinancialScenario:
         yrly_rf_interest_list: list,
         monthly_rf_interest_list: list,
         savings_added_list: list,
-        car_pmt_list: list,
+        item_pmt_list: list,
         savings_list: list,
     ):
         self.assumptions = assumptions
@@ -202,8 +210,13 @@ class FinancialScenario:
         self.yrly_rf_interest_list = yrly_rf_interest_list
         self.monthly_rf_interest_list = monthly_rf_interest_list
         self.savings_added_list = savings_added_list
-        self.car_pmt_list = car_pmt_list
+        self.item_pmt_list = item_pmt_list
         self.savings_list = savings_list
+
+    @cached_property
+    def tot_pmt_list(self):
+        """Docstring"""
+        return [sum(sublist) for sublist in zip(*self.item_pmt_list)]
 
     @cached_property
     def var_interest_yrly(self) -> list:
@@ -263,7 +276,7 @@ class FinancialScenario:
                     round(
                         prev_savings * (1 + self.var_interest_monthly[i])
                         + self.var_added_savings[i]
-                        - self.car_pmt_list[i],
+                        - self.tot_pmt_list[i],
                         2,
                     )
                 )
@@ -272,7 +285,7 @@ class FinancialScenario:
 
     def create_pandas_df(self) -> pd.DataFrame:
         """Docstring"""
-        data = {
+        data_1 = {
             "month_count": self.month_count_list,
             "month": self.months_list,
             "age_yrs": self.age_yrs_list,
@@ -280,13 +293,22 @@ class FinancialScenario:
             "yrly_interest": self.yrly_rf_interest_list,
             "monthly_interest": self.monthly_rf_interest_list,
             "savings_added": self.savings_added_list,
-            "car_pmt_list": self.car_pmt_list,
+        }
+
+        pmt_item_names = [
+            f'{x["item_name"]}_pmt' for x in self.assumptions["payment_items"]
+        ]
+        pmt_items = {k: v for (k, v) in zip(pmt_item_names, self.item_pmt_list)}
+
+        data_3 = {
             "savings": self.savings_list,
             "var_interest_yrly": self.var_interest_yrly,
             "var_interest_monthly": self.var_interest_monthly,
             "var_added_savings": self.var_added_savings,
             "var_savings_list": self.var_savings,
         }
+
+        data = {**data_1, **pmt_items, **data_3}
 
         return pd.DataFrame(data)
 
@@ -317,12 +339,9 @@ def main() -> None:
     ]
     monthly_rf_interest_list = calc_monthly_interest(assumptions, tot_months)
     savings_added_list = calc_savings_added(assumptions, tot_months)
-    car_pmt_start_date, car_pmt_end_date = calc_car_dates(assumptions, birthdate)
-    car_pmt_list = calc_car_payment(
-        assumptions, months_list, car_pmt_start_date, car_pmt_end_date
-    )
+    payments_list = calc_payments(assumptions, birthdate, months_list)
     savings_list = calc_savings(
-        assumptions, monthly_rf_interest_list, savings_added_list, car_pmt_list
+        assumptions, monthly_rf_interest_list, savings_added_list, payments_list
     )
 
     first_class = FinancialScenario(
@@ -337,7 +356,7 @@ def main() -> None:
         yrly_rf_interest_list,
         monthly_rf_interest_list,
         savings_added_list,
-        car_pmt_list,
+        payments_list,
         savings_list,
     )
 
@@ -355,7 +374,7 @@ def main() -> None:
             yrly_rf_interest_list,
             monthly_rf_interest_list,
             savings_added_list,
-            car_pmt_list,
+            payments_list,
             savings_list,
         )
         new_scen.create_pandas_df().to_csv(f"./outputs/scen_{i}.csv", index=False)
