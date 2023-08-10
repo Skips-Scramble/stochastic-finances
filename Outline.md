@@ -1,8 +1,9 @@
 ## Outline
-- Add in car payment start/stop
-  - Do this as a template for a general savings hit (mortgage, other car payment, etc.)
-- Do analysis?
 - Build in Retirement calcs
+  - Reformat everything so that:
+    - I output yearly and monthly interest for everything
+	- base savings added per month increase is shown
+	- base (unvaried) retirement stuff is before the variable savings stuff (maybe not?)
 
 
 Implementation
