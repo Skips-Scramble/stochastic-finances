@@ -61,12 +61,12 @@ def calc_age_mos(months: list, birthdate: datetime.date) -> list:
     return age_mos_list
 
 
-def calc_monthly_interest(assumptions: dict, tot_months: int) -> list:
+def calc_monthly_rf_interest(assumptions: dict, tot_months: int) -> list:
     monthly_interest = float(
         round(((1 + assumptions["base_rf_interest_per_yr"] / 100) ** (1 / 12)) - 1, 4)
     )
-    interest_list = [monthly_interest for _ in range(tot_months)]
-    return interest_list
+    rf_interest_list = [monthly_interest for _ in range(tot_months)]
+    return rf_interest_list
 
 
 def calc_savings_added(assumptions: dict, tot_months: int):
@@ -182,6 +182,55 @@ def calc_savings(
     return savings_list
 
 
+def calc_monthly_mkt_interest(assumptions: dict, tot_months: int) -> list:
+    monthly_interest = float(
+        round(((1 + assumptions["base_mkt_interest_per_yr"] / 100) ** (1 / 12)) - 1, 4)
+    )
+    mkt_interest_list = [monthly_interest for _ in range(tot_months)]
+    return mkt_interest_list
+
+
+def calc_ret_added(assumptions: dict, tot_months: int):
+    ret_added_list = []
+    for i in range(tot_months):
+        if i == 0:
+            ret_added_list.append(round(assumptions["base_retirement_per_mo"], 2))
+        elif i % 12 == 0:
+            ret_added_list.append(
+                round(
+                    ret_added_list[i - 1]
+                    + assumptions["base_retirement_per_yr_increase"] / 12,
+                    2,
+                )
+            )
+        else:
+            ret_added_list.append(ret_added_list[i - 1])
+
+    return ret_added_list
+
+
+def calc_retirement(
+    assumptions: dict,
+    mkt_intersest_list: list,
+    retirement_added_list: list,
+) -> list:
+    """Calculate base savings"""
+    retirement_list = []
+    for index, interest in enumerate(mkt_intersest_list):
+        if index == 0:
+            retirement = float(round(assumptions["base_retirement"], 2))
+            retirement_list.append(retirement)
+        else:
+            retirement = float(
+                round(
+                    (retirement + retirement_added_list[index]) * (1 + interest),
+                    2,
+                )
+            )
+            retirement_list.append(retirement)
+    return retirement_list
+
+
 class FinancialScenario:
     def __init__(
         self,
@@ -195,9 +244,12 @@ class FinancialScenario:
         age_mos_list: list,
         yrly_rf_interest_list: list,
         monthly_rf_interest_list: list,
+        monthly_mkt_interest_list: list,
         savings_added_list: list,
+        retirement_added_list: list,
         item_pmt_list: list,
         savings_list: list,
+        retirement_list: list,
     ):
         self.assumptions = assumptions
         self.birthdate = birthdate
@@ -209,9 +261,12 @@ class FinancialScenario:
         self.age_mos_list = age_mos_list
         self.yrly_rf_interest_list = yrly_rf_interest_list
         self.monthly_rf_interest_list = monthly_rf_interest_list
+        self.monthly_mkt_interest_list = monthly_mkt_interest_list
         self.savings_added_list = savings_added_list
+        self.retirement_added_list = retirement_added_list
         self.item_pmt_list = item_pmt_list
         self.savings_list = savings_list
+        self.retirement_list = retirement_list
 
     @cached_property
     def tot_pmt_list(self):
@@ -305,7 +360,10 @@ class FinancialScenario:
             "var_interest_yrly": self.var_interest_yrly,
             "var_interest_monthly": self.var_interest_monthly,
             "var_added_savings": self.var_added_savings,
-            "var_savings_list": self.var_savings,
+            "var_savings": self.var_savings,
+            "mkt_interst": self.monthly_mkt_interest_list,
+            "retirement_added": self.retirement_added_list,
+            "retirement": self.retirement_list,
         }
 
         data = {**data_1, **pmt_items, **data_3}
@@ -326,7 +384,7 @@ def main() -> None:
         assumptions["retirement_age_yrs"],
         assumptions["retirement_age_mos"],
     )
-    # retirement_date = datetime(2060, 12, 1)
+    # retirement_date = datetime(2026, 12, 1)
 
     months_list = calc_months(retirement_date)
     month_count_list = [i for i in range(len(months_list))]
@@ -337,11 +395,16 @@ def main() -> None:
         float(round(assumptions["base_rf_interest_per_yr"] / 100, 4))
         for _ in range(tot_months)
     ]
-    monthly_rf_interest_list = calc_monthly_interest(assumptions, tot_months)
+    monthly_rf_interest_list = calc_monthly_rf_interest(assumptions, tot_months)
     savings_added_list = calc_savings_added(assumptions, tot_months)
     payments_list = calc_payments(assumptions, birthdate, months_list)
     savings_list = calc_savings(
         assumptions, monthly_rf_interest_list, savings_added_list, payments_list
+    )
+    monthly_mkt_interest_list = calc_monthly_mkt_interest(assumptions, tot_months)
+    retirement_added_list = calc_ret_added(assumptions, tot_months)
+    retirement_list = calc_retirement(
+        assumptions, monthly_mkt_interest_list, retirement_added_list
     )
 
     first_class = FinancialScenario(
@@ -355,9 +418,12 @@ def main() -> None:
         age_mos_list,
         yrly_rf_interest_list,
         monthly_rf_interest_list,
+        monthly_mkt_interest_list,
         savings_added_list,
+        retirement_added_list,
         payments_list,
         savings_list,
+        retirement_list,
     )
 
     final_list = []
@@ -373,9 +439,12 @@ def main() -> None:
             age_mos_list,
             yrly_rf_interest_list,
             monthly_rf_interest_list,
+            monthly_mkt_interest_list,
             savings_added_list,
+            retirement_added_list,
             payments_list,
             savings_list,
+            retirement_list,
         )
         new_scen.create_pandas_df().to_csv(f"./outputs/scen_{i}.csv", index=False)
         # print(f"{new_scen.var_savings[-1]:,.0f}")
