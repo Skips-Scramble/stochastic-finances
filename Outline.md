@@ -1,8 +1,6 @@
 ## Outline
 - Build in Retirement calcs
   - Reformat everything so that:
-    - I output yearly and monthly interest for everything
-	- base savings added per month increase is shown
 	- base (unvaried) retirement stuff is before the variable savings stuff (maybe not?)
 
 

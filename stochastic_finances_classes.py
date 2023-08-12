@@ -1,7 +1,3 @@
-import findspark
-
-findspark.init()
-
 import json
 import pandas as pd
 
@@ -69,21 +65,33 @@ def calc_monthly_rf_interest(assumptions: dict, tot_months: int) -> list:
     return rf_interest_list
 
 
-def calc_savings_added(assumptions: dict, tot_months: int):
-    savings_added_list = []
+def calc_savings_added_increase(assumptions: dict, tot_months: int):
+    savings_added_increase_list = []
     for i in range(tot_months):
         if i == 0:
-            savings_added_list.append(round(assumptions["base_saved_per_mo"], 2))
+            savings_added_increase_list.append(round(0, 2))
         elif i % 12 == 0:
-            savings_added_list.append(
+            savings_added_increase_list.append(
                 round(
-                    savings_added_list[i - 1]
-                    * (1 + assumptions["base_savings_per_yr_increase"] / 100),
+                    assumptions["base_savings_per_yr_increase"] / 100,
                     2,
                 )
             )
         else:
-            savings_added_list.append(savings_added_list[i - 1])
+            savings_added_increase_list.append(round(0, 2))
+
+    return savings_added_increase_list
+
+
+def calc_savings_added(assumptions: dict, savings_added_increase_list: list):
+    savings_added_list = []
+    for index, value in enumerate(savings_added_increase_list):
+        if index == 0:
+            savings_added_list.append(round(assumptions["base_saved_per_mo"], 2))
+        else:
+            savings_added_list.append(
+                round(savings_added_list[index - 1] * (1 + value), 2)
+            )
 
     return savings_added_list
 
@@ -244,11 +252,13 @@ class FinancialScenario:
         age_mos_list: list,
         yrly_rf_interest_list: list,
         monthly_rf_interest_list: list,
-        monthly_mkt_interest_list: list,
+        savings_increase_list: list,
         savings_added_list: list,
-        retirement_added_list: list,
         item_pmt_list: list,
         savings_list: list,
+        yrly_mkt_interest_list: list,
+        monthly_mkt_interest_list: list,
+        retirement_added_list: list,
         retirement_list: list,
     ):
         self.assumptions = assumptions
@@ -261,11 +271,13 @@ class FinancialScenario:
         self.age_mos_list = age_mos_list
         self.yrly_rf_interest_list = yrly_rf_interest_list
         self.monthly_rf_interest_list = monthly_rf_interest_list
-        self.monthly_mkt_interest_list = monthly_mkt_interest_list
+        self.savings_increase_list = savings_increase_list
         self.savings_added_list = savings_added_list
-        self.retirement_added_list = retirement_added_list
         self.item_pmt_list = item_pmt_list
         self.savings_list = savings_list
+        self.yrly_mkt_interest_list = yrly_mkt_interest_list
+        self.monthly_mkt_interest_list = monthly_mkt_interest_list
+        self.retirement_added_list = retirement_added_list
         self.retirement_list = retirement_list
 
     @cached_property
@@ -345,8 +357,9 @@ class FinancialScenario:
             "month": self.months_list,
             "age_yrs": self.age_yrs_list,
             "age_mos": self.age_mos_list,
-            "yrly_interest": self.yrly_rf_interest_list,
-            "monthly_interest": self.monthly_rf_interest_list,
+            "yrly_rf_interest": self.yrly_rf_interest_list,
+            "monthly_rf_interest": self.monthly_rf_interest_list,
+            "savings_increase": self.savings_increase_list,
             "savings_added": self.savings_added_list,
         }
 
@@ -357,13 +370,14 @@ class FinancialScenario:
 
         data_3 = {
             "savings": self.savings_list,
+            "yrly_mkt_interst": self.yrly_mkt_interest_list,
+            "monthly_mkt_interst": self.monthly_mkt_interest_list,
+            "retirement_added": self.retirement_added_list,
+            "retirement": self.retirement_list,
             "var_interest_yrly": self.var_interest_yrly,
             "var_interest_monthly": self.var_interest_monthly,
             "var_added_savings": self.var_added_savings,
             "var_savings": self.var_savings,
-            "mkt_interst": self.monthly_mkt_interest_list,
-            "retirement_added": self.retirement_added_list,
-            "retirement": self.retirement_list,
         }
 
         data = {**data_1, **pmt_items, **data_3}
@@ -396,34 +410,20 @@ def main() -> None:
         for _ in range(tot_months)
     ]
     monthly_rf_interest_list = calc_monthly_rf_interest(assumptions, tot_months)
-    savings_added_list = calc_savings_added(assumptions, tot_months)
+    savings_increase_list = calc_savings_added_increase(assumptions, tot_months)
+    savings_added_list = calc_savings_added(assumptions, savings_increase_list)
     payments_list = calc_payments(assumptions, birthdate, months_list)
     savings_list = calc_savings(
         assumptions, monthly_rf_interest_list, savings_added_list, payments_list
     )
+    yrly_mkt_interest_list = [
+        round(assumptions["base_mkt_interest_per_yr"] / 100, 4)
+        for _ in range(tot_months)
+    ]
     monthly_mkt_interest_list = calc_monthly_mkt_interest(assumptions, tot_months)
     retirement_added_list = calc_ret_added(assumptions, tot_months)
     retirement_list = calc_retirement(
         assumptions, monthly_mkt_interest_list, retirement_added_list
-    )
-
-    first_class = FinancialScenario(
-        assumptions,
-        birthdate,
-        retirement_date,
-        months_list,
-        month_count_list,
-        tot_months,
-        age_yrs_list,
-        age_mos_list,
-        yrly_rf_interest_list,
-        monthly_rf_interest_list,
-        monthly_mkt_interest_list,
-        savings_added_list,
-        retirement_added_list,
-        payments_list,
-        savings_list,
-        retirement_list,
     )
 
     final_list = []
@@ -439,11 +439,14 @@ def main() -> None:
             age_mos_list,
             yrly_rf_interest_list,
             monthly_rf_interest_list,
-            monthly_mkt_interest_list,
+            savings_increase_list,
             savings_added_list,
-            retirement_added_list,
             payments_list,
             savings_list,
+            yrly_mkt_interest_list,
+            monthly_mkt_interest_list,
+            retirement_added_list,
+            retirement_increase_list,
             retirement_list,
         )
         new_scen.create_pandas_df().to_csv(f"./outputs/scen_{i}.csv", index=False)
