@@ -3,7 +3,7 @@
 	"birthday": "12/22/1986",
 	"base_retirement": 100000,
 	"base_retirement_per_mo": 2000,
-	"base_retirement_per_yr_increase": 200,
+	"base_retirement_per_yr_increase": 300,
 	"base_mkt_interest_per_yr": 5.0,
 	"base_inflation_per_yr": 3.0,
 	"retirement_age_yrs": 60,
