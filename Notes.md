@@ -38,3 +38,7 @@ so really don't need lists. Only really needed for outputting to csv
 - Add in optional TVM calc for payments per month
 - Right now the person has to enter in their information one at a time (like for cars). Should there be a thing to just says, 
   "buy new car every X years, and just adjust according to inflation?"
+  
+## Retirement
+- What money are you pulling from where?
+- Reverse mortgage?

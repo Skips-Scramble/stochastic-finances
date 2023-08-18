@@ -1,7 +1,15 @@
 ## Outline
-- Build in Retirement calcs
-  - Reformat everything so that:
-	- base (unvaried) retirement stuff is before the variable savings stuff (maybe not?)
+- Start to add in calculations for post-retirement
+  - Re-work counts and everything for pre-retirement count, post-retirement count and a total count
+    - And months
+  - Are you working?
+  - Are you still contributing to retirement?
+  - Are you withdrawing SS?
+  - What are your monthly bills?
+  - What are your extra monthly bills?
+  - Does your market interest change post-retirement?
+  - How to deal with health care
+  - 
 
 
 Implementation
