@@ -25,10 +25,10 @@ def calc_date_on_age(
     return date(year, month, 1)
 
 
-def calc_months(retirement_date: datetime.date) -> list:
+def calc_months(end_date: datetime.date) -> list:
     current_date = date.today()
     start_month = current_date.replace(day=1)
-    delta = relativedelta(retirement_date, start_month)
+    delta = relativedelta(end_date, start_month)
     months_between = (delta.years * 12) + delta.months
 
     months_list = []
@@ -57,17 +57,17 @@ def calc_age_mos(months: list, birthdate: datetime.date) -> list:
     return age_mos_list
 
 
-def calc_monthly_rf_interest(assumptions: dict, tot_months: int) -> list:
+def calc_monthly_rf_interest(assumptions: dict, pre_retire_months_cnt: int) -> list:
     monthly_interest = float(
         round(((1 + assumptions["base_rf_interest_per_yr"] / 100) ** (1 / 12)) - 1, 4)
     )
-    rf_interest_list = [monthly_interest for _ in range(tot_months)]
+    rf_interest_list = [monthly_interest for _ in range(pre_retire_months_cnt)]
     return rf_interest_list
 
 
-def calc_savings_added_increase(assumptions: dict, tot_months: int):
+def calc_savings_added_increase(assumptions: dict, pre_retire_months_cnt: int):
     savings_added_increase_list = []
-    for i in range(tot_months):
+    for i in range(pre_retire_months_cnt):
         if i == 0:
             savings_added_increase_list.append(round(0, 2))
         elif i % 12 == 0:
@@ -190,17 +190,17 @@ def calc_savings(
     return savings_list
 
 
-def calc_monthly_mkt_interest(assumptions: dict, tot_months: int) -> list:
+def calc_monthly_mkt_interest(assumptions: dict, pre_retire_months_cnt: int) -> list:
     monthly_interest = float(
         round(((1 + assumptions["base_mkt_interest_per_yr"] / 100) ** (1 / 12)) - 1, 4)
     )
-    mkt_interest_list = [monthly_interest for _ in range(tot_months)]
+    mkt_interest_list = [monthly_interest for _ in range(pre_retire_months_cnt)]
     return mkt_interest_list
 
 
-def calc_ret_added_increase(assumptions: dict, tot_months: int):
+def calc_ret_added_increase(assumptions: dict, pre_retire_months_cnt: int):
     ret_added_increase_list = []
-    for i in range(tot_months):
+    for i in range(pre_retire_months_cnt):
         if i == 0:
             ret_added_increase_list.append(round(0, 2))
         elif i % 12 == 0:
@@ -256,8 +256,8 @@ class FinancialScenario:
         birthdate: date,
         retirement_date: date,
         months_list: list,
-        month_count_list: list,
-        tot_months: int,
+        month_cnt_list: list,
+        pre_retire_months_cnt: int,
         age_yrs_list: list,
         age_mos_list: list,
         yrly_rf_interest_list: list,
@@ -276,8 +276,8 @@ class FinancialScenario:
         self.birthdate = birthdate
         self.retirement_date = retirement_date
         self.months_list = months_list
-        self.month_count_list = month_count_list
-        self.tot_months = tot_months
+        self.month_cnt_list = month_cnt_list
+        self.pre_retire_months_cnt = pre_retire_months_cnt
         self.age_yrs_list = age_yrs_list
         self.age_mos_list = age_mos_list
         self.yrly_rf_interest_list = yrly_rf_interest_list
@@ -305,7 +305,7 @@ class FinancialScenario:
         """
         base_list = [
             self.assumptions["base_rf_interest_per_yr"] / 100
-        ] * self.tot_months
+        ] * self.pre_retire_months_cnt
 
         variable_rf_list = []
         for index, rate in enumerate(base_list):
@@ -347,7 +347,7 @@ class FinancialScenario:
     def var_savings(self) -> list:
         """Docstring"""
         var_savings = []
-        for i in range(self.tot_months):
+        for i in range(self.pre_retire_months_cnt):
             if i == 0:
                 prev_savings = round(float(self.assumptions["current_savings"]), 2)
                 var_savings.append(prev_savings)
@@ -375,7 +375,7 @@ class FinancialScenario:
                 / 100,
                 4,
             )
-            for _ in range(self.tot_months)
+            for _ in range(self.pre_retire_months_cnt)
         ]
 
     @cached_property
@@ -387,7 +387,7 @@ class FinancialScenario:
     def var_retirement(self) -> list:
         """Docstring"""
         var_retirement = []
-        for i in range(self.tot_months):
+        for i in range(self.pre_retire_months_cnt):
             if i == 0:
                 prev_retirement = round(self.assumptions["base_retirement"], 2)
                 var_retirement.append(prev_retirement)
@@ -400,10 +400,28 @@ class FinancialScenario:
                 var_retirement.append(prev_retirement)
         return var_retirement
 
+    @cached_property
+    def retirement_count_list(self) -> list:
+        retirement_count_list = []
+        for month in self.months_list:
+            if month < self.retirement_date:
+                retirement_count_list.append(0)
+            else:
+                retirement_count_list.append(
+                    relativedelta(month, self.retirement_date).months
+                )
+        return retirement_count_list
+
+    # @cached_property
+    # def var_bills_monthly(self) ->list:
+    #     base_bills = self.assumptions['1500']
+    #     inflation = self.assumptions['base_inflation_yr']
+    #     base_bills_retirement = base_bills * (1+inflation)**
+
     def create_pandas_df(self) -> pd.DataFrame:
         """Docstring"""
         data_1 = {
-            "month_count": self.month_count_list,
+            "month_count": self.month_cnt_list,
             "month": self.months_list,
             "age_yrs": self.age_yrs_list,
             "age_mos": self.age_mos_list,
@@ -446,6 +464,7 @@ def main() -> None:
         assumptions = json.load(json_data)
 
     birthdate = datetime.strptime(assumptions["birthday"], "%m/%d/%Y").date()
+    deathdate = calc_date_on_age(birthdate, 110, 0)
 
     retirement_date = calc_date_on_age(
         birthdate,
@@ -454,17 +473,30 @@ def main() -> None:
     )
     # retirement_date = datetime(2026, 12, 1)
 
-    months_list = calc_months(retirement_date)
-    month_count_list = [i for i in range(len(months_list))]
-    tot_months = len(months_list)
+    months_list = calc_months(deathdate)
+    month_cnt_list = [i for i in range(len(months_list))]
+
+    pre_retire_month_cnt_list = []
+    for i in month_cnt_list:
+        if months_list[i] <= retirement_date:
+            pre_retire_month_cnt_list.append(i)
+        else:
+            pre_retire_month_cnt_list.append(0)
+
+    pre_retire_months_cnt = len(months_list)
+
     age_yrs_list = calc_age_yrs(months_list, birthdate)
     age_mos_list = calc_age_mos(months_list, birthdate)
     yrly_rf_interest_list = [
         float(round(assumptions["base_rf_interest_per_yr"] / 100, 4))
-        for _ in range(tot_months)
+        for _ in range(pre_retire_months_cnt)
     ]
-    monthly_rf_interest_list = calc_monthly_rf_interest(assumptions, tot_months)
-    savings_increase_list = calc_savings_added_increase(assumptions, tot_months)
+    monthly_rf_interest_list = calc_monthly_rf_interest(
+        assumptions, pre_retire_months_cnt
+    )
+    savings_increase_list = calc_savings_added_increase(
+        assumptions, pre_retire_months_cnt
+    )
     savings_added_list = calc_savings_added(assumptions, savings_increase_list)
     payments_list = calc_payments(assumptions, birthdate, months_list)
     savings_list = calc_savings(
@@ -472,10 +504,14 @@ def main() -> None:
     )
     yrly_mkt_interest_list = [
         round(assumptions["base_mkt_interest_per_yr"] / 100, 4)
-        for _ in range(tot_months)
+        for _ in range(pre_retire_months_cnt)
     ]
-    monthly_mkt_interest_list = calc_monthly_mkt_interest(assumptions, tot_months)
-    retirement_increase_list = calc_ret_added_increase(assumptions, tot_months)
+    monthly_mkt_interest_list = calc_monthly_mkt_interest(
+        assumptions, pre_retire_months_cnt
+    )
+    retirement_increase_list = calc_ret_added_increase(
+        assumptions, pre_retire_months_cnt
+    )
     retirement_added_list = calc_ret_added(assumptions, retirement_increase_list)
     retirement_list = calc_retirement(
         assumptions, monthly_mkt_interest_list, retirement_added_list
@@ -489,8 +525,8 @@ def main() -> None:
             birthdate,
             retirement_date,
             months_list,
-            month_count_list,
-            tot_months,
+            month_cnt_list,
+            pre_retire_months_cnt,
             age_yrs_list,
             age_mos_list,
             yrly_rf_interest_list,
