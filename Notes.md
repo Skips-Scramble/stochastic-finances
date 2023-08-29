@@ -42,3 +42,4 @@ so really don't need lists. Only really needed for outputting to csv
 ## Retirement
 - What money are you pulling from where?
 - Reverse mortgage?
+- This kind of assumes a Roth style account where taxes aren't a thing. Probably should add logic to deal with that
