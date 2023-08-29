@@ -145,6 +145,17 @@ def calc_item_monthly_pmt_list(
     return item_pmt_list
 
 
+def calc_base_bills(assumptions: dict, months_cnt_list: list) -> list:
+    """Docstring"""
+    monthly_inflation = round(
+        ((1 + assumptions["base_inflation_per_yr"] / 100) ** (1 / 12)) - 1, 6
+    )
+    return [
+        round(assumptions["base_monthly_bills"] * (1 + monthly_inflation) ** i, 2)
+        for i in months_cnt_list
+    ]
+
+
 def calc_payments(
     assumptions: dict,
     birthdate: datetime.date,
@@ -175,10 +186,19 @@ def calc_savings(
     assumptions: dict,
     interest_list: list,
     savings_added_list: list,
+    base_bills_list: list,
     payments_list: list,
+    post_retire_months_cnt_list: list,
 ) -> list:
     """Calculate base savings"""
     tot_pmts_list = [sum(sublist) for sublist in zip(*payments_list)]
+    retire_bills_list = []
+    for index, val in enumerate(post_retire_months_cnt_list):
+        if val == 0:
+            retire_bills_list.append(0)
+        else:
+            retire_bills_list.append(base_bills_list[index])
+
     savings_list = []
     for index, interest in enumerate(interest_list):
         if index == 0:
@@ -187,7 +207,12 @@ def calc_savings(
         else:
             savings = float(
                 round(
-                    (savings + savings_added_list[index] - tot_pmts_list[index])
+                    (
+                        savings
+                        + savings_added_list[index]
+                        - tot_pmts_list[index]
+                        - retire_bills_list[index]
+                    )
                     * (1 + interest),
                     2,
                 )
@@ -276,6 +301,7 @@ class FinancialScenario:
         monthly_rf_interest_list: list,
         savings_increase_list: list,
         savings_added_list: list,
+        base_bills_list: list,
         item_pmt_list: list,
         savings_list: list,
         yrly_mkt_interest_list: list,
@@ -298,6 +324,7 @@ class FinancialScenario:
         self.monthly_rf_interest_list = monthly_rf_interest_list
         self.savings_increase_list = savings_increase_list
         self.savings_added_list = savings_added_list
+        self.base_bills_list = base_bills_list
         self.item_pmt_list = item_pmt_list
         self.savings_list = savings_list
         self.yrly_mkt_interest_list = yrly_mkt_interest_list
@@ -445,6 +472,7 @@ class FinancialScenario:
             "monthly_rf_interest": self.monthly_rf_interest_list,
             "savings_increase": self.savings_increase_list,
             "savings_added": self.savings_added_list,
+            "base_bills": self.base_bills_list,
         }
 
         pmt_item_names = [
@@ -523,9 +551,15 @@ def main() -> None:
     savings_added_list = calc_savings_added(
         assumptions, savings_increase_list, pre_retire_months_cnt
     )
+    base_bills_list = calc_base_bills(assumptions, months_cnt_list)
     payments_list = calc_payments(assumptions, birthdate, months_list)
     savings_list = calc_savings(
-        assumptions, monthly_rf_interest_list, savings_added_list, payments_list
+        assumptions,
+        monthly_rf_interest_list,
+        savings_added_list,
+        base_bills_list,
+        payments_list,
+        post_retire_months_cnt_list,
     )
     yrly_mkt_interest_list = [
         round(assumptions["base_mkt_interest_per_yr"] / 100, 4) for _ in months_cnt_list
@@ -561,6 +595,7 @@ def main() -> None:
             monthly_rf_interest_list,
             savings_increase_list,
             savings_added_list,
+            base_bills_list,
             payments_list,
             savings_list,
             yrly_mkt_interest_list,
