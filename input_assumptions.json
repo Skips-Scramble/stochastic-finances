@@ -13,7 +13,7 @@
 	"ss_withdraw_age_yrs": 70,
 	"ss_withdraw_age_mos": 11,
 	"ss_withdraw_amt": 0,
-	"current_savings": 130000,
+	"current_savings": 100000,
 	"base_saved_per_mo": 1000,
 	"base_savings_per_yr_increase": 3.0,
 	"base_monthly_bills": 1500,
@@ -41,7 +41,7 @@
 			"item_pmt_start_age_mos": 6,
 			"item_pmt_length_yrs": 30,
 			"item_down_pmt": 2,
-			"item_monthly_pmt": 1
+			"item_monthly_pmt": 1000
 		}
 	],
 	"rent_end_age_yrs": 70,

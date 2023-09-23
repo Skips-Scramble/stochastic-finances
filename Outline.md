@@ -1,15 +1,6 @@
 ## Outline
-- Start to add in calculations for post-retirement
-  - Re-work counts and everything for pre-retirement count, post-retirement count and a total count
-    - And months
-  - Are you working?
-  - Are you still contributing to retirement?
-  - Are you withdrawing SS?
-  - What are your monthly bills?
-  - What are your extra monthly bills?
-  - Does your market interest change post-retirement?
-  - How to deal with health care
-  - 
+- How do we decide when to spend retirement and when to spend savings?
+- What is the interest rate post-retirement?
 
 
 Implementation

@@ -8,6 +8,15 @@
 - Right now, there are yearly (base) interest and monthly (base) interest list being generated. But these are static variables,
 so really don't need lists. Only really needed for outputting to csv
 - Have a thing that calculates total salary for each month (so like money invested + spent + saved) and use as a check
+- Re-work counts and everything for pre-retirement count, post-retirement count and a total count
+  - And months
+- Are you working?
+- Are you still contributing to retirement?
+- Are you withdrawing SS?
+- What are your monthly bills?
+- What are your extra monthly bills?
+- Does your market interest change post-retirement?
+- How to deal with health care
 
 ## Savings
 - Do I need to make a new variable for savings interest? Usually lower and less volatile - continuous flow
