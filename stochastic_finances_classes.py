@@ -508,12 +508,12 @@ def main() -> None:
     birthdate = datetime.strptime(assumptions["birthday"], "%m/%d/%Y").date()
     deathdate = calc_date_on_age(birthdate, death_years, 0)
 
-    retirement_date = calc_date_on_age(
-        birthdate,
-        assumptions["retirement_age_yrs"],
-        assumptions["retirement_age_mos"],
-    )
-    # retirement_date = datetime(2026, 12, 1)
+    # retirement_date = calc_date_on_age(
+    #     birthdate,
+    #     assumptions["retirement_age_yrs"],
+    #     assumptions["retirement_age_mos"],
+    # )
+    retirement_date = date(2026, 12, 1)
 
     months_list = calc_months(deathdate)
     months_cnt_list = [i for i in range(len(months_list))]

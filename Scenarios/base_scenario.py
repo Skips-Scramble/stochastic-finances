@@ -20,10 +20,8 @@ def calc_date_on_age(birthdate: date, age_yrs: int, age_mos: int) -> datetime.da
     return date(year, month, 1)
 
 
-def calc_months_list(end_date: datetime.date) -> list:
-    current_date = date.today()
-    start_month = current_date.replace(day=1)
-    delta = relativedelta(end_date, start_month)
+def calc_months_list(start_month: date, end_month: date) -> list:
+    delta = relativedelta(end_month, start_month)
     months_between = (delta.years * 12) + delta.months
 
     months_list = []
@@ -44,18 +42,35 @@ class BaseScenario:
         """The age you are when you die"""
         return 110
 
+    @cached_property
+    def start_month(self) -> date:
+        """Create start month"""
+        return date.today().replace(day=1)
+
     @property
-    def birthdate(self) -> datetime.date:
+    def birthdate(self) -> date:
         """Calculate birthdate"""
         return datetime.strptime(self.assumptions["birthday"], "%m/%d/%Y").date()
 
     @property
-    def deathdate(self) -> date:
+    def death_month(self) -> date:
         return calc_date_on_age(self.birthdate, self.death_years, 0)
+
+    @property
+    def retirement_date(self) -> date:
+        return calc_date_on_age(
+            self.birthdate,
+            self.assumptions["retirement_age_yrs"],
+            self.assumptions["retirement_age_mos"],
+        )
 
     def create_initial_df(self) -> pd.DataFrame:
         """Create month count and month dataframe"""
-        months_list = calc_months_list(self.deathdate)
+        months_list = calc_months_list(self.start_month, self.death_month)
         return pd.DataFrame(
             {"months": [i for i in range(len(months_list))], "month": months_list}
+        ).assign(
+            month_cnt_pre_retire=lambda df: relativedelta(
+                df.month, self.start_month
+            ).months
         )
