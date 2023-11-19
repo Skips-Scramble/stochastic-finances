@@ -9,7 +9,10 @@ import random
 
 from functools import cached_property
 
-death_years = 110
+from Scenarios.base_scenario import BaseScenario
+from Scenarios.random_scenario import RandomScenario
+
+DEATH_YEARS = 110
 
 
 def calc_date_on_age(
@@ -202,7 +205,7 @@ def calc_savings(
     savings_list = []
     for index, interest in enumerate(interest_list):
         if index == 0:
-            savings = float(round(assumptions["current_savings"], 2))
+            savings = float(round(assumptions["base_savings"], 2))
             savings_list.append(savings)
         else:
             savings = float(
@@ -390,7 +393,7 @@ class FinancialScenario:
         var_savings = []
         for index, _ in enumerate(self.pre_retire_months_cnt_list):
             if index == 0:
-                prev_savings = round(float(self.assumptions["current_savings"]), 2)
+                prev_savings = round(float(self.assumptions["base_savings"]), 2)
                 var_savings.append(prev_savings)
             else:
                 prev_savings = float(
@@ -505,8 +508,11 @@ def main() -> None:
     with open("input_assumptions.json") as json_data:
         assumptions = json.load(json_data)
 
+    test_base = BaseScenario(assumptions)
+    test_random = RandomScenario(test_base)
+
     birthdate = datetime.strptime(assumptions["birthday"], "%m/%d/%Y").date()
-    deathdate = calc_date_on_age(birthdate, death_years, 0)
+    deathdate = calc_date_on_age(birthdate, DEATH_YEARS, 0)
 
     # retirement_date = calc_date_on_age(
     #     birthdate,
@@ -528,7 +534,7 @@ def main() -> None:
     pre_retire_months_cnt = max(pre_retire_months_cnt_list)
 
     post_retire_months_cnt_list = []
-    for index, value in enumerate(months_cnt_list):
+    for index, _ in enumerate(months_cnt_list):
         if index <= pre_retire_months_cnt:
             post_retire_months_cnt_list.append(0)
         else:

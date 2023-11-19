@@ -13,11 +13,12 @@
 	"ss_withdraw_age_yrs": 70,
 	"ss_withdraw_age_mos": 11,
 	"ss_withdraw_amt": 0,
-	"current_savings": 100000,
+	"base_savings": 100000,
 	"base_saved_per_mo": 1000,
 	"base_savings_per_yr_increase": 3.0,
 	"base_monthly_bills": 1500,
 	"base_monthly_rent": 1100,
+	"savings_lower_limit": 25000,
 	"payment_items": [
 		{
 			"item_name": "car_1",

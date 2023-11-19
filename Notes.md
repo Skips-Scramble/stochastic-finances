@@ -17,6 +17,14 @@ so really don't need lists. Only really needed for outputting to csv
 - What are your extra monthly bills?
 - Does your market interest change post-retirement?
 - How to deal with health care
+- I think I need to reevaluate the randomness here. E.g. it's not very likely that you will double your savings. But more likely you will go down to 0. So skew it lower more than higher.
+
+##Inputs (.json)
+- Should we have a base inputs file and a dynamic file?
+- Use pydantic to validate
+- Make sure all inputs are in todays dollars
+  - Adjust everything else accordingly
+    - Looking at you lower-limit savings amount
 
 ## Savings
 - Do I need to make a new variable for savings interest? Usually lower and less volatile - continuous flow
@@ -49,6 +57,8 @@ so really don't need lists. Only really needed for outputting to csv
   "buy new car every X years, and just adjust according to inflation?"
   
 ## Retirement
+- Change it so that retirement increase only changes at the start of a calendar year
 - What money are you pulling from where?
 - Reverse mortgage?
 - This kind of assumes a Roth style account where taxes aren't a thing. Probably should add logic to deal with that
+- Maybe use the costs calculated and TVM that back to figure out the present value of all of that to give a retirement value
