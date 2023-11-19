@@ -352,7 +352,7 @@ class BaseScenario:
             "yearly_mkt_interest": self.yearly_mkt_interest,
             "monthly_mkt_interest": self.monthly_mkt_interest,
             "retirement_increase": self.retirement_increase_list,
-            "retirment_account": self.savings_retirement_account_list[1],
+            "retirement_account": self.savings_retirement_account_list[1],
         }
 
         data = {**data_1, **non_base_items_lists, **data_3}
