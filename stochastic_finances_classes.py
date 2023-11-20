@@ -19,9 +19,9 @@ def main() -> None:
         }
     )
 
-    for i in range(1000):
+    for i in range(100):
         new_scenario = RandomScenario(base_scenario)
-        # new_scenario.create_full_df().to_csv(f"./outputs/scen_{i+1}.csv", index=False)
+        new_scenario.create_full_df().to_csv(f"./outputs/scen_{i+1}.csv", index=False)
 
         base_age_df = base_age_df.merge(
             new_scenario.create_full_df()[

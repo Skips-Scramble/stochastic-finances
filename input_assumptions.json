@@ -1,7 +1,7 @@
 {
 	"number_of_scenarios": 10,
 	"birthday": "12/22/1986",
-	"base_retirement": 10000,
+	"base_retirement": 100000,
 	"base_retirement_per_mo": 2000,
 	"base_retirement_per_yr_increase": 300,
 	"base_mkt_interest_per_yr": 6.0,
@@ -13,7 +13,7 @@
 	"ss_withdraw_age_yrs": 70,
 	"ss_withdraw_age_mos": 11,
 	"ss_withdraw_amt": 0,
-	"base_savings": 10000,
+	"base_savings": 100000,
 	"base_saved_per_mo": 1000,
 	"base_savings_per_yr_increase": 3.0,
 	"base_monthly_bills": 1500,
