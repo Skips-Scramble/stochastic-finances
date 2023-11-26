@@ -46,27 +46,6 @@ class RandomScenario:
             round(((1 + x) ** (1 / 12) - 1), 6) for x in self.var_yearly_rf_interest
         ]
 
-    # @cached_property
-    # def var_inflation_yrly_list(self) -> list:
-    #     """Calculate a random monthly inflation rate"""
-    #     variable_inflation_list = []
-    #     for index, rate in enumerate(self.var_rf_interest_yrly_list):
-    #         if index % self.base_scenario.assumptions["rf_interest_change_mos"] != 0:
-    #             variable_inflation_list.append(variable_inflation_list[index - 1])
-    #         else:
-    #             variable_inflation_list.append(
-    #                 round(rate + random.randint(-5, 5) * 0.001, 4)
-    #             )
-
-    #     return variable_inflation_list
-
-    # @cached_property
-    # def var_inflation_monthly_list(self) -> list:
-    #     """Take the annualized risk free rate and create a monthly rate"""
-    #     return [
-    #         round(((1 + x) ** (1 / 12) - 1), 6) for x in self.var_inflation_yrly_list
-    #     ]
-
     @cached_property
     def var_base_bills_list(self) -> list:
         """Calculate variable base bills (for retirement)
@@ -81,6 +60,20 @@ class RandomScenario:
                 2,
             )
             for x in self.base_scenario.base_bills_list
+        ]
+    
+    @cached_property
+    def var_post_retire_extra_bills_list(self) -> list:
+        """Calculate variable extra money spent post-retirment (on fun things)"""
+        return [
+            round(
+                np.random.normal(
+                    x,
+                    x * (0.5),
+                ),
+                2,
+            )
+            for x in self.base_scenario.post_retire_extra_bills_list
         ]
 
     @cached_property
@@ -160,7 +153,7 @@ class RandomScenario:
             else:  # If you are retired
                 if (
                     var_savings_list[i - 1]
-                    <= self.base_scenario.assumptions["savings_lower_limit"]
+                    <= self.base_scenario.monthly_savings_threshold_list[i-1]
                 ):
                     savings = float(
                         round(
@@ -174,6 +167,7 @@ class RandomScenario:
                             (
                                 retirement
                                 - self.var_base_bills_list[i]
+                                - self.var_post_retire_extra_bills_list[i]
                                 - total_non_base_bills_list[i]
                             )
                             * (1 + self.var_monthly_mkt_interest[i]),
@@ -187,6 +181,7 @@ class RandomScenario:
                                 savings
                                 + self.var_savings_increase_list[i]
                                 - (self.var_base_bills_list[i] / 2)
+                                - (self.var_post_retire_extra_bills_list[i] / 2)
                                 - (total_non_base_bills_list[i] / 2)
                             )
                             * (1 + self.var_monthly_rf_interest[i]),
@@ -198,6 +193,7 @@ class RandomScenario:
                             (
                                 retirement
                                 - (self.var_base_bills_list[i] / 2)
+                                - (self.var_post_retire_extra_bills_list[i] / 2)
                                 - (total_non_base_bills_list[i] / 2)
                             )
                             * (1 + self.var_monthly_mkt_interest[i]),
@@ -216,6 +212,7 @@ class RandomScenario:
                 "var_yearly_rf_interest": self.var_yearly_rf_interest,
                 "var_monthly_rf_interest": self.var_monthly_rf_interest,
                 "var_base_bills": self.var_base_bills_list,
+                "var_retire_extra": self.var_post_retire_extra_bills_list,
                 "var_savings_increase": self.var_savings_increase_list,
                 "var_savings_account": self.var_savings_retirement_account_list[0],
                 "var_yearly_mkt_interest": self.var_yearly_mkt_interest,

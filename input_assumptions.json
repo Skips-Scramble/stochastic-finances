@@ -19,6 +19,7 @@
 	"base_monthly_bills": 1500,
 	"base_monthly_rent": 1100,
 	"savings_lower_limit": 25000,
+	"retirement_extra_expenses": 4500,
 	"payment_items": [
 		{
 			"item_name": "car_1",
