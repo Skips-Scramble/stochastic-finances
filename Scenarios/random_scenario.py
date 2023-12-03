@@ -5,7 +5,7 @@ import pandas as pd
 import random
 import numpy as np
 
-from Scenarios.base_scenario import BaseScenario
+from scenarios.base_scenario import BaseScenario
 
 
 @dataclass

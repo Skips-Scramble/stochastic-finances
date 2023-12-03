@@ -1,12 +1,12 @@
 import json
 
-from Scenarios.base_scenario import BaseScenario
-from Scenarios.random_scenario import RandomScenario
+from scenarios.base_scenario import BaseScenario
+from scenarios.random_scenario import RandomScenario
 
 
-def main() -> None:
-    with open("input_assumptions.json") as json_data:
-        assumptions = json.load(json_data)
+def main(assumptions) -> None:
+    # with open("input_assumptions_no_payments.json") as json_data:
+    #     assumptions = json.load(json_data)
 
     base_scenario = BaseScenario(assumptions)
 
@@ -52,3 +52,5 @@ def main() -> None:
             f"Average retirement at age {age} is {total_retirement_df.loc[lambda df: (df.age_yrs == age) & (df.age_mos == 0)]['average'].iat[0]:,.0f}"
         )
         print("")
+
+    return total_savings_df, total_retirement_df

@@ -77,6 +77,8 @@ class BaseScenario:
     @cached_property
     def birthdate(self) -> date:
         """Calculate birthdate"""
+        if isinstance(self.assumptions['birthday'], date):
+            return self.assumptions['birthday']
         return datetime.strptime(self.assumptions["birthday"], "%m/%d/%Y").date()
 
     @cached_property
@@ -88,8 +90,8 @@ class BaseScenario:
         # return date(2024, 12, 1)
         return calc_date_on_age(
             self.birthdate,
-            self.assumptions["retirement_age_yrs"],
-            self.assumptions["retirement_age_mos"],
+            int(self.assumptions["retirement_age_yrs"]),
+            int(self.assumptions["retirement_age_mos"]),
         )
 
     @cached_property
@@ -251,6 +253,8 @@ class BaseScenario:
                     item["item_monthly_pmt"],
                 )
             )
+        if non_base_bills_lists == []:
+            non_base_bills_lists = [[0 for _ in range(self.total_months)]]
         return non_base_bills_lists
 
     @cached_property

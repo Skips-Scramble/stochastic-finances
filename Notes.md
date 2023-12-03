@@ -19,12 +19,27 @@ so really don't need lists. Only really needed for outputting to csv
 - How to deal with health care
 - I think I need to reevaluate the randomness here. E.g. it's not very likely that you will double your savings. But more likely you will go down to 0. So skew it lower more than higher.
 
-##Inputs (.json)
-- Should we have a base inputs file and a dynamic file?
-- Use pydantic to validate
-- Make sure all inputs are in todays dollars
-  - Adjust everything else accordingly
-    - Looking at you lower-limit savings amount
+##Inputs
+- (.json)
+  - Should we have a base inputs file and a dynamic file?
+  - Use pydantic to validate
+  - Make sure all inputs are in todays dollars
+    - Adjust everything else accordingly
+      - Looking at you lower-limit savings amount
+  - Re-do ordering/naming
+  - Year over year changes to retirement and savings should be the same type (percent versus total dollars)
+    - Maybe eventually have this be an option for both?
+  - Make sure everything goes somewhere
+    - Where does rent go? Should this be separate from monthly bills?
+	- Yeah, and what's the deal with rent end yrs/months? Where does that go and is it different from the payments section?
+- Website
+  - Figure out how non-base payments can be an empty list
+  - Make a note saying everything should be in today's dollars
+  - Pass in date as string? Everything as string?
+  - Better names
+  - Make payments be able to be added dynamically, multiple times
+  - Have modals pop up on mouse-over with explanations
+
 
 ## Savings
 - Do I need to make a new variable for savings interest? Usually lower and less volatile - continuous flow
@@ -37,6 +52,7 @@ so really don't need lists. Only really needed for outputting to csv
     - This also adjusts for inflation assuming your pay is inflation-adjusted
   - Can do a flat savings increase or a percentage
 - Add bonuses eventually
+- Make it so that savings can't go negative is retirement is positive
 
 ## Kids, College, Other
 - Have options to put in other expenses, put in time periods, adjustments over time, starting/stopping
@@ -62,3 +78,4 @@ so really don't need lists. Only really needed for outputting to csv
 - Reverse mortgage?
 - This kind of assumes a Roth style account where taxes aren't a thing. Probably should add logic to deal with that
 - Maybe use the costs calculated and TVM that back to figure out the present value of all of that to give a retirement value
+- Make it so that retirement can't go negative is savings is positive
