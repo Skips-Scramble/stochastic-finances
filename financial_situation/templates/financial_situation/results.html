@@ -1,0 +1,16 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<h1 class="mb-6 text-3xl">{{ title }}</h1>
+
+<ul>
+    {% for value in results.values %}
+
+        <li>{{ value.0 }}</li>
+        <li>{{ value.1 }}</li>
+        <br></br>
+    {% endfor %}
+</ul>
+{% endblock %}

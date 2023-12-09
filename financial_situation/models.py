@@ -74,7 +74,7 @@ class FinancialInputs(models.Model):
     payment_3_item_monthly_pmt = models.FloatField(null=True, blank=True)  #: 450
     rent_end_age_yrs = models.FloatField(null=True, blank=True)
     rent_end_age_months = models.FloatField(null=True, blank=True)
-    input_dict = models.CharField(max_length=1000, null=True, blank=True)
+    input_dict = models.CharField(max_length=10000, null=True, blank=True)
 
     class Meta:
         verbose_name_plural = "Fiancial_Inputs"

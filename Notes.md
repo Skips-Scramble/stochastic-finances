@@ -18,6 +18,8 @@ so really don't need lists. Only really needed for outputting to csv
 - Does your market interest change post-retirement?
 - How to deal with health care
 - I think I need to reevaluate the randomness here. E.g. it's not very likely that you will double your savings. But more likely you will go down to 0. So skew it lower more than higher.
+- Write unit tests
+- Get isort, etc hooked into CI
 
 ##Inputs
 - (.json)
@@ -41,7 +43,6 @@ so really don't need lists. Only really needed for outputting to csv
   - Have modals pop up on mouse-over with explanations
   - Maybe have sections for each type of input (savings, retirement, base bills/savings, non-base payments, etc.)
     - You could create multiple and then mix and match or something like that?
-
 
 ## Savings
 - Do I need to make a new variable for savings interest? Usually lower and less volatile - continuous flow
@@ -81,3 +82,7 @@ so really don't need lists. Only really needed for outputting to csv
 - This kind of assumes a Roth style account where taxes aren't a thing. Probably should add logic to deal with that
 - Maybe use the costs calculated and TVM that back to figure out the present value of all of that to give a retirement value
 - Make it so that retirement can't go negative is savings is positive
+
+## Outputs
+- Need to format dollars using some sort of function
+  - Negatives, percentages

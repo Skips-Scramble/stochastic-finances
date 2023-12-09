@@ -34,6 +34,14 @@ def test_new_form(request):
             print(
                 f"next year's savings is {item.current_savings_account * (1+item.current_interest/100)}"
             )
+            return render(
+                request,
+                "financial_situation/results.html",
+                {
+                    "title": "Test Page",
+                    "results": f"next year's savings is {item.current_savings_account * (1+item.current_interest/100)}",
+                },
+            )
     else:
         form = NewTestCalcForm()
         print("form defined as get")
@@ -109,14 +117,32 @@ def add_financial_situation(request):
             (total_savings_df, total_retirement_df) = stochastic_finances_func.main(
                 input_dict_new
             )
+            results_dict = {}
             for age in range(60, 100, 5):
-                print(
-                    f"Average savings at age {age} is {total_savings_df.loc[lambda df: (df.age_yrs == age) & (df.age_mos == 0)]['average'].iat[0]:,.0f}"
-                )
-                print(
-                    f"Average retirement at age {age} is {total_retirement_df.loc[lambda df: (df.age_yrs == age) & (df.age_mos == 0)]['average'].iat[0]:,.0f}"
-                )
-                print("")
+                savings_at_age = total_savings_df.loc[
+                    lambda df: (df.age_yrs == age) & (df.age_mos == 0)
+                ]["average"].iat[0]
+
+                retirement_at_age = total_retirement_df.loc[
+                    lambda df: (df.age_yrs == age) & (df.age_mos == 0)
+                ]["average"].iat[0]
+
+                results_dict[age] = [
+                    f"Average savings at age {age} is ${savings_at_age:,.0f}",
+                    f"Average retirement at age {age} is ${retirement_at_age:,.0f}",
+                ]
+
+            print(val for val in results_dict.values())
+
+            return render(
+                request,
+                "financial_situation/results.html",
+                {
+                    "title": "Financial Results",
+                    "results": results_dict,
+                },
+            )
+
     else:
         form = NewFinancialSituation()
     return render(
