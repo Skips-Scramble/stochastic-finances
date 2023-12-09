@@ -16,7 +16,7 @@ class TestCalc(models.Model):
 
 class FinancialInputs(models.Model):
     name = models.CharField(max_length=255, default="test")
-    birthday = models.DateField()
+    birthday = models.CharField(max_length=10, default="MM/DD/YYYY")
     base_retirement = models.FloatField()
     base_retirement_per_mo = models.FloatField()
     base_retirement_per_yr_increase = models.FloatField()
@@ -36,9 +36,44 @@ class FinancialInputs(models.Model):
     base_monthly_rent = models.FloatField()
     savings_lower_limit = models.FloatField()
     retirement_extra_expenses = models.FloatField()
-    payment_items = models.FloatField()
-    rent_end_age_yrs = models.FloatField()
-    rent_end_age_months = models.FloatField()
+    payment_1_item_name = models.CharField(
+        max_length=100, null=True, blank=True
+    )  # "car_1",
+    payment_1_item_pmt_start_age_yrs = models.IntegerField(
+        null=True, blank=True
+    )  #: 40,
+    payment_1_item_pmt_start_age_mos = models.IntegerField(
+        null=True, blank=True
+    )  #: 11,
+    payment_1_item_pmt_length_yrs = models.IntegerField(null=True, blank=True)  #: 3,
+    payment_1_item_down_pmt = models.FloatField(null=True, blank=True)  #: 15000,
+    payment_1_item_monthly_pmt = models.FloatField(null=True, blank=True)  #: 450
+    payment_2_item_name = models.CharField(
+        max_length=100, null=True, blank=True
+    )  # "car_1",
+    payment_2_item_pmt_start_age_yrs = models.IntegerField(
+        null=True, blank=True
+    )  #: 40,
+    payment_2_item_pmt_start_age_mos = models.IntegerField(
+        null=True, blank=True
+    )  #: 11,
+    payment_2_item_pmt_length_yrs = models.IntegerField(null=True, blank=True)  #: 3,
+    payment_2_item_down_pmt = models.FloatField(null=True, blank=True)  #: 15000,
+    payment_2_item_monthly_pmt = models.FloatField(null=True, blank=True)  #: 450
+    payment_3_item_name = models.CharField(
+        max_length=100, null=True, blank=True
+    )  # "car_1",
+    payment_3_item_pmt_start_age_yrs = models.IntegerField(
+        null=True, blank=True
+    )  #: 40,
+    payment_3_item_pmt_start_age_mos = models.IntegerField(
+        null=True, blank=True
+    )  #: 11,
+    payment_3_item_pmt_length_yrs = models.IntegerField(null=True, blank=True)  #: 3,
+    payment_3_item_down_pmt = models.FloatField(null=True, blank=True)  #: 15000,
+    payment_3_item_monthly_pmt = models.FloatField(null=True, blank=True)  #: 450
+    rent_end_age_yrs = models.FloatField(null=True, blank=True)
+    rent_end_age_months = models.FloatField(null=True, blank=True)
     input_dict = models.CharField(max_length=1000, null=True, blank=True)
 
     class Meta:
@@ -46,3 +81,12 @@ class FinancialInputs(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Person(models.Model):
+    name = models.CharField(max_length=100)
+
+
+class Job(models.Model):
+    person = models.ForeignKey(Person, on_delete=models.CASCADE)
+    job_title = models.CharField(max_length=100)

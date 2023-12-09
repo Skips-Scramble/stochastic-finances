@@ -1,3 +1,6 @@
 # Ignore all bak files
 *.bak
 **/__pycache__/
+
+#Ignore outputs
+outputs/

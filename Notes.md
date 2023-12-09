@@ -35,10 +35,12 @@ so really don't need lists. Only really needed for outputting to csv
 - Website
   - Figure out how non-base payments can be an empty list
   - Make a note saying everything should be in today's dollars
-  - Pass in date as string? Everything as string?
-  - Better names
+  - Pass in everything as string and validate from there?
+  - Better names for the input fields
   - Make payments be able to be added dynamically, multiple times
   - Have modals pop up on mouse-over with explanations
+  - Maybe have sections for each type of input (savings, retirement, base bills/savings, non-base payments, etc.)
+    - You could create multiple and then mix and match or something like that?
 
 
 ## Savings

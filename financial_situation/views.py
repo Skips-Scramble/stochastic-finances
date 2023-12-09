@@ -1,5 +1,13 @@
-from .forms import NewTestCalcForm, NewFinancialSituation
-from .models import FinancialInputs
+from .forms import (
+    NewTestCalcForm,
+    NewFinancialSituation,
+    JobForm,
+    JobFormSet,
+    PersonForm,
+)
+from .models import FinancialInputs, Person, Job
+
+import json
 
 import stochastic_finances_func
 
@@ -47,16 +55,57 @@ def add_financial_situation(request):
     if request.method == "POST":
         form = NewFinancialSituation(request.POST)
         if form.is_valid():
-            # item = form.save(commit=False)
             input_dict_new = form.cleaned_data
-            print(input_dict_new)
             FinancialInputs.objects.create(
-                **input_dict_new,
+                **form.cleaned_data,
                 **{"input_dict": form.cleaned_data},
             )
-            input_dict_new['payment_items'] = []
-            input_dict_new['birthday'] = "12/22/1986"
-            print(input_dict_new)
+            input_dict_new["payment_items"] = [
+                {
+                    "item_name": input_dict_new["payment_1_item_name"],
+                    "item_pmt_start_age_yrs": input_dict_new[
+                        "payment_1_item_pmt_start_age_yrs"
+                    ],
+                    "item_pmt_start_age_mos": input_dict_new[
+                        "payment_1_item_pmt_start_age_mos"
+                    ],
+                    "item_pmt_length_yrs": input_dict_new[
+                        "payment_1_item_pmt_length_yrs"
+                    ],
+                    "item_down_pmt": input_dict_new["payment_1_item_down_pmt"],
+                    "item_monthly_pmt": input_dict_new["payment_1_item_monthly_pmt"],
+                },
+                {
+                    "item_name": input_dict_new["payment_2_item_name"],
+                    "item_pmt_start_age_yrs": input_dict_new[
+                        "payment_2_item_pmt_start_age_yrs"
+                    ],
+                    "item_pmt_start_age_mos": input_dict_new[
+                        "payment_2_item_pmt_start_age_mos"
+                    ],
+                    "item_pmt_length_yrs": input_dict_new[
+                        "payment_2_item_pmt_length_yrs"
+                    ],
+                    "item_down_pmt": input_dict_new["payment_2_item_down_pmt"],
+                    "item_monthly_pmt": input_dict_new["payment_2_item_monthly_pmt"],
+                },
+                {
+                    "item_name": input_dict_new["payment_3_item_name"],
+                    "item_pmt_start_age_yrs": input_dict_new[
+                        "payment_3_item_pmt_start_age_yrs"
+                    ],
+                    "item_pmt_start_age_mos": input_dict_new[
+                        "payment_3_item_pmt_start_age_mos"
+                    ],
+                    "item_pmt_length_yrs": input_dict_new[
+                        "payment_3_item_pmt_length_yrs"
+                    ],
+                    "item_down_pmt": input_dict_new["payment_3_item_down_pmt"],
+                    "item_monthly_pmt": input_dict_new["payment_3_item_monthly_pmt"],
+                },
+            ]
+            print(f"input_dict new = {json.dumps(input_dict_new, indent=2)}")
+
             (total_savings_df, total_retirement_df) = stochastic_finances_func.main(
                 input_dict_new
             )
@@ -77,4 +126,25 @@ def add_financial_situation(request):
             "form": form,
             "title": "New Financial Situation",
         },
+    )
+
+
+def add_person(request):
+    if request.method == "POST":
+        person_form = PersonForm(request.POST)
+        job_formset = JobFormSet(request.POST, prefix="job")
+        if person_form.is_valid() and job_formset.is_valid():
+            person = person_form.save()
+            for job_form in job_formset:
+                job = job_form.save(commit=False)
+                job.person = person
+                job.save()
+            return redirect("success")  # Redirect to a success page or another view
+    else:
+        person_form = PersonForm()
+        job_formset = JobFormSet(prefix="job")
+    return render(
+        request,
+        "add_person.html",
+        {"person_form": person_form, "job_formset": job_formset},
     )
