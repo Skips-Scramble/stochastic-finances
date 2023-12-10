@@ -5,7 +5,11 @@ from .forms import (
     JobFormSet,
     PersonForm,
 )
+from django.contrib.auth.models import User
+
 from .models import FinancialInputs, Person, Job
+
+from datetime import datetime
 
 import json
 
@@ -58,15 +62,18 @@ def test_new_form(request):
     )
 
 
+# @login_required
 def add_financial_situation(request):
     """Create a new financial situation"""
     if request.method == "POST":
         form = NewFinancialSituation(request.POST)
         if form.is_valid():
             input_dict_new = form.cleaned_data
+            print(input_dict_new)
             FinancialInputs.objects.create(
                 **form.cleaned_data,
                 **{"input_dict": form.cleaned_data},
+                **{"created_by": request.user, "created_at": datetime.now()},
             )
             input_dict_new["payment_items"] = [
                 {
@@ -113,7 +120,8 @@ def add_financial_situation(request):
                 },
             ]
             print(f"input_dict new = {json.dumps(input_dict_new, indent=2)}")
-
+            # del input_dict_new["created_by"]
+            # del input_dict_new["created_at"]
             (total_savings_df, total_retirement_df) = stochastic_finances_func.main(
                 input_dict_new
             )
@@ -133,6 +141,10 @@ def add_financial_situation(request):
                 ]
 
             print(val for val in results_dict.values())
+
+            # item = form.save(commit=False)
+            # item.created_by = request.user
+            # item.save()
 
             return render(
                 request,

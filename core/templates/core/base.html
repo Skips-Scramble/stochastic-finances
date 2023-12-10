@@ -20,8 +20,9 @@
             <a href="#" class = "test-lg font-semibold hove:test-gray-500">Browse</a>
             <a href="/" class = "test-lg font-semibold hove:test-gray-500">Home</a>
             <a href="#" class = "test-lg font-semibold hove:test-gray-500">Contact</a>
-            <a href="#" class = "px-6 py-3 text-lg font-semibold bg-teal-500 text-white rounded-xl hover:bg-teal-700">Sign up</a>
-            <a href="#" class = "px-6 py-3 text-lg font-semibold bg-gray-500 text-white rounded-xl hover:bg-gray-700">Log In</a>
+            <a href="{% url 'core:signup' %}" class="px-6 py-3 text-lg font-semibold bg-gray-500 text-white rounded-xl hover:bg-gray-700">Sign up</a>
+            <a href="{% url 'core:login' %}" class="px-6 py-3 text-lg font-semibold bg-gray-500 text-white rounded-xl hover:bg-gray-700">Log in</a>
+
         </div>
     </nav>
     <div class="px-6 py-6">

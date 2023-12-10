@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class TestCalc(models.Model):
@@ -75,6 +76,10 @@ class FinancialInputs(models.Model):
     rent_end_age_yrs = models.FloatField(null=True, blank=True)
     rent_end_age_months = models.FloatField(null=True, blank=True)
     input_dict = models.CharField(max_length=10000, null=True, blank=True)
+    created_by = models.ForeignKey(
+        User, related_name="items", on_delete=models.CASCADE, null=True, blank=True
+    )
+    created_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         verbose_name_plural = "Fiancial_Inputs"
