@@ -28,7 +28,12 @@ so really don't need lists. Only really needed for outputting to csv
   - Make sure all inputs are in todays dollars
     - Adjust everything else accordingly
       - Looking at you lower-limit savings amount
-  - Re-do ordering/naming
+  - Re-do ordering/naming/removal
+    - Remove:
+	  - ss_withdraw_age_yrs/mos/amount
+	  - base_monthly_rent
+	  - Just one non-base payment?
+	  - rent end age yrs/mos
   - Year over year changes to retirement and savings should be the same type (percent versus total dollars)
     - Maybe eventually have this be an option for both?
   - Make sure everything goes somewhere

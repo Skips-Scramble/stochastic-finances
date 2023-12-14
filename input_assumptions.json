@@ -1,25 +1,12 @@
 {
 	"name": "Test Scenario Base",
 	"birthday": "12/22/1986",
-	"base_retirement": 100000,
-	"base_retirement_per_mo": 2000,
-	"base_retirement_per_yr_increase": 300,
-	"base_mkt_interest_per_yr": 6.0,
-	"base_inflation_per_yr": 3.0,
 	"retirement_age_yrs": 60,
 	"retirement_age_mos": 11,
-	"base_rf_interest_per_yr": 1.5,
-	"rf_interest_change_mos": 6,
-	"ss_withdraw_age_yrs": 70,
-	"ss_withdraw_age_mos": 11,
-	"ss_withdraw_amt": 0,
 	"base_savings": 100000,
 	"base_saved_per_mo": 1000,
 	"base_savings_per_yr_increase": 3.0,
 	"base_monthly_bills": 1500,
-	"base_monthly_rent": 1100,
-	"savings_lower_limit": 25000,
-	"retirement_extra_expenses": 4500,
 	"payment_items": [
 		{
 			"item_name": "car_1",
@@ -28,24 +15,15 @@
 			"item_pmt_length_yrs": 3,
 			"item_down_pmt": 15000,
 			"item_monthly_pmt": 450
-		},
-		{
-			"item_name": "car_2",
-			"item_pmt_start_age_yrs": 50,
-			"item_pmt_start_age_mos": 11,
-			"item_pmt_length_yrs": 3,
-			"item_down_pmt": 20000,
-			"item_monthly_pmt": 550
-		},
-		{
-			"item_name": "mortgage",
-			"item_pmt_start_age_yrs": 40,
-			"item_pmt_start_age_mos": 6,
-			"item_pmt_length_yrs": 30,
-			"item_down_pmt": 20000,
-			"item_monthly_pmt": 1000
 		}
 	],
-	"rent_end_age_yrs": 70,
-	"rent_end_age_months": 0
+	"base_rf_interest_per_yr": 1.5,
+	"base_retirement": 100000,
+	"base_retirement_per_mo": 2000,
+	"base_retirement_per_yr_increase": 300,
+	"base_mkt_interest_per_yr": 6.0,
+	"rf_interest_change_mos": 6,
+	"savings_lower_limit": 25000,
+	"base_inflation_per_yr": 3.0,
+	"retirement_extra_expenses": 4500
 }
