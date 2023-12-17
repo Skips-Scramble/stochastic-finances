@@ -1,15 +1,12 @@
-from datetime import datetime
 import json
-import stochastic_finances_func
-from django.shortcuts import render, get_object_or_404, redirect
+from datetime import datetime
+
 from django.contrib.auth.decorators import login_required
-from .forms import (
-    NewTestCalcForm,
-    NewFinancialSituation,
-    EditFinancialSituation,
-)
+from django.shortcuts import get_object_or_404, redirect, render
 
+import stochastic_finances_func
 
+from .forms import EditFinancialSituation, NewFinancialSituation, NewTestCalcForm
 from .models import FinancialInputs
 
 
@@ -141,6 +138,7 @@ def edit(request, pk):
     )
 
     if request.method == "POST":
+        print(f"The request.POST is: {request.POST}")
         form = EditFinancialSituation(
             request.POST, request.FILES, instance=financial_inputs
         )
