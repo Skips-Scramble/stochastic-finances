@@ -5,7 +5,7 @@ from scenarios.random_scenario import RandomScenario
 
 
 def main(assumptions) -> None:
-    with open("input_assumptions_no_payments.json") as json_data:
+    with open("input_assumptions.json") as json_data:
         assumptions = json.load(json_data)
 
     base_scenario = BaseScenario(assumptions)
