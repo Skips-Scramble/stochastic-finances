@@ -1,5 +1,5 @@
-from django.db import models
 from django.contrib.auth.models import User
+from django.db import models
 
 
 class TestCalc(models.Model):
@@ -52,10 +52,19 @@ class FinancialInputs(models.Model):
         return self.name
 
 
-class Person(models.Model):
-    name = models.CharField(max_length=100)
+class GeneralInputsModel(models.Model):
+    birthday = models.CharField(max_length=10, default="MM/DD/YYYY")
+    retirement_age_yrs = models.FloatField()
+    retirement_age_mos = models.FloatField()
+
+    class Meta:
+        verbose_name_plural = "General_Inputs"
 
 
-class Job(models.Model):
-    person = models.ForeignKey(Person, on_delete=models.CASCADE)
-    job_title = models.CharField(max_length=100)
+class SavingsInputsModel(models.Model):
+    base_savings = models.FloatField()
+    base_saved_per_mo = models.FloatField()
+    base_savings_per_yr_increase = models.FloatField()
+
+    class Meta:
+        verbose_name_plural = "Savings_Inputs"

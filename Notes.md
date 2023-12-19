@@ -20,25 +20,16 @@ so really don't need lists. Only really needed for outputting to csv
 - I think I need to reevaluate the randomness here. E.g. it's not very likely that you will double your savings. But more likely you will go down to 0. So skew it lower more than higher.
 - Write unit tests
 - Get isort, etc hooked into CI
+  - Do I need GH actions for this? Does it cost?
 
 ##Inputs
 - (.json)
-  - Should we have a base inputs file and a dynamic file?
   - Use pydantic to validate
   - Make sure all inputs are in todays dollars
     - Adjust everything else accordingly
       - Looking at you lower-limit savings amount
-  - Re-do ordering/naming/removal
-    - Remove:
-	  - ss_withdraw_age_yrs/mos/amount
-	  - base_monthly_rent
-	  - Just one non-base payment?
-	  - rent end age yrs/mos
   - Year over year changes to retirement and savings should be the same type (percent versus total dollars)
     - Maybe eventually have this be an option for both?
-  - Make sure everything goes somewhere
-    - Where does rent go? Should this be separate from monthly bills?
-	- Yeah, and what's the deal with rent end yrs/months? Where does that go and is it different from the payments section?
 - Website
   - Figure out how non-base payments can be an empty list
   - Make a note saying everything should be in today's dollars

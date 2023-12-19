@@ -25,6 +25,14 @@
 
         </div>
     </nav>
+    <!-- New Tab Section -->
+    <div class="px-6 py-3 flex space-x-6 border-b border-gray-200">
+        <a href="{% url 'financial_situation:general_inputs_view' %}" class="text-lg font-semibold hover:text-gray-500">General</a>
+        <a href="{% url 'financial_situation:savings_inputs_view' %}" class="text-lg font-semibold hover:text-gray-500">Savings</a>
+        <a href="" class="text-lg font-semibold hover:text-gray-500">Payments</a>
+        <a href="" class="text-lg font-semibold hover:text-gray-500">Retirement</a>
+        <a href="" class="text-lg font-semibold hover:text-gray-500">Rates</a>
+    </div>
     <div class="px-6 py-6">
         {% block content %}
 

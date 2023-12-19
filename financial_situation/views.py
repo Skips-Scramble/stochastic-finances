@@ -6,8 +6,14 @@ from django.shortcuts import get_object_or_404, redirect, render
 
 import stochastic_finances_func
 
-from .forms import EditFinancialSituation, NewFinancialSituation, NewTestCalcForm
-from .models import FinancialInputs
+from .forms import (
+    EditFinancialSituation,
+    GeneralInputsForm,
+    NewFinancialSituation,
+    NewTestCalcForm,
+    SavingsInputsForm,
+)
+from .models import FinancialInputs, GeneralInputsModel, SavingsInputsModel
 
 
 def test_new_form(request):
@@ -211,5 +217,59 @@ def edit(request, pk):
         {
             "form": form,
             "title": "Edit Financial Situation",
+        },
+    )
+
+
+@login_required
+def general_inputs_view(request):
+    """This will validate/create a new general inputs item"""
+    if request.method == "POST":
+        form = GeneralInputsForm(request.POST)
+
+        if form.is_valid():
+            item = form.save(commit=False)
+            item.save()
+
+            return render(
+                request,
+                "core/index.html",
+            )
+    else:
+        form = GeneralInputsForm()
+
+    return render(
+        request,
+        "financial_situation/general_inputs.html",
+        {
+            "form": form,
+            "title": "New General Inputs",
+        },
+    )
+
+
+@login_required
+def savings_inputs_view(request):
+    """This will validate/create a new savings inputs item"""
+    if request.method == "POST":
+        form = SavingsInputsForm(request.POST)
+
+        if form.is_valid():
+            item = form.save(commit=False)
+            item.save()
+
+            return render(
+                request,
+                "core/index.html",
+            )
+    else:
+        form = SavingsInputsForm()
+
+    return render(
+        request,
+        "financial_situation/savings_inputs.html",
+        {
+            "form": form,
+            "title": "New Savings Inputs",
         },
     )

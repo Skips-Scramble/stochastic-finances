@@ -1,6 +1,6 @@
 from django import forms
 
-from .models import TestCalc, FinancialInputs, Job, Person
+from .models import FinancialInputs, GeneralInputsModel, SavingsInputsModel, TestCalc
 
 INPUT_CLASSES = "w-full py-4 px-6 rounded-xl border"
 
@@ -221,6 +221,52 @@ class EditFinancialSituation(forms.ModelForm):
             "savings_lower_limit": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
             "base_inflation_per_yr": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
             "retirement_extra_expenses": forms.NumberInput(
+                attrs={"class": INPUT_CLASSES}
+            ),
+        }
+
+
+class GeneralInputsForm(forms.ModelForm):
+    """Class to contain all pertinent general information"""
+
+    class Meta:
+        model = GeneralInputsModel
+        fields = [
+            "birthday",
+            "retirement_age_yrs",
+            "retirement_age_mos",
+        ]
+        labels = {
+            "birthday": "Birthday (MM/DD/YYYY)",
+            "retirement_age_yrs": "Retirement age (years)",
+            "retirement_age_mos": "Retirement age (months)",
+        }
+        widgets = {
+            "birthday": forms.TextInput(attrs={"class": INPUT_CLASSES}),
+            "retirement_age_yrs": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
+            "retirement_age_mos": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
+        }
+
+
+class SavingsInputsForm(forms.ModelForm):
+    """Class to contain all pertinent savings information"""
+
+    class Meta:
+        model = SavingsInputsModel
+        fields = [
+            "base_savings",
+            "base_saved_per_mo",
+            "base_savings_per_yr_increase",
+        ]
+        labels = {
+            "base_savings": "Current savings account",
+            "base_saved_per_mo": "How much do you save per month",
+            "base_savings_per_yr_increase": "Yearly savings contribution increase (%)",
+        }
+        widgets = {
+            "base_savings": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
+            "base_saved_per_mo": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
+            "base_savings_per_yr_increase": forms.NumberInput(
                 attrs={"class": INPUT_CLASSES}
             ),
         }

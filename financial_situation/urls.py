@@ -6,6 +6,8 @@ app_name = "financial_situation"
 
 urlpatterns = [
     path("", views.test_new_form, name="test_new_form"),
+    path("general/", views.general_inputs_view, name="general_inputs_view"),
+    path("savings/", views.savings_inputs_view, name="savings_inputs_view"),
     path(
         "financial_situation/",
         views.add_financial_situation,
