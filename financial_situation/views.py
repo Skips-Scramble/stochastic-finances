@@ -11,9 +11,10 @@ from .forms import (
     GeneralInputsForm,
     NewFinancialSituation,
     NewTestCalcForm,
+    PaymentsInputsForm,
+    RetirementInputsForm,
     SavingsInputsForm,
 )
-from .models import FinancialInputs, GeneralInputsModel, SavingsInputsModel
 
 
 def test_new_form(request):
@@ -271,5 +272,59 @@ def savings_inputs_view(request):
         {
             "form": form,
             "title": "New Savings Inputs",
+        },
+    )
+
+
+@login_required
+def payments_inputs_view(request):
+    """This will validate/create a new payments inputs item"""
+    if request.method == "POST":
+        form = PaymentsInputsForm(request.POST)
+
+        if form.is_valid():
+            item = form.save(commit=False)
+            item.save()
+
+            return render(
+                request,
+                "core/index.html",
+            )
+    else:
+        form = PaymentsInputsForm()
+
+    return render(
+        request,
+        "financial_situation/payments_inputs.html",
+        {
+            "form": form,
+            "title": "New Payments Inputs",
+        },
+    )
+
+
+@login_required
+def retirement_inputs_view(request):
+    """This will validate/create a new payments inputs item"""
+    if request.method == "POST":
+        form = RetirementInputsForm(request.POST)
+
+        if form.is_valid():
+            item = form.save(commit=False)
+            item.save()
+
+            return render(
+                request,
+                "core/index.html",
+            )
+    else:
+        form = RetirementInputsForm()
+
+    return render(
+        request,
+        "financial_situation/retirement_inputs.html",
+        {
+            "form": form,
+            "title": "New Retirement Inputs",
         },
     )

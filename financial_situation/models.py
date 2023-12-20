@@ -68,3 +68,26 @@ class SavingsInputsModel(models.Model):
 
     class Meta:
         verbose_name_plural = "Savings_Inputs"
+
+
+class PaymentsInputsModel(models.Model):
+    base_monthly_bills = models.FloatField()
+    payment_1_item_name = models.CharField(max_length=100, null=True, blank=True)
+    payment_1_item_pmt_start_age_yrs = models.IntegerField(null=True, blank=True)
+    payment_1_item_pmt_start_age_mos = models.IntegerField(null=True, blank=True)
+    payment_1_item_pmt_length_yrs = models.IntegerField(null=True, blank=True)
+    payment_1_item_down_pmt = models.FloatField(null=True, blank=True)
+    payment_1_item_monthly_pmt = models.FloatField(null=True, blank=True)
+
+    class Meta:
+        verbose_name_plural = "Payments_Inputs"
+
+
+class RetirementInputsModel(models.Model):
+    base_retirement = models.FloatField()
+    base_retirement_per_mo = models.FloatField()
+    base_retirement_per_yr_increase = models.FloatField()
+    retirement_extra_expenses = models.FloatField()
+
+    class Meta:
+        verbose_name_plural = "Retirement_Inputs"

@@ -1,6 +1,13 @@
 from django import forms
 
-from .models import FinancialInputs, GeneralInputsModel, SavingsInputsModel, TestCalc
+from .models import (
+    FinancialInputs,
+    GeneralInputsModel,
+    PaymentsInputsModel,
+    RetirementInputsModel,
+    SavingsInputsModel,
+    TestCalc,
+)
 
 INPUT_CLASSES = "w-full py-4 px-6 rounded-xl border"
 
@@ -267,6 +274,79 @@ class SavingsInputsForm(forms.ModelForm):
             "base_savings": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
             "base_saved_per_mo": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
             "base_savings_per_yr_increase": forms.NumberInput(
+                attrs={"class": INPUT_CLASSES}
+            ),
+        }
+
+
+class PaymentsInputsForm(forms.ModelForm):
+    """Class to contain all pertinent payment information"""
+
+    class Meta:
+        model = PaymentsInputsModel
+        fields = [
+            "base_monthly_bills",
+            "payment_1_item_name",
+            "payment_1_item_pmt_start_age_yrs",
+            "payment_1_item_pmt_start_age_mos",
+            "payment_1_item_pmt_length_yrs",
+            "payment_1_item_down_pmt",
+            "payment_1_item_monthly_pmt",
+        ]
+        labels = {
+            "base_monthly_bills": "Usual monthly expenses",
+            "payment_1_item_name": "Extra payment 1 name",
+            "payment_1_item_pmt_start_age_yrs": "Extra payment 1 start age in years",
+            "payment_1_item_pmt_start_age_mos": "Extra payment 1 start age months",
+            "payment_1_item_pmt_length_yrs": "Extra payment 1 length in years",
+            "payment_1_item_down_pmt": "Extra payment 1 down payment",
+            "payment_1_item_monthly_pmt": "Extra payment 1 monthly payment",
+        }
+        widgets = {
+            "base_monthly_bills": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
+            "payment_1_item_name": forms.TextInput(attrs={"class": INPUT_CLASSES}),
+            "payment_1_item_pmt_start_age_yrs": forms.NumberInput(
+                attrs={"class": INPUT_CLASSES}
+            ),
+            "payment_1_item_pmt_start_age_mos": forms.NumberInput(
+                attrs={"class": INPUT_CLASSES}
+            ),
+            "payment_1_item_pmt_length_yrs": forms.NumberInput(
+                attrs={"class": INPUT_CLASSES}
+            ),
+            "payment_1_item_down_pmt": forms.NumberInput(
+                attrs={"class": INPUT_CLASSES}
+            ),
+            "payment_1_item_monthly_pmt": forms.NumberInput(
+                attrs={"class": INPUT_CLASSES}
+            ),
+        }
+
+
+class RetirementInputsForm(forms.ModelForm):
+    """Class to contain all pertinent financial information"""
+
+    class Meta:
+        model = RetirementInputsModel
+        fields = [
+            "base_retirement",
+            "base_retirement_per_mo",
+            "base_retirement_per_yr_increase",
+            "retirement_extra_expenses",
+        ]
+        labels = {
+            "base_retirement": "Current retirement amount",
+            "base_retirement_per_mo": "Monthly retirement contributions",
+            "base_retirement_per_yr_increase": "Yearly retirement contribution increase ($)",
+            "retirement_extra_expenses": "Extra expenses in retirement (vacations, etc.)",
+        }
+        widgets = {
+            "base_retirement": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
+            "base_retirement_per_mo": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
+            "base_retirement_per_yr_increase": forms.NumberInput(
+                attrs={"class": INPUT_CLASSES}
+            ),
+            "retirement_extra_expenses": forms.NumberInput(
                 attrs={"class": INPUT_CLASSES}
             ),
         }
