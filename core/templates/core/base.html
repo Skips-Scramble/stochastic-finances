@@ -31,7 +31,7 @@
         <a href="{% url 'financial_situation:savings_inputs_view' %}" class="text-lg font-semibold hover:text-gray-500">Savings</a>
         <a href="{% url 'financial_situation:payments_inputs_view' %}" class="text-lg font-semibold hover:text-gray-500">Payments</a>
         <a href="{% url 'financial_situation:retirement_inputs_view' %}" class="text-lg font-semibold hover:text-gray-500">Retirement</a>
-        <a href="" class="text-lg font-semibold hover:text-gray-500">Rates</a>
+        <a href="{% url 'financial_situation:rates_inputs_view' %}" class="text-lg font-semibold hover:text-gray-500">Rates</a>
     </div>
     <div class="px-6 py-6">
         {% block content %}

@@ -52,6 +52,7 @@ so really don't need lists. Only really needed for outputting to csv
   - Can do a flat savings increase or a percentage
 - Add bonuses eventually
 - Make it so that savings can't go negative is retirement is positive
+- Should the frequency that the rf rate changes be something the user can input? Seems like not
 
 ## Kids, College, Other
 - Have options to put in other expenses, put in time periods, adjustments over time, starting/stopping
@@ -70,6 +71,8 @@ so really don't need lists. Only really needed for outputting to csv
 - Add in optional TVM calc for payments per month
 - Right now the person has to enter in their information one at a time (like for cars). Should there be a thing to just says, 
   "buy new car every X years, and just adjust according to inflation?"
+- Need to add an employer contribution bit
+  - I suppose this could be baked into the monthly, but if you're like me with annual contributions, then you'd need something extra
   
 ## Retirement
 - Change it so that retirement increase only changes at the start of a calendar year

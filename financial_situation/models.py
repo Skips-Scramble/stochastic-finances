@@ -56,6 +56,13 @@ class GeneralInputsModel(models.Model):
     birthday = models.CharField(max_length=10, default="MM/DD/YYYY")
     retirement_age_yrs = models.FloatField()
     retirement_age_mos = models.FloatField()
+    created_by = models.ForeignKey(
+        User,
+        related_name="general_inputs",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+    )
 
     class Meta:
         verbose_name_plural = "General_Inputs"
@@ -91,3 +98,13 @@ class RetirementInputsModel(models.Model):
 
     class Meta:
         verbose_name_plural = "Retirement_Inputs"
+
+
+class RatesInputsModel(models.Model):
+    base_rf_interest_per_yr = models.FloatField()
+    base_mkt_interest_per_yr = models.FloatField()
+    rf_interest_change_mos = models.FloatField()
+    base_inflation_per_yr = models.FloatField()
+
+    class Meta:
+        verbose_name_plural = "Rates_Inputs"

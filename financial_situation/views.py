@@ -12,6 +12,7 @@ from .forms import (
     NewFinancialSituation,
     NewTestCalcForm,
     PaymentsInputsForm,
+    RatesInputsForm,
     RetirementInputsForm,
     SavingsInputsForm,
 )
@@ -230,6 +231,7 @@ def general_inputs_view(request):
 
         if form.is_valid():
             item = form.save(commit=False)
+            item.created_by = request.user
             item.save()
 
             return render(
@@ -326,5 +328,32 @@ def retirement_inputs_view(request):
         {
             "form": form,
             "title": "New Retirement Inputs",
+        },
+    )
+
+
+@login_required
+def rates_inputs_view(request):
+    """This will validate/create a new payments inputs item"""
+    if request.method == "POST":
+        form = RatesInputsForm(request.POST)
+
+        if form.is_valid():
+            item = form.save(commit=False)
+            item.save()
+
+            return render(
+                request,
+                "core/index.html",
+            )
+    else:
+        form = RatesInputsForm()
+
+    return render(
+        request,
+        "financial_situation/rates_inputs.html",
+        {
+            "form": form,
+            "title": "New Rates Inputs",
         },
     )
