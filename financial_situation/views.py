@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 
 import stochastic_finances_func
+from utils.get_field_values import model_to_dict
 
 from .forms import (
     EditFinancialSituation,
@@ -16,6 +17,7 @@ from .forms import (
     RetirementInputsForm,
     SavingsInputsForm,
 )
+from .models import GeneralInputsModel
 
 
 def test_new_form(request):
@@ -259,6 +261,7 @@ def savings_inputs_view(request):
 
         if form.is_valid():
             item = form.save(commit=False)
+            item.created_by = request.user
             item.save()
 
             return render(
@@ -286,6 +289,7 @@ def payments_inputs_view(request):
 
         if form.is_valid():
             item = form.save(commit=False)
+            item.created_by = request.user
             item.save()
 
             return render(
@@ -313,6 +317,7 @@ def retirement_inputs_view(request):
 
         if form.is_valid():
             item = form.save(commit=False)
+            item.created_by = request.user
             item.save()
 
             return render(
@@ -340,6 +345,7 @@ def rates_inputs_view(request):
 
         if form.is_valid():
             item = form.save(commit=False)
+            item.created_by = request.user
             item.save()
 
             return render(
@@ -356,4 +362,30 @@ def rates_inputs_view(request):
             "form": form,
             "title": "New Rates Inputs",
         },
+    )
+
+
+@login_required
+def calculation(request):
+    """This will run the financial calculations"""
+    if request.method == "POST":
+        print("Post request")
+        general_inputs_model = GeneralInputsModel.objects.filter(
+            created_by=request.user, is_active=True
+        )
+        general_inputs = model_to_dict(general_inputs_model)
+
+        print(general_inputs)
+    else:
+        print("Get request")
+        general_inputs_model = GeneralInputsModel.objects.filter(
+            created_by=request.user, is_active=True
+        )
+        print(f"{general_inputs_model=}")
+        for item in general_inputs_model:
+            print(model_to_dict(item))
+
+    return render(
+        request,
+        "core/index.html",
     )

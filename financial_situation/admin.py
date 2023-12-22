@@ -10,10 +10,15 @@ from .models import (
     TestCalc,
 )
 
+
+class InputsModelAdmin(admin.ModelAdmin):
+    readonly_fields = ("modified_at",)
+
+
 admin.site.register(FinancialInputs)
-admin.site.register(GeneralInputsModel)
-admin.site.register(PaymentsInputsModel)
-admin.site.register(RatesInputsModel)
-admin.site.register(RetirementInputsModel)
-admin.site.register(SavingsInputsModel)
+admin.site.register(GeneralInputsModel, InputsModelAdmin)
+admin.site.register(PaymentsInputsModel, InputsModelAdmin)
+admin.site.register(RatesInputsModel, InputsModelAdmin)
+admin.site.register(RetirementInputsModel, InputsModelAdmin)
+admin.site.register(SavingsInputsModel, InputsModelAdmin)
 admin.site.register(TestCalc)
