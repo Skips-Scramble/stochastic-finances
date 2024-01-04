@@ -411,18 +411,14 @@ def calculation(request):
         )
         print(f"{payments_inputs_model=}")
         print(f"length of query set is: {len(payments_inputs_model)}")
+        payment_item_list = []
         for item in payments_inputs_model:
             payments_inputs_dict = model_to_dict(item)
             del payments_inputs_dict["id"]
             del payments_inputs_dict["is_active"]
             del payments_inputs_dict["created_by"]
             del payments_inputs_dict["modified_at"]
-        print(f"payments dict: {payments_inputs_dict}")
-        base_monthly_bills_dict = {
-            "base_monthly_bills": payments_inputs_dict["base_monthly_bills"]
-        }
-        payment_dict_list = {
-            "payment_items": [
+            payment_item_list.append(
                 {
                     "item_name": payments_inputs_dict["payment_1_item_name"],
                     "item_pmt_start_age_yrs": payments_inputs_dict[
@@ -439,8 +435,32 @@ def calculation(request):
                         "payment_1_item_monthly_pmt"
                     ],
                 }
-            ]
+            )
+            print(f"payments dict: {payments_inputs_dict}")
+        print(f"payment_item_list is {payment_item_list}")
+        base_monthly_bills_dict = {
+            "base_monthly_bills": payments_inputs_dict["base_monthly_bills"]
         }
+        # payment_dict_list = {
+        #     "payment_items": [
+        #         {
+        #             "item_name": payments_inputs_dict["payment_1_item_name"],
+        #             "item_pmt_start_age_yrs": payments_inputs_dict[
+        #                 "payment_1_item_pmt_start_age_yrs"
+        #             ],
+        #             "item_pmt_start_age_mos": payments_inputs_dict[
+        #                 "payment_1_item_pmt_start_age_mos"
+        #             ],
+        #             "item_pmt_length_yrs": payments_inputs_dict[
+        #                 "payment_1_item_pmt_length_yrs"
+        #             ],
+        #             "item_down_pmt": payments_inputs_dict["payment_1_item_down_pmt"],
+        #             "item_monthly_pmt": payments_inputs_dict[
+        #                 "payment_1_item_monthly_pmt"
+        #             ],
+        #         }
+        #     ]
+        # }
 
         retirement_inputs_model = RetirementInputsModel.objects.filter(
             created_by=request.user, is_active=True
@@ -473,7 +493,7 @@ def calculation(request):
         **general_inputs_dict,
         **savings_inputs_dict,
         **base_monthly_bills_dict,
-        **payment_dict_list,
+        **{"payment_items": payment_item_list},
         **retirement_inputs_dict,
         **rates_inputs_dict,
     }

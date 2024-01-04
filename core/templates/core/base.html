@@ -20,7 +20,7 @@
             <a href="{% url 'core:signup' %}" class="px-6 py-3 text-lg font-semibold bg-gray-500 text-white rounded-xl hover:bg-gray-700">Sign up</a>
             <a href="{% url 'core:login' %}" class="px-6 py-3 text-lg font-semibold bg-gray-500 text-white rounded-xl hover:bg-gray-700">Log in</a>
             {% if request.user.is_authenticated %}
-                <a href="{% url 'dashboard:index' %}" class = "test-lg font-semibold hove:test-gray-500">Dashboard</a>
+                <a href="{% url 'dashboard:general_inputs_dashboard' %}" class = "test-lg font-semibold hove:test-gray-500">Dashboard</a>
             {% endif %}
 
         </div>
