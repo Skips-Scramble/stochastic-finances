@@ -17,5 +17,5 @@ urlpatterns = [
         views.add_financial_situation,
         name="add_financial_situation",
     ),
-    path("<int:pk>/edit/", views.edit, name="edit"),
+    path("<int:pk>/edit/", views.general_inputs_edit, name="general_inputs_edit"),
 ]

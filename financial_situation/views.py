@@ -261,6 +261,36 @@ def general_inputs_view(request):
 
 
 @login_required
+def general_inputs_edit(request, pk):
+    """This will validate/create a new general inputs item"""
+    general_inputs = get_object_or_404(
+        GeneralInputsModel, pk=pk, created_by=request.user
+    )
+
+    if request.method == "POST":
+        form = GeneralInputsForm(request.POST, instance=general_inputs)
+
+        if form.is_valid():
+            form.save()
+
+            return render(
+                request,
+                "core/index.html",
+            )
+    else:
+        form = GeneralInputsForm(instance=general_inputs)
+
+    return render(
+        request,
+        "financial_situation/general_inputs.html",
+        {
+            "form": form,
+            "title": "Edit General Inputs",
+        },
+    )
+
+
+@login_required
 def savings_inputs_view(request):
     """This will validate/create a new savings inputs item"""
     if request.method == "POST":
