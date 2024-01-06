@@ -57,7 +57,7 @@ def general_inputs_edit(request, pk):
         if form.is_valid():
             form.save()
 
-            return redirect("/inputs/general/")
+            return redirect("inputs:general_inputs_dashboard")
     else:
         form = GeneralInputsForm(instance=general_inputs)
 
@@ -69,6 +69,16 @@ def general_inputs_edit(request, pk):
             "title": "Edit General Inputs",
         },
     )
+
+
+@login_required
+def general_inputs_delete(request, pk):
+    general_inputs = get_object_or_404(
+        GeneralInputsModel, pk=pk, created_by=request.user
+    )
+    general_inputs.delete()
+
+    return redirect("inputs:general_inputs_dashboard")
 
 
 @login_required
@@ -132,3 +142,13 @@ def savings_inputs_edit(request, pk):
             "title": "Edit Savings Inputs",
         },
     )
+
+
+@login_required
+def savings_inputs_delete(request, pk):
+    savings_inputs = get_object_or_404(
+        SavingsInputsModel, pk=pk, created_by=request.user
+    )
+    savings_inputs.delete()
+
+    return redirect("inputs:savings_inputs_dashboard")
