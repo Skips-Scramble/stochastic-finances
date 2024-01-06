@@ -7,23 +7,19 @@ from django.shortcuts import get_object_or_404, redirect, render
 import stochastic_finances_func
 from utils.get_field_values import model_to_dict
 
-from .forms import (
+from .forms import (  # GeneralInputsForm,; SavingsInputsForm,
     EditFinancialSituation,
-    GeneralInputsForm,
     NewFinancialSituation,
     NewTestCalcForm,
     PaymentsInputsForm,
     RatesInputsForm,
     RetirementInputsForm,
-    SavingsInputsForm,
 )
 from .models import (
     FinancialInputs,
-    GeneralInputsModel,
     PaymentsInputsModel,
     RatesInputsModel,
     RetirementInputsModel,
-    SavingsInputsModel,
 )
 
 
@@ -228,92 +224,6 @@ def edit(request, pk):
         {
             "form": form,
             "title": "Edit Financial Situation",
-        },
-    )
-
-
-@login_required
-def general_inputs_view(request):
-    """This will validate/create a new general inputs item"""
-    if request.method == "POST":
-        form = GeneralInputsForm(request.POST)
-
-        if form.is_valid():
-            item = form.save(commit=False)
-            item.created_by = request.user
-            item.save()
-
-            return render(
-                request,
-                "core/index.html",
-            )
-    else:
-        form = GeneralInputsForm()
-
-    return render(
-        request,
-        "financial_situation/general_inputs.html",
-        {
-            "form": form,
-            "title": "New General Inputs",
-        },
-    )
-
-
-@login_required
-def general_inputs_edit(request, pk):
-    """This will validate/create a new general inputs item"""
-    general_inputs = get_object_or_404(
-        GeneralInputsModel, pk=pk, created_by=request.user
-    )
-
-    if request.method == "POST":
-        form = GeneralInputsForm(request.POST, instance=general_inputs)
-
-        if form.is_valid():
-            form.save()
-
-            return render(
-                request,
-                "core/index.html",
-            )
-    else:
-        form = GeneralInputsForm(instance=general_inputs)
-
-    return render(
-        request,
-        "financial_situation/general_inputs.html",
-        {
-            "form": form,
-            "title": "Edit General Inputs",
-        },
-    )
-
-
-@login_required
-def savings_inputs_view(request):
-    """This will validate/create a new savings inputs item"""
-    if request.method == "POST":
-        form = SavingsInputsForm(request.POST)
-
-        if form.is_valid():
-            item = form.save(commit=False)
-            item.created_by = request.user
-            item.save()
-
-            return render(
-                request,
-                "core/index.html",
-            )
-    else:
-        form = SavingsInputsForm()
-
-    return render(
-        request,
-        "financial_situation/savings_inputs.html",
-        {
-            "form": form,
-            "title": "New Savings Inputs",
         },
     )
 

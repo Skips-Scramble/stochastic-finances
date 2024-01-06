@@ -19,16 +19,13 @@
             <a href="{% url 'financial_situation:add_financial_situation' %}" class = "test-lg font-semibold hove:test-gray-500">Financial Situation</a>
             <a href="{% url 'core:signup' %}" class="px-6 py-3 text-lg font-semibold bg-gray-500 text-white rounded-xl hover:bg-gray-700">Sign up</a>
             <a href="{% url 'core:login' %}" class="px-6 py-3 text-lg font-semibold bg-gray-500 text-white rounded-xl hover:bg-gray-700">Log in</a>
-            {% if request.user.is_authenticated %}
-                <a href="{% url 'dashboard:general_inputs_dashboard' %}" class = "test-lg font-semibold hove:test-gray-500">Dashboard</a>
-            {% endif %}
 
         </div>
     </nav>
     <!-- New Tab Section -->
     <div class="px-6 py-3 flex space-x-6 border-b border-gray-200">
-        <a href="{% url 'dashboard:general_inputs_dashboard' %}" class="text-lg font-semibold hover:text-gray-500">General</a>
-        <a href="{% url 'financial_situation:savings_inputs_view' %}" class="text-lg font-semibold hover:text-gray-500">Savings</a>
+        <a href="{% url 'inputs:general_inputs_dashboard' %}" class="text-lg font-semibold hover:text-gray-500">General</a>
+        <a href="{% url 'inputs:savings_inputs_dashboard' %}" class="text-lg font-semibold hover:text-gray-500">Savings</a>
         <a href="{% url 'financial_situation:payments_inputs_view' %}" class="text-lg font-semibold hover:text-gray-500">Payments</a>
         <a href="{% url 'financial_situation:retirement_inputs_view' %}" class="text-lg font-semibold hover:text-gray-500">Retirement</a>
         <a href="{% url 'financial_situation:rates_inputs_view' %}" class="text-lg font-semibold hover:text-gray-500">Rates</a>
