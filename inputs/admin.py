@@ -1,6 +1,12 @@
 from django.contrib import admin
 
-from .models import GeneralInputsModel, SavingsInputsModel, PaymentsInputsModel
+from .models import (
+    GeneralInputsModel,
+    PaymentsInputsModel,
+    RatesInputsModel,
+    RetirementInputsModel,
+    SavingsInputsModel,
+)
 
 
 class InputsModelAdmin(admin.ModelAdmin):
@@ -9,4 +15,6 @@ class InputsModelAdmin(admin.ModelAdmin):
 
 admin.site.register(GeneralInputsModel, InputsModelAdmin)
 admin.site.register(PaymentsInputsModel, InputsModelAdmin)
+admin.site.register(RatesInputsModel, InputsModelAdmin)
+admin.site.register(RetirementInputsModel, InputsModelAdmin)
 admin.site.register(SavingsInputsModel, InputsModelAdmin)

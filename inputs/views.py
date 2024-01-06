@@ -1,8 +1,20 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .forms import GeneralInputsForm, PaymentsInputsForm, SavingsInputsForm
-from .models import GeneralInputsModel, PaymentsInputsModel, SavingsInputsModel
+from .forms import (
+    GeneralInputsForm,
+    PaymentsInputsForm,
+    RatesInputsForm,
+    RetirementInputsForm,
+    SavingsInputsForm,
+)
+from .models import (
+    GeneralInputsModel,
+    PaymentsInputsModel,
+    RatesInputsModel,
+    RetirementInputsModel,
+    SavingsInputsModel,
+)
 
 
 @login_required
@@ -225,3 +237,147 @@ def payments_inputs_delete(request, pk):
     payments_inputs.delete()
 
     return redirect("inputs:payments_inputs_dashboard")
+
+
+@login_required
+def retirement_inputs_dashboard(request):
+    retirement_inputs_models = RetirementInputsModel.objects.filter(
+        created_by=request.user
+    )
+
+    return render(
+        request,
+        "inputs/retirement_inputs.html",
+        {"retirement_inputs": retirement_inputs_models},
+    )
+
+
+@login_required
+def retirement_inputs_create(request):
+    """This will validate/create a new retirement inputs item"""
+    if request.method == "POST":
+        form = RetirementInputsForm(request.POST)
+
+        if form.is_valid():
+            item = form.save(commit=False)
+            item.created_by = request.user
+            item.save()
+
+            return redirect("/inputs/retirement/")
+    else:
+        form = RetirementInputsForm()
+
+    return render(
+        request,
+        "inputs/inputs_create.html",
+        {
+            "form": form,
+            "title": "New retirement Inputs",
+        },
+    )
+
+
+@login_required
+def retirement_inputs_edit(request, pk):
+    """This will edit a retirement inputs item"""
+    retirement_inputs = get_object_or_404(
+        RetirementInputsModel, pk=pk, created_by=request.user
+    )
+
+    if request.method == "POST":
+        form = RetirementInputsForm(request.POST, instance=retirement_inputs)
+
+        if form.is_valid():
+            form.save()
+
+            return redirect("/inputs/retirement/")
+    else:
+        form = RetirementInputsForm(instance=retirement_inputs)
+
+    return render(
+        request,
+        "inputs/inputs_create.html",
+        {
+            "form": form,
+            "title": "Edit retirement Inputs",
+        },
+    )
+
+
+@login_required
+def retirement_inputs_delete(request, pk):
+    retirement_inputs = get_object_or_404(
+        RetirementInputsModel, pk=pk, created_by=request.user
+    )
+    retirement_inputs.delete()
+
+    return redirect("inputs:retirement_inputs_dashboard")
+
+
+@login_required
+def rates_inputs_dashboard(request):
+    rates_inputs_models = RatesInputsModel.objects.filter(created_by=request.user)
+
+    return render(
+        request,
+        "inputs/rates_inputs.html",
+        {"rates_inputs": rates_inputs_models},
+    )
+
+
+@login_required
+def rates_inputs_create(request):
+    """This will validate/create a new rates inputs item"""
+    if request.method == "POST":
+        form = RatesInputsForm(request.POST)
+
+        if form.is_valid():
+            item = form.save(commit=False)
+            item.created_by = request.user
+            item.save()
+
+            return redirect("/inputs/rates/")
+    else:
+        form = RatesInputsForm()
+
+    return render(
+        request,
+        "inputs/inputs_create.html",
+        {
+            "form": form,
+            "title": "New rates Inputs",
+        },
+    )
+
+
+@login_required
+def rates_inputs_edit(request, pk):
+    """This will edit a rates inputs item"""
+    rates_inputs = get_object_or_404(RatesInputsModel, pk=pk, created_by=request.user)
+
+    if request.method == "POST":
+        form = RatesInputsForm(request.POST, instance=rates_inputs)
+
+        if form.is_valid():
+            form.save()
+
+            return redirect("/inputs/rates/")
+    else:
+        form = RatesInputsForm(instance=rates_inputs)
+
+    return render(
+        request,
+        "inputs/inputs_create.html",
+        {
+            "form": form,
+            "title": "Edit rates Inputs",
+        },
+    )
+
+
+@login_required
+def rates_inputs_delete(request, pk):
+    rates_inputs = get_object_or_404(RatesInputsModel, pk=pk, created_by=request.user)
+    rates_inputs.delete()
+
+    return redirect("inputs:rates_inputs_dashboard")

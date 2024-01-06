@@ -11,14 +11,8 @@ from .forms import (  # GeneralInputsForm,; SavingsInputsForm,
     EditFinancialSituation,
     NewFinancialSituation,
     NewTestCalcForm,
-    RatesInputsForm,
-    RetirementInputsForm,
 )
-from .models import (
-    FinancialInputs,
-    RatesInputsModel,
-    RetirementInputsModel,
-)
+from .models import FinancialInputs
 
 
 def test_new_form(request):

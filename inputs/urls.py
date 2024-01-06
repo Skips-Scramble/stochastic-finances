@@ -26,10 +26,14 @@ urlpatterns = [
         name="savings_inputs_delete",
     ),
     path(
-        "payments/", views.payments_inputs_dashboard, name="payments_inputs_dashboard"
+        "payments/",
+        views.payments_inputs_dashboard,
+        name="payments_inputs_dashboard",
     ),
     path(
-        "payments/create/", views.payments_inputs_create, name="payments_inputs_create"
+        "payments/create/",
+        views.payments_inputs_create,
+        name="payments_inputs_create",
     ),
     path(
         "payments/<int:pk>/edit/",
@@ -40,5 +44,37 @@ urlpatterns = [
         "payments/<int:pk>/delete/",
         views.payments_inputs_delete,
         name="payments_inputs_delete",
+    ),
+    path(
+        "retirement/",
+        views.retirement_inputs_dashboard,
+        name="retirement_inputs_dashboard",
+    ),
+    path(
+        "retirement/create/",
+        views.retirement_inputs_create,
+        name="retirement_inputs_create",
+    ),
+    path(
+        "retirement/<int:pk>/edit/",
+        views.retirement_inputs_edit,
+        name="retirement_inputs_edit",
+    ),
+    path(
+        "retirement/<int:pk>/delete/",
+        views.retirement_inputs_delete,
+        name="retirement_inputs_delete",
+    ),
+    path("rates/", views.rates_inputs_dashboard, name="rates_inputs_dashboard"),
+    path("rates/create/", views.rates_inputs_create, name="rates_inputs_create"),
+    path(
+        "rates/<int:pk>/edit/",
+        views.rates_inputs_edit,
+        name="rates_inputs_edit",
+    ),
+    path(
+        "rates/<int:pk>/delete/",
+        views.rates_inputs_delete,
+        name="rates_inputs_delete",
     ),
 ]

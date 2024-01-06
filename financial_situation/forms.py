@@ -1,11 +1,6 @@
 from django import forms
 
-from .models import (
-    FinancialInputs,
-    RatesInputsModel,
-    RetirementInputsModel,
-    TestCalc,
-)
+from .models import FinancialInputs, TestCalc
 
 INPUT_CLASSES = "w-full py-4 px-6 rounded-xl border"
 
@@ -228,68 +223,4 @@ class EditFinancialSituation(forms.ModelForm):
             "retirement_extra_expenses": forms.NumberInput(
                 attrs={"class": INPUT_CLASSES}
             ),
-        }
-
-
-class RetirementInputsForm(forms.ModelForm):
-    """Class to contain all pertinent financial information"""
-
-    class Meta:
-        model = RetirementInputsModel
-        fields = [
-            "is_active",
-            "base_retirement",
-            "base_retirement_per_mo",
-            "base_retirement_per_yr_increase",
-            "retirement_extra_expenses",
-        ]
-        labels = {
-            "is_active": "Use this for calculations",
-            "base_retirement": "Current retirement amount",
-            "base_retirement_per_mo": "Monthly retirement contributions",
-            "base_retirement_per_yr_increase": "Yearly retirement contribution increase ($)",
-            "retirement_extra_expenses": "Extra expenses in retirement (vacations, etc.)",
-        }
-        widgets = {
-            "is_active": forms.CheckboxInput(),
-            "base_retirement": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
-            "base_retirement_per_mo": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
-            "base_retirement_per_yr_increase": forms.NumberInput(
-                attrs={"class": INPUT_CLASSES}
-            ),
-            "retirement_extra_expenses": forms.NumberInput(
-                attrs={"class": INPUT_CLASSES}
-            ),
-        }
-
-
-class RatesInputsForm(forms.ModelForm):
-    """Class to contain all pertinent financial information"""
-
-    class Meta:
-        model = RatesInputsModel
-        fields = [
-            "is_active",
-            "base_rf_interest_per_yr",
-            "base_mkt_interest_per_yr",
-            "rf_interest_change_mos",
-            "base_inflation_per_yr",
-        ]
-        labels = {
-            "is_active": "Use this for calculations",
-            "base_rf_interest_per_yr": "Assumed savings account interest rate",
-            "base_mkt_interest_per_yr": "Assumed retirement interest rate",
-            "rf_interest_change_mos": "How often do you assume savings rate will change (in months)",
-            "base_inflation_per_yr": "Assumed inflation per year",
-        }
-        widgets = {
-            "is_active": forms.CheckboxInput(),
-            "base_rf_interest_per_yr": forms.NumberInput(
-                attrs={"class": INPUT_CLASSES}
-            ),
-            "base_mkt_interest_per_yr": forms.NumberInput(
-                attrs={"class": INPUT_CLASSES}
-            ),
-            "rf_interest_change_mos": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
-            "base_inflation_per_yr": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
         }
