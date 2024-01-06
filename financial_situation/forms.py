@@ -2,7 +2,6 @@ from django import forms
 
 from .models import (
     FinancialInputs,
-    PaymentsInputsModel,
     RatesInputsModel,
     RetirementInputsModel,
     TestCalc,
@@ -227,53 +226,6 @@ class EditFinancialSituation(forms.ModelForm):
             "savings_lower_limit": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
             "base_inflation_per_yr": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
             "retirement_extra_expenses": forms.NumberInput(
-                attrs={"class": INPUT_CLASSES}
-            ),
-        }
-
-
-class PaymentsInputsForm(forms.ModelForm):
-    """Class to contain all pertinent payment information"""
-
-    class Meta:
-        model = PaymentsInputsModel
-        fields = [
-            "is_active",
-            "base_monthly_bills",
-            "payment_1_item_name",
-            "payment_1_item_pmt_start_age_yrs",
-            "payment_1_item_pmt_start_age_mos",
-            "payment_1_item_pmt_length_yrs",
-            "payment_1_item_down_pmt",
-            "payment_1_item_monthly_pmt",
-        ]
-        labels = {
-            "is_active": "Use this for calculations",
-            "base_monthly_bills": "Usual monthly expenses",
-            "payment_1_item_name": "Extra payment 1 name",
-            "payment_1_item_pmt_start_age_yrs": "Extra payment 1 start age in years",
-            "payment_1_item_pmt_start_age_mos": "Extra payment 1 start age months",
-            "payment_1_item_pmt_length_yrs": "Extra payment 1 length in years",
-            "payment_1_item_down_pmt": "Extra payment 1 down payment",
-            "payment_1_item_monthly_pmt": "Extra payment 1 monthly payment",
-        }
-        widgets = {
-            "is_active": forms.CheckboxInput(),
-            "base_monthly_bills": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
-            "payment_1_item_name": forms.TextInput(attrs={"class": INPUT_CLASSES}),
-            "payment_1_item_pmt_start_age_yrs": forms.NumberInput(
-                attrs={"class": INPUT_CLASSES}
-            ),
-            "payment_1_item_pmt_start_age_mos": forms.NumberInput(
-                attrs={"class": INPUT_CLASSES}
-            ),
-            "payment_1_item_pmt_length_yrs": forms.NumberInput(
-                attrs={"class": INPUT_CLASSES}
-            ),
-            "payment_1_item_down_pmt": forms.NumberInput(
-                attrs={"class": INPUT_CLASSES}
-            ),
-            "payment_1_item_monthly_pmt": forms.NumberInput(
                 attrs={"class": INPUT_CLASSES}
             ),
         }

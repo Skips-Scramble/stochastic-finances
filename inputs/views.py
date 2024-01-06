@@ -1,8 +1,8 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 
-from .forms import GeneralInputsForm, SavingsInputsForm
-from .models import GeneralInputsModel, SavingsInputsModel
+from .forms import GeneralInputsForm, PaymentsInputsForm, SavingsInputsForm
+from .models import GeneralInputsModel, PaymentsInputsModel, SavingsInputsModel
 
 
 @login_required
@@ -152,3 +152,76 @@ def savings_inputs_delete(request, pk):
     savings_inputs.delete()
 
     return redirect("inputs:savings_inputs_dashboard")
+
+
+@login_required
+def payments_inputs_dashboard(request):
+    payments_inputs_models = PaymentsInputsModel.objects.filter(created_by=request.user)
+
+    return render(
+        request,
+        "inputs/payments_inputs.html",
+        {"payments_inputs": payments_inputs_models},
+    )
+
+
+@login_required
+def payments_inputs_create(request):
+    """This will validate/create a new payments inputs item"""
+    if request.method == "POST":
+        form = PaymentsInputsForm(request.POST)
+
+        if form.is_valid():
+            item = form.save(commit=False)
+            item.created_by = request.user
+            item.save()
+
+            return redirect("/inputs/payments/")
+    else:
+        form = PaymentsInputsForm()
+
+    return render(
+        request,
+        "inputs/inputs_create.html",
+        {
+            "form": form,
+            "title": "New Payments Inputs",
+        },
+    )
+
+
+@login_required
+def payments_inputs_edit(request, pk):
+    """This will edit a payments inputs item"""
+    payments_inputs = get_object_or_404(
+        PaymentsInputsModel, pk=pk, created_by=request.user
+    )
+
+    if request.method == "POST":
+        form = PaymentsInputsForm(request.POST, instance=payments_inputs)
+
+        if form.is_valid():
+            form.save()
+
+            return redirect("/inputs/payments/")
+    else:
+        form = PaymentsInputsForm(instance=payments_inputs)
+
+    return render(
+        request,
+        "inputs/inputs_create.html",
+        {
+            "form": form,
+            "title": "Edit payments Inputs",
+        },
+    )
+
+
+@login_required
+def payments_inputs_delete(request, pk):
+    payments_inputs = get_object_or_404(
+        PaymentsInputsModel, pk=pk, created_by=request.user
+    )
+    payments_inputs.delete()
+
+    return redirect("inputs:payments_inputs_dashboard")

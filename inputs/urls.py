@@ -25,4 +25,20 @@ urlpatterns = [
         views.savings_inputs_delete,
         name="savings_inputs_delete",
     ),
+    path(
+        "payments/", views.payments_inputs_dashboard, name="payments_inputs_dashboard"
+    ),
+    path(
+        "payments/create/", views.payments_inputs_create, name="payments_inputs_create"
+    ),
+    path(
+        "payments/<int:pk>/edit/",
+        views.payments_inputs_edit,
+        name="payments_inputs_edit",
+    ),
+    path(
+        "payments/<int:pk>/delete/",
+        views.payments_inputs_delete,
+        name="payments_inputs_delete",
+    ),
 ]

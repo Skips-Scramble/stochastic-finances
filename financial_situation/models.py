@@ -52,28 +52,6 @@ class FinancialInputs(models.Model):
         return self.name
 
 
-class PaymentsInputsModel(models.Model):
-    is_active = models.BooleanField(default=False)
-    base_monthly_bills = models.FloatField()
-    payment_1_item_name = models.CharField(max_length=100, null=True, blank=True)
-    payment_1_item_pmt_start_age_yrs = models.IntegerField(null=True, blank=True)
-    payment_1_item_pmt_start_age_mos = models.IntegerField(null=True, blank=True)
-    payment_1_item_pmt_length_yrs = models.IntegerField(null=True, blank=True)
-    payment_1_item_down_pmt = models.FloatField(null=True, blank=True)
-    payment_1_item_monthly_pmt = models.FloatField(null=True, blank=True)
-    created_by = models.ForeignKey(
-        User,
-        related_name="payments_inputs",
-        on_delete=models.CASCADE,
-        null=True,
-        blank=True,
-    )
-    modified_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        verbose_name_plural = "Payments_Inputs"
-
-
 class RetirementInputsModel(models.Model):
     is_active = models.BooleanField(default=False)
     base_retirement = models.FloatField()

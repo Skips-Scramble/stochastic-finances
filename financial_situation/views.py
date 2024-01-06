@@ -11,13 +11,11 @@ from .forms import (  # GeneralInputsForm,; SavingsInputsForm,
     EditFinancialSituation,
     NewFinancialSituation,
     NewTestCalcForm,
-    PaymentsInputsForm,
     RatesInputsForm,
     RetirementInputsForm,
 )
 from .models import (
     FinancialInputs,
-    PaymentsInputsModel,
     RatesInputsModel,
     RetirementInputsModel,
 )
@@ -224,34 +222,6 @@ def edit(request, pk):
         {
             "form": form,
             "title": "Edit Financial Situation",
-        },
-    )
-
-
-@login_required
-def payments_inputs_view(request):
-    """This will validate/create a new payments inputs item"""
-    if request.method == "POST":
-        form = PaymentsInputsForm(request.POST)
-
-        if form.is_valid():
-            item = form.save(commit=False)
-            item.created_by = request.user
-            item.save()
-
-            return render(
-                request,
-                "core/index.html",
-            )
-    else:
-        form = PaymentsInputsForm()
-
-    return render(
-        request,
-        "financial_situation/payments_inputs.html",
-        {
-            "form": form,
-            "title": "New Payments Inputs",
         },
     )
 
