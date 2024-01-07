@@ -1,10 +1,9 @@
-import pandas as pd
-
-from datetime import date, datetime, timedelta
-from dateutil.relativedelta import relativedelta
-
 from dataclasses import dataclass
+from datetime import date, datetime, timedelta
 from functools import cached_property
+
+import pandas as pd
+from dateutil.relativedelta import relativedelta
 
 DEATH_YEARS = 110
 
@@ -24,18 +23,18 @@ def calc_date_on_age(birthdate: date, age_yrs: int, age_mos: int) -> datetime.da
 
 def calc_payment_item_dates(
     birthdate: datetime.date,
-    item_pmt_start_age_yrs: int,
-    item_pmt_start_age_mos: int,
-    item_pmt_length_yrs: int,
+    pmt_start_age_yrs: int,
+    pmt_start_age_mos: int,
+    pmt_length_yrs: int,
 ) -> (datetime.date, datetime.date):
     """Docstring"""
     item_pmt_start_date = calc_date_on_age(
         birthdate,
-        item_pmt_start_age_yrs,
-        item_pmt_start_age_mos,
+        pmt_start_age_yrs,
+        pmt_start_age_mos,
     )
 
-    item_pmt_end_yr = item_pmt_start_date.year + item_pmt_length_yrs
+    item_pmt_end_yr = item_pmt_start_date.year + pmt_length_yrs
     if item_pmt_start_date.month - 1 != 0:
         item_pmt_end_mo = item_pmt_start_date.month - 1
     else:
@@ -77,8 +76,8 @@ class BaseScenario:
     @cached_property
     def birthdate(self) -> date:
         """Calculate birthdate"""
-        if isinstance(self.assumptions['birthday'], date):
-            return self.assumptions['birthday']
+        if isinstance(self.assumptions["birthday"], date):
+            return self.assumptions["birthday"]
         return datetime.strptime(self.assumptions["birthday"], "%m/%d/%Y").date()
 
     @cached_property
@@ -240,17 +239,17 @@ class BaseScenario:
         for item in self.assumptions["payment_items"]:
             item_pmt_start_date, item_pmt_end_date = calc_payment_item_dates(
                 self.birthdate,
-                item["item_pmt_start_age_yrs"],
-                item["item_pmt_start_age_mos"],
-                item["item_pmt_length_yrs"],
+                item["pmt_start_age_yrs"],
+                item["pmt_start_age_mos"],
+                item["pmt_length_yrs"],
             )
             non_base_bills_lists.append(
                 calc_item_monthly_pmt_list(
                     self.month_list,
                     item_pmt_start_date,
                     item_pmt_end_date,
-                    item["item_down_pmt"],
-                    item["item_monthly_pmt"],
+                    item["down_pmt"],
+                    item["monthly_pmt"],
                 )
             )
         if non_base_bills_lists == []:
@@ -384,7 +383,7 @@ class BaseScenario:
             "retire_extra": self.post_retire_extra_bills_list,
         }
         non_base_items_names = [
-            f'{x["item_name"]}_pmt' for x in self.assumptions["payment_items"]
+            f'{x["pmt_name"]}_pmt' for x in self.assumptions["payment_items"]
         ]
         non_base_items_lists = {
             k: v for (k, v) in zip(non_base_items_names, self.non_base_bills_lists)

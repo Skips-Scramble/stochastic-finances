@@ -1,0 +1,18 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Results{% endblock %}
+
+{% block content %}
+    <div class="mt-6 px-6 py-12 bg-gray-100 rounded-xl">
+        <h2 class="mb-6 text-4xl text-center">Savings and Retirement Results</h2>
+        <div class="grid grid-cols-3 gap-3">
+            {% for key, value in results.items %}
+                <div class="p-6 bg-white rounded-b-xl space-y-4">
+                    <h2>Age: {{key}}</h2>
+                    <h2>{{ value.0 }}</h2>
+                    <h2>{{ value.1 }}</h2>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

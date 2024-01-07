@@ -24,6 +24,7 @@ so really don't need lists. Only really needed for outputting to csv
 - It would be good to have it calculate back from 110 (or whatever) and show you how much you would need at each age of retirement
   - This would be part of a suite of results/outputs from the calculations
   - Helpful to know how much more you'd need at 55 versus 60 versus 65, etc.
+- Add logging
 
 ##Inputs
 - (.json)
@@ -57,16 +58,10 @@ so really don't need lists. Only really needed for outputting to csv
 - Make it so that savings can't go negative is retirement is positive
 - Should the frequency that the rf rate changes be something the user can input? Seems like not
 
-## Kids, College, Other
-- Have options to put in other expenses, put in time periods, adjustments over time, starting/stopping
-
 ## Social Security
 - SS withdraw amount could be assumed, or calculated
   - Should also have an override for if SS is assumed at all upon retirement
 - Can you withdraw SS beginning at any age/month combo?
-
-## Rent/Mortgage
-- Need to make rent more dynamic (start, stop, multiple)
 
 ## Payments
 - Need to make car payment more dynamic (start, stop, multiple occurrences)
@@ -76,6 +71,10 @@ so really don't need lists. Only really needed for outputting to csv
   "buy new car every X years, and just adjust according to inflation?"
 - Need to add an employer contribution bit
   - I suppose this could be baked into the monthly, but if you're like me with annual contributions, then you'd need something extra
+- I think this could maybe account for negative payments (i.e. savings) as well?
+  - If you expect to have a reverse mortgage, or an annuity or something like that, this would be able to be input here as negative amounts?
+  - Maybe should be its own thing?
+- Since this is getting stored as a dictionary, can't have duplicate names. Need to fix.
   
 ## Retirement
 - Change it so that retirement increase only changes at the start of a calendar year
@@ -88,3 +87,7 @@ so really don't need lists. Only really needed for outputting to csv
 ## Outputs
 - Need to format dollars using some sort of function
   - Negatives, percentages
+  
+#Front End
+- Make it easier to update forms without redirecting to a new webpage
+  - Formsets? Inline formsets?

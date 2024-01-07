@@ -46,12 +46,16 @@ class SavingsInputsForm(forms.ModelForm):
             "base_savings",
             "base_saved_per_mo",
             "base_savings_per_yr_increase",
+            "savings_lower_limit",
+            "base_monthly_bills",
         ]
         labels = {
             "is_active": "Use this for calculations",
             "base_savings": "Current savings account",
             "base_saved_per_mo": "How much do you save per month",
             "base_savings_per_yr_increase": "Yearly savings contribution increase (%)",
+            "savings_lower_limit": "The lowest amount of savings before you fully use retirement",
+            "base_monthly_bills": "Usual monthly expenses",
         }
         widgets = {
             "is_active": forms.CheckboxInput(),
@@ -60,6 +64,8 @@ class SavingsInputsForm(forms.ModelForm):
             "base_savings_per_yr_increase": forms.NumberInput(
                 attrs={"class": INPUT_CLASSES}
             ),
+            "savings_lower_limit": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
+            "base_monthly_bills": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
         }
 
 
@@ -70,39 +76,30 @@ class PaymentsInputsForm(forms.ModelForm):
         model = PaymentsInputsModel
         fields = [
             "is_active",
-            "base_monthly_bills",
-            "payment_item_name",
-            "payment_item_pmt_start_age_yrs",
-            "payment_item_pmt_start_age_mos",
-            "payment_item_pmt_length_yrs",
-            "payment_item_down_pmt",
-            "payment_item_monthly_pmt",
+            "pmt_name",
+            "pmt_start_age_yrs",
+            "pmt_start_age_mos",
+            "pmt_length_yrs",
+            "down_pmt",
+            "monthly_pmt",
         ]
         labels = {
             "is_active": "Use this for calculations",
-            "base_monthly_bills": "Usual monthly expenses",
-            "payment_item_name": "Extra payment name",
-            "payment_item_pmt_start_age_yrs": "Extra payment start age in years",
-            "payment_item_pmt_start_age_mos": "Extra payment start age months",
-            "payment_item_pmt_length_yrs": "Extra payment length in years",
-            "payment_item_down_pmt": "Extra payment down payment",
-            "payment_item_monthly_pmt": "Extra payment monthly payment",
+            "pmt_name": "Extra payment name",
+            "pmt_start_age_yrs": "Extra payment start age in years",
+            "pmt_start_age_mos": "Extra payment start age months",
+            "pmt_length_yrs": "Extra payment length in years",
+            "down_pmt": "Extra payment down payment",
+            "monthly_pmt": "Extra payment monthly payment",
         }
         widgets = {
             "is_active": forms.CheckboxInput(),
-            "base_monthly_bills": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
-            "payment_item_name": forms.TextInput(attrs={"class": INPUT_CLASSES}),
-            "payment_item_pmt_start_age_yrs": forms.NumberInput(
-                attrs={"class": INPUT_CLASSES}
-            ),
-            "payment_item_pmt_start_age_mos": forms.NumberInput(
-                attrs={"class": INPUT_CLASSES}
-            ),
-            "payment_item_pmt_length_yrs": forms.NumberInput(
-                attrs={"class": INPUT_CLASSES}
-            ),
-            "payment_item_down_pmt": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
-            "payment_item_monthly_pmt": forms.NumberInput(
+            "pmt_name": forms.TextInput(attrs={"class": INPUT_CLASSES}),
+            "pmt_start_age_yrs": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
+            "pmt_start_age_mos": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
+            "pmt_length_yrs": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
+            "down_pmt": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
+            "monthly_pmt": forms.NumberInput(
                 attrs={"class": INPUT_CLASSES}
             ),
         }

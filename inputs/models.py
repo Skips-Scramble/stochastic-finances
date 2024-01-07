@@ -25,12 +25,12 @@ class SavingsInputsModel(models.Model):
     base_savings = models.FloatField()
     base_saved_per_mo = models.FloatField()
     base_savings_per_yr_increase = models.FloatField()
+    savings_lower_limit = models.FloatField()
+    base_monthly_bills = models.FloatField(null=True, blank=True)
     created_by = models.ForeignKey(
         User,
         related_name="savings_inputs",
         on_delete=models.CASCADE,
-        null=True,
-        blank=True,
     )
     modified_at = models.DateTimeField(auto_now=True)
 
@@ -40,13 +40,12 @@ class SavingsInputsModel(models.Model):
 
 class PaymentsInputsModel(models.Model):
     is_active = models.BooleanField(default=False)
-    base_monthly_bills = models.FloatField()
-    payment_item_name = models.CharField(max_length=100, null=True, blank=True)
-    payment_item_pmt_start_age_yrs = models.IntegerField(null=True, blank=True)
-    payment_item_pmt_start_age_mos = models.IntegerField(null=True, blank=True)
-    payment_item_pmt_length_yrs = models.IntegerField(null=True, blank=True)
-    payment_item_down_pmt = models.FloatField(null=True, blank=True)
-    payment_item_monthly_pmt = models.FloatField(null=True, blank=True)
+    pmt_name = models.CharField(max_length=100, null=True, blank=True)
+    pmt_start_age_yrs = models.IntegerField(null=True, blank=True)
+    pmt_start_age_mos = models.IntegerField(null=True, blank=True)
+    pmt_length_yrs = models.IntegerField(null=True, blank=True)
+    down_pmt = models.FloatField(null=True, blank=True)
+    monthly_pmt = models.FloatField(null=True, blank=True)
     created_by = models.ForeignKey(
         User,
         related_name="payments_inputs",
