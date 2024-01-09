@@ -383,7 +383,7 @@ class BaseScenario:
             "retire_extra": self.post_retire_extra_bills_list,
         }
         non_base_items_names = [
-            f'{x["pmt_name"]}_pmt' for x in self.assumptions["payment_items"]
+            f'{x["pmt_name"]}' for x in self.assumptions["payment_items"]
         ]
         non_base_items_lists = {
             k: v for (k, v) in zip(non_base_items_names, self.non_base_bills_lists)

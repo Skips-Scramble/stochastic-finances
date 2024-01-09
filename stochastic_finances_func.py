@@ -44,13 +44,4 @@ def main(assumptions) -> None:
         average=lambda df: df.filter(regex="^retirement_account").mean(axis=1)
     )
 
-    for age in range(60, 100, 5):
-        print(
-            f"Average savings at age {age} is {total_savings_df.loc[lambda df: (df.age_yrs == age) & (df.age_mos == 0)]['average'].iat[0]:,.0f}"
-        )
-        print(
-            f"Average retirement at age {age} is {total_retirement_df.loc[lambda df: (df.age_yrs == age) & (df.age_mos == 0)]['average'].iat[0]:,.0f}"
-        )
-        print("")
-
     return total_savings_df, total_retirement_df
