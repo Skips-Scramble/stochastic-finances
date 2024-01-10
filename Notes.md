@@ -33,6 +33,8 @@
   - Instead of having things in age in years and age in months, should do everything date based? Option for both? Provide calculator?
   - Make payments be able to be added dynamically, multiple times
   - Have modals pop up on mouse-over with explanations
+  - Should have an "advanced options" toggle which would display more things
+    - Should have the ability to switch back to advanced defaults in case you are screwing around and forgot where you are and want to reset or something like that
 
 ## Savings
 - Adjust amount saved per month
@@ -63,11 +65,12 @@
   
 ## Retirement
 - Change it so that retirement increase only changes at the start of a calendar year
-- What money are you pulling from where?
 - Reverse mortgage?
 - This kind of assumes a Roth style account where taxes aren't a thing. Probably should add logic to deal with that
 - Maybe use the costs calculated and TVM that back to figure out the present value of all of that to give a retirement value
 - Make it so that retirement can't go negative is savings is positive
+- Eventually need to figure out how to pull money from savings versus retirement in a reasonable way
+- Need to factor in taxes on retirement (if applicable) to know your true value of things
 
 ## Outputs
 - Need to format dollars using some sort of function
