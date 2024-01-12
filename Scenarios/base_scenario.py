@@ -10,15 +10,8 @@ DEATH_YEARS = 110
 
 def calc_date_on_age(birthdate: date, age_yrs: int, age_mos: int) -> datetime.date:
     """Calculates a date based on a birthdate and a given age in years and months"""
-    if birthdate.month + age_mos <= 12:
-        month = birthdate.month + age_mos
-        spill_over = 0
-    else:
-        month = birthdate.month + age_mos - 12
-        spill_over = 1
-
-    year = birthdate.year + age_yrs + spill_over
-    return date(year, month, 1)
+    months_add = age_yrs * 12 + age_mos
+    return (birthdate + relativedelta(months=months_add)).replace(day=1)
 
 
 def calc_payment_item_dates(
@@ -26,21 +19,19 @@ def calc_payment_item_dates(
     pmt_start_age_yrs: int,
     pmt_start_age_mos: int,
     pmt_length_yrs: int,
+    pmt_length_mos: int,
 ) -> (datetime.date, datetime.date):
-    """Docstring"""
+    """Calculate beginning and end date of a given payment"""
     item_pmt_start_date = calc_date_on_age(
         birthdate,
         pmt_start_age_yrs,
         pmt_start_age_mos,
     )
 
-    item_pmt_end_yr = item_pmt_start_date.year + pmt_length_yrs
-    if item_pmt_start_date.month - 1 != 0:
-        item_pmt_end_mo = item_pmt_start_date.month - 1
-    else:
-        item_pmt_end_mo = 12
-
-    return item_pmt_start_date, date(item_pmt_end_yr, item_pmt_end_mo, 1)
+    months_add = pmt_length_yrs * 12 + pmt_length_mos
+    return item_pmt_start_date, (
+        item_pmt_start_date + relativedelta(months=months_add)
+    ).replace(day=1)
 
 
 def calc_item_monthly_pmt_list(
@@ -242,6 +233,7 @@ class BaseScenario:
                 item["pmt_start_age_yrs"],
                 item["pmt_start_age_mos"],
                 item["pmt_length_yrs"],
+                item["pmt_length_mos"],
             )
             non_base_bills_lists.append(
                 calc_item_monthly_pmt_list(

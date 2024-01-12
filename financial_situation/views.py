@@ -42,6 +42,7 @@ def calculation(request):
         for payment in payments_inputs_model:
             print(model_to_dict(payment, "payments"))
             payments_list.append(model_to_dict(payment, "payments"))
+        print(f"{payments_list = }")
 
         retirement_inputs_model = RetirementInputsModel.objects.filter(
             created_by=request.user, is_active=True

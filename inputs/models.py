@@ -44,6 +44,7 @@ class PaymentsInputsModel(models.Model):
     pmt_start_age_yrs = models.IntegerField(null=True, blank=True)
     pmt_start_age_mos = models.IntegerField(null=True, blank=True)
     pmt_length_yrs = models.IntegerField(null=True, blank=True)
+    pmt_length_mos = models.IntegerField(null=True, blank=True)
     down_pmt = models.FloatField(null=True, blank=True)
     monthly_pmt = models.FloatField(null=True, blank=True)
     created_by = models.ForeignKey(

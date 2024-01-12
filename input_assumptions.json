@@ -13,6 +13,7 @@
 			"item_pmt_start_age_yrs": 40,
 			"item_pmt_start_age_mos": 0,
 			"item_pmt_length_yrs": 30,
+			"item_pmt_length_mos": 0,
 			"item_down_pmt": 25000,
 			"item_monthly_pmt": 1050
 		}

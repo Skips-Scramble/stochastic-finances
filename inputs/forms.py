@@ -80,6 +80,7 @@ class PaymentsInputsForm(forms.ModelForm):
             "pmt_start_age_yrs",
             "pmt_start_age_mos",
             "pmt_length_yrs",
+            "pmt_length_mos",
             "down_pmt",
             "monthly_pmt",
         ]
@@ -89,6 +90,7 @@ class PaymentsInputsForm(forms.ModelForm):
             "pmt_start_age_yrs": "Extra payment start age in years",
             "pmt_start_age_mos": "Extra payment start age months",
             "pmt_length_yrs": "Extra payment length in years",
+            "pmt_length_mos": "Extra payment length in months",
             "down_pmt": "Extra payment down payment",
             "monthly_pmt": "Extra payment monthly payment",
         }
@@ -98,10 +100,9 @@ class PaymentsInputsForm(forms.ModelForm):
             "pmt_start_age_yrs": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
             "pmt_start_age_mos": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
             "pmt_length_yrs": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
+            "pmt_length_mos": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
             "down_pmt": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
-            "monthly_pmt": forms.NumberInput(
-                attrs={"class": INPUT_CLASSES}
-            ),
+            "monthly_pmt": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
         }
 
 

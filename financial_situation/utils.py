@@ -12,6 +12,7 @@ inputs_by_model_dict = {
         "pmt_start_age_yrs",
         "pmt_start_age_mos",
         "pmt_length_yrs",
+        "pmt_length_mos",
         "down_pmt",
         "monthly_pmt",
     ],
