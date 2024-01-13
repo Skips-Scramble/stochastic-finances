@@ -25,7 +25,6 @@ inputs_by_model_dict = {
     "rates": [
         "base_rf_interest_per_yr",
         "base_mkt_interest_per_yr",
-        "rf_interest_change_mos",
         "base_inflation_per_yr",
     ],
 }

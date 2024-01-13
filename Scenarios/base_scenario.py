@@ -282,9 +282,11 @@ class BaseScenario:
     @cached_property
     def savings_retirement_account_list(self) -> [list, list]:
         """Calculate amount in your savings account by month"""
+        print(f"{self.non_base_bills_lists =}")
         total_non_base_bills_list = [
             sum(sublist) for sublist in zip(*self.non_base_bills_lists)
         ]
+        print(f"{total_non_base_bills_list = }")
         savings_list = []
         retirement_list = []
         for i in range(self.total_months):
@@ -375,7 +377,7 @@ class BaseScenario:
             "retire_extra": self.post_retire_extra_bills_list,
         }
         non_base_items_names = [
-            f'{x["pmt_name"]}' for x in self.assumptions["payment_items"]
+            f"pmt_{i}" for i in range(len(self.non_base_bills_lists))
         ]
         non_base_items_lists = {
             k: v for (k, v) in zip(non_base_items_names, self.non_base_bills_lists)
@@ -390,4 +392,9 @@ class BaseScenario:
 
         data = {**data_1, **non_base_items_lists, **data_3}
 
-        return pd.DataFrame(data)
+        return pd.DataFrame(data).rename(
+            columns={
+                f"pmt_{i}": v["pmt_name"]
+                for i, v in enumerate(self.assumptions["payment_items"])
+            }
+        )

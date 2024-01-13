@@ -83,7 +83,6 @@ class RatesInputsModel(models.Model):
     is_active = models.BooleanField(default=False)
     base_rf_interest_per_yr = models.FloatField()
     base_mkt_interest_per_yr = models.FloatField()
-    rf_interest_change_mos = models.FloatField()
     base_inflation_per_yr = models.FloatField()
     created_by = models.ForeignKey(
         User,

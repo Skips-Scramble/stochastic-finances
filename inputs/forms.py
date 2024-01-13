@@ -147,14 +147,12 @@ class RatesInputsForm(forms.ModelForm):
             "is_active",
             "base_rf_interest_per_yr",
             "base_mkt_interest_per_yr",
-            "rf_interest_change_mos",
             "base_inflation_per_yr",
         ]
         labels = {
             "is_active": "Use this for calculations",
             "base_rf_interest_per_yr": "Assumed savings account interest rate",
             "base_mkt_interest_per_yr": "Assumed retirement interest rate",
-            "rf_interest_change_mos": "How often do you assume savings rate will change (in months)",
             "base_inflation_per_yr": "Assumed inflation per year",
         }
         widgets = {
@@ -165,6 +163,5 @@ class RatesInputsForm(forms.ModelForm):
             "base_mkt_interest_per_yr": forms.NumberInput(
                 attrs={"class": INPUT_CLASSES}
             ),
-            "rf_interest_change_mos": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
             "base_inflation_per_yr": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
         }

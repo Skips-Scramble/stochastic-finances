@@ -1,11 +1,13 @@
+import random
 from dataclasses import dataclass
 from functools import cached_property
 
-import pandas as pd
-import random
 import numpy as np
+import pandas as pd
 
 from scenarios.base_scenario import BaseScenario
+
+RF_INTEREST_CHANGE_MOS = 6
 
 
 @dataclass
@@ -26,7 +28,7 @@ class RandomScenario:
         for index, rate in enumerate(base_list):
             if index == 0:
                 variable_rf_list.append(rate)
-            elif index % self.base_scenario.assumptions["rf_interest_change_mos"] != 0:
+            elif index % RF_INTEREST_CHANGE_MOS != 0:
                 variable_rf_list.append(variable_rf_list[index - 1])
             else:
                 adj_factor = random.randint(-1, 1) * 0.0015
@@ -61,7 +63,7 @@ class RandomScenario:
             )
             for x in self.base_scenario.base_bills_list
         ]
-    
+
     @cached_property
     def var_post_retire_extra_bills_list(self) -> list:
         """Calculate variable extra money spent post-retirment (on fun things)"""
@@ -153,7 +155,7 @@ class RandomScenario:
             else:  # If you are retired
                 if (
                     var_savings_list[i - 1]
-                    <= self.base_scenario.monthly_savings_threshold_list[i-1]
+                    <= self.base_scenario.monthly_savings_threshold_list[i - 1]
                 ):
                     savings = float(
                         round(
