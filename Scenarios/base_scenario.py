@@ -28,7 +28,7 @@ def calc_payment_item_dates(
         pmt_start_age_mos,
     )
 
-    months_add = pmt_length_yrs * 12 + pmt_length_mos
+    months_add = pmt_length_yrs * 12 + pmt_length_mos - 1
     return item_pmt_start_date, (
         item_pmt_start_date + relativedelta(months=months_add)
     ).replace(day=1)

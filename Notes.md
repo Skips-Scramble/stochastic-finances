@@ -6,7 +6,6 @@
   - This would be part of a suite of results/outputs from the calculations
   - Helpful to know how much more you'd need at 55 versus 60 versus 65, etc.
 - Add logging
-- Add chaos variable
 
 ## Rates
 - Are interest rates (risk-free and S&P) normally distributed? or Uniform? or What?

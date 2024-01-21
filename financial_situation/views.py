@@ -72,7 +72,7 @@ def calculation(request):
 
     (total_savings_df, total_retirement_df) = stochastic_finances_func.main(full_dict)
     results_dict = {}
-    for age in range(60, 100, 5):
+    for age in range(40, 105, 5):
         savings_at_age = total_savings_df.loc[
             lambda df: (df.age_yrs == age) & (df.age_mos == 0)
         ]["average"].iat[0]

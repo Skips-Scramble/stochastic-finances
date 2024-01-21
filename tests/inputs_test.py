@@ -7,7 +7,7 @@ import pydantic
 import pytest
 from dateutil.relativedelta import relativedelta
 
-from financial_situation.models import Inputs
+from financial_situation.models import Inputs, PaymentItems
 from scenarios.base_scenario import BaseScenario
 from stochastic_finances_func import main
 
@@ -255,3 +255,73 @@ def test_core_tvm() -> None:
             when="beginning",
         ),
     ), "With contributions savings failed"
+
+
+def test_payment_items() -> None:
+    """Test various aspects of payment items"""
+    payment_assumptions = base_assumptions.copy()
+    payment_assumptions["base_savings"] = 100_000
+
+    # Check the payment items work with pydantic validations
+    payment_mortgage = payment_assumptions["payment_items"][0]
+    payment_mortgage["pmt_length_yrs"] = 30
+    payment_mortgage["down_pmt"] = 10_000
+    payment_mortgage["monthly_pmt"] = 2_000
+
+    PaymentItems(**payment_mortgage)
+
+    payment_car = {
+        "pmt_name": "Car",
+        "pmt_start_age_yrs": 33,
+        "pmt_start_age_mos": 0,
+        "pmt_length_yrs": 3,
+        "pmt_length_mos": 15,
+        "down_pmt": 20_000,
+        "monthly_pmt": 200,
+    }
+
+    with pytest.raises(pydantic.ValidationError):
+        PaymentItems(**payment_car), "Should have not been able to create car payment"
+
+    payment_car["pmt_length_mos"] = 6
+
+    PaymentItems(**payment_car)
+
+    payment_car_2 = payment_car.copy()
+    payment_car_2["pmt_tart_age_yrs"] = 45
+
+    payments_list = [payment_mortgage, payment_car, payment_car_2]
+
+    payment_assumptions["payment_items"] = payments_list
+
+    payments_scen = BaseScenario(payment_assumptions)
+
+    # Check that all payments items have a spot
+    payment_names = [
+        payment["pmt_name"] for payment in payment_assumptions["payment_items"]
+    ]
+    assert all([x in payments_scen.create_base_df().columns for x in payment_names])
+
+    assert list(payments_scen.create_base_df().columns).count("Car") == 2
+
+    # Assert the first month is correct
+    mortgage_start_date = payment_assumptions["birthdate"] + relativedelta(
+        months=payment_mortgage["pmt_start_age_yrs"] * 12
+        + payment_mortgage["pmt_start_age_mos"]
+    )
+
+    assert (
+        payments_scen.create_base_df()
+        .loc[lambda df: df.month == mortgage_start_date]["Mortgage"]
+        .iat[0]
+        == payment_mortgage["down_pmt"] + payment_mortgage["monthly_pmt"]
+    )
+
+    # Assert the rest of the months are correct
+    total_mortgage_pmts = payment_mortgage["down_pmt"] + payment_mortgage[
+        "monthly_pmt"
+    ] * (payment_mortgage["pmt_length_yrs"] * 12 + payment_mortgage["pmt_length_mos"])
+
+    assert (
+        sum(payments_scen.non_base_bills_lists[0]) == total_mortgage_pmts
+    ), f"Total mortgage payments are incorrect. Calculated as {sum(payments_scen.non_base_bills_lists[0])}, but should be {total_mortgage_pmts}"
