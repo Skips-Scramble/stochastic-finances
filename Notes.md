@@ -5,6 +5,8 @@
 - It would be good to have it calculate back from 110 (or whatever) and show you how much you would need at each age of retirement
   - This would be part of a suite of results/outputs from the calculations
   - Helpful to know how much more you'd need at 55 versus 60 versus 65, etc.
+  - Maybe build in a recommended retirement age
+    - Define this by the age at which you will go from having negative retirement at age 110 to positive
 - Add logging
 
 ## Rates
