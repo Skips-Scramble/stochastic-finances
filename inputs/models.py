@@ -4,7 +4,7 @@ from django.db import models
 
 class GeneralInputsModel(models.Model):
     is_active = models.BooleanField(default=False)
-    birthday = models.CharField(max_length=10, default="MM/DD/YYYY")
+    birthdate = models.CharField(max_length=10, default="MM/DD/YYYY")
     retirement_age_yrs = models.FloatField()
     retirement_age_mos = models.FloatField()
     created_by = models.ForeignKey(

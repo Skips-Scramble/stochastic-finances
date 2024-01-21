@@ -1,5 +1,5 @@
 inputs_by_model_dict = {
-    "general": ["birthday", "retirement_age_yrs", "retirement_age_mos"],
+    "general": ["birthdate", "retirement_age_yrs", "retirement_age_mos"],
     "savings": [
         "base_savings",
         "base_saved_per_mo",

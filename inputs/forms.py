@@ -18,19 +18,19 @@ class GeneralInputsForm(forms.ModelForm):
         model = GeneralInputsModel
         fields = [
             "is_active",
-            "birthday",
+            "birthdate",
             "retirement_age_yrs",
             "retirement_age_mos",
         ]
         labels = {
             "is_active": "Use this for calculations",
-            "birthday": "Birthday (MM/DD/YYYY)",
+            "birthdate": "Birthdate (MM/DD/YYYY)",
             "retirement_age_yrs": "Retirement age (years)",
             "retirement_age_mos": "Retirement age (months)",
         }
         widgets = {
             "is_active": forms.CheckboxInput(),
-            "birthday": forms.TextInput(attrs={"class": INPUT_CLASSES}),
+            "birthdate": forms.TextInput(attrs={"class": INPUT_CLASSES}),
             "retirement_age_yrs": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
             "retirement_age_mos": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
         }

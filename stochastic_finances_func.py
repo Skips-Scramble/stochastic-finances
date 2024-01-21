@@ -1,5 +1,7 @@
 import json
 
+# from assumption_validations import apply_validations
+
 from scenarios.base_scenario import BaseScenario
 from scenarios.random_scenario import RandomScenario
 
@@ -7,6 +9,8 @@ from scenarios.random_scenario import RandomScenario
 def main(assumptions) -> None:
     # with open("input_assumptions.json") as json_data:
     #     assumptions = json.load(json_data)
+
+    # apply_validations(assumptions)
 
     base_scenario = BaseScenario(assumptions)
 

@@ -1,30 +1,28 @@
 {
-	"name": "Test Scenario Base",
-	"birthday": "12/22/1986",
-	"retirement_age_yrs": 60,
-	"retirement_age_mos": 11,
-	"base_savings": 100000,
-	"base_saved_per_mo": 500,
-	"base_savings_per_yr_increase": 3.0,
-	"base_monthly_bills": 1500,
+	"birthdate": "1/1/2000",
+	"retirement_age_yrs": 65,
+	"retirement_age_mos": 0,
+	"base_savings": 0,
+	"base_saved_per_mo": 0,
+	"base_savings_per_yr_increase": 0,
+	"savings_lower_limit": 0,
+	"base_monthly_bills": 0,
 	"payment_items": [
 		{
-			"item_name": "Mortgage",
-			"item_pmt_start_age_yrs": 40,
-			"item_pmt_start_age_mos": 0,
-			"item_pmt_length_yrs": 30,
-			"item_pmt_length_mos": 0,
-			"item_down_pmt": 25000,
-			"item_monthly_pmt": 1050
+			"pmt_name": "Mortgage",
+			"pmt_start_age_yrs": 30,
+			"pmt_start_age_mos": 0,
+			"pmt_length_yrs": 0,
+			"pmt_length_mos": 0,
+			"down_pmt": 0,
+			"monthly_pmt": 0
 		}
 	],
-	"base_rf_interest_per_yr": 1.5,
-	"base_retirement": 100000,
-	"base_retirement_per_mo": 500,
-	"base_retirement_per_yr_increase": 300,
-	"base_mkt_interest_per_yr": 6.0,
-	"rf_interest_change_mos": 6,
-	"savings_lower_limit": 25000,
-	"base_inflation_per_yr": 3.0,
-	"retirement_extra_expenses": 4500
+	"base_retirement": 0,
+	"base_retirement_per_mo": 0,
+	"base_retirement_per_yr_increase": 0,
+	"retirement_extra_expenses": 0,
+	"base_rf_interest_per_yr": 0,
+	"base_mkt_interest_per_yr": 0,
+	"base_inflation_per_yr": 0
 }
