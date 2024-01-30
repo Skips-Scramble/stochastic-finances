@@ -2,6 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
 import stochastic_finances_func
+from financial_situation.utils import ensure_active_inputs, model_to_dict
 from inputs.models import (
     GeneralInputsModel,
     PaymentsInputsModel,
@@ -9,8 +10,6 @@ from inputs.models import (
     RetirementInputsModel,
     SavingsInputsModel,
 )
-
-from .utils import ensure_active_inputs, model_to_dict
 
 
 @login_required
@@ -21,19 +20,26 @@ def calculation(request):
 
     else:
         print("Get request")
+        bad_active_list = []
         general_inputs_model = GeneralInputsModel.objects.filter(
             created_by=request.user, is_active=True
         )
-        ensure_active_inputs(general_inputs_model)
-        general_inputs_dict = model_to_dict(general_inputs_model[0], "general")
-        print(f"{general_inputs_dict =}")
+
+        if ensure_active_inputs(general_inputs_model, 1):
+            general_inputs_dict = model_to_dict(general_inputs_model[0], "general")
+            print(f"{general_inputs_dict =}")
+        else:
+            bad_active_list.append("General")
 
         savings_inputs_model = SavingsInputsModel.objects.filter(
             created_by=request.user, is_active=True
         )
-        ensure_active_inputs(savings_inputs_model)
-        savings_inputs_dict = model_to_dict(savings_inputs_model[0], "savings")
-        print(f"{savings_inputs_dict =}")
+
+        if ensure_active_inputs(savings_inputs_model, 1):
+            savings_inputs_dict = model_to_dict(savings_inputs_model[0], "savings")
+            print(f"{savings_inputs_dict =}")
+        else:
+            bad_active_list.append("Savings")
 
         payments_inputs_model = PaymentsInputsModel.objects.filter(
             created_by=request.user, is_active=True
@@ -47,16 +53,29 @@ def calculation(request):
         retirement_inputs_model = RetirementInputsModel.objects.filter(
             created_by=request.user, is_active=True
         )
-        ensure_active_inputs(retirement_inputs_model)
-        retirement_inputs_dict = model_to_dict(retirement_inputs_model[0], "retirement")
-        print(f"{retirement_inputs_dict =}")
+        if ensure_active_inputs(retirement_inputs_model, 1):
+            retirement_inputs_dict = model_to_dict(
+                retirement_inputs_model[0], "retirement"
+            )
+            print(f"{retirement_inputs_dict =}")
+        else:
+            bad_active_list.append("Retirement")
 
         rates_inputs_model = RatesInputsModel.objects.filter(
             created_by=request.user, is_active=True
         )
-        ensure_active_inputs(rates_inputs_model)
-        rates_inputs_dict = model_to_dict(rates_inputs_model[0], "rates")
-        print(f"{rates_inputs_dict =}")
+        if ensure_active_inputs(rates_inputs_model, 1):
+            rates_inputs_dict = model_to_dict(rates_inputs_model[0], "rates")
+            print(f"{rates_inputs_dict =}")
+        else:
+            bad_active_list.append("Rates")
+            return render(
+                request,
+                "financial_situation/non_active.html",
+                {
+                    "errors": bad_active_list,
+                },
+            )
 
     full_dict = {
         **{"name": "Test Scenario"},

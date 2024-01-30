@@ -1,3 +1,5 @@
+import typing
+
 inputs_by_model_dict = {
     "general": ["birthdate", "retirement_age_yrs", "retirement_age_mos"],
     "savings": [
@@ -41,7 +43,6 @@ def model_to_dict(active_inputs, model):
     return model_dict
 
 
-def ensure_active_inputs(active_inputs):
+def ensure_active_inputs(active_inputs: typing.Any, expected_active: int) -> bool:
     """Functtion to ensure inputs are acceptable"""
-    assert active_inputs, "There are no active scenarios for this user"
-    assert len(active_inputs) == 1, "There are too many active scenarios for this user"
+    return len(active_inputs) == expected_active

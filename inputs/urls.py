@@ -5,6 +5,7 @@ from . import views
 app_name = "inputs"
 
 urlpatterns = [
+    path("get_started/", views.get_started, name="get_started"),
     path("general/", views.general_inputs_dashboard, name="general_inputs_dashboard"),
     path("general/create/", views.general_inputs_create, name="general_inputs_create"),
     path(

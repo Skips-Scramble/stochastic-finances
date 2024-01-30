@@ -55,7 +55,7 @@ class SavingsInputsForm(forms.ModelForm):
             "base_saved_per_mo": "How much do you save per month",
             "base_savings_per_yr_increase": "Yearly savings contribution increase (%)",
             "savings_lower_limit": "The lowest amount of savings before you fully use retirement",
-            "base_monthly_bills": "Usual monthly expenses",
+            "base_monthly_bills": "Usual monthly expenses (excluding rent, car, other terminal payments)",
         }
         widgets = {
             "is_active": forms.CheckboxInput(),

@@ -18,6 +18,14 @@ from .models import (
 
 
 @login_required
+def get_started(request):
+    return render(
+        request,
+        "inputs/get_started.html",
+    )
+
+
+@login_required
 def general_inputs_dashboard(request):
     general_inputs_models = GeneralInputsModel.objects.filter(created_by=request.user)
 
