@@ -1,39 +1,77 @@
-<!doctype html>
 
+{% load static %}
 <html>
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width" , initial-scale="1.0">
-
-    <script src="https://cdn.tailwindcss.com"></script>
     <title>{% block title %}{% endblock %} | Stochastic Finances </title>
+
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
 </head>
 
 <body>
-    <nav class="py-6 px-6 flex justify-between items-center border-b border-gray-200">
-        <a href="/" class ="text-xl font-semibold">Stochastic Finances Title</a>
-
-        <div class ="space-x-6">
-            <a href="{% url 'core:signup' %}" class="px-6 py-3 text-lg font-semibold bg-gray-500 text-white rounded-xl hover:bg-gray-700">Sign up</a>
-            <a href="{% url 'core:login' %}" class="px-6 py-3 text-lg font-semibold bg-gray-500 text-white rounded-xl hover:bg-gray-700">Log in</a>
-
+    <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="/">Stochastic Finances</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarColor01">
+            <ul class="navbar-nav me-auto">
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'inputs:general_inputs_dashboard' %}">General</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'inputs:savings_inputs_dashboard' %}">Savings</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'inputs:payments_inputs_dashboard' %}">Payments</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'inputs:retirement_inputs_dashboard' %}">Retirement</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'inputs:rates_inputs_dashboard' %}">Rates</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'financial_situation:calculation' %}">Calculation</a>
+              </li>
+            </ul>
+            <div class="navbar-nav ml-auto">
+              <a href="{% url 'core:signup' %}" class="btn btn-primary">Sign up</a>
+              <a href="{% url 'core:login' %}" class="btn btn-primary">Log in</a>
+          </div>
+          </div>
+        </div>
+      </nav>
+    <!--
+    <nav class="navbar py-3 px-6 border-bottom border-gray-200">
+        <a href="/" class="navbar-brand text-xl font-weight-bold">Stochastic Finances Title</a>
+    
+        <div class="navbar-nav ml-auto">
+            <a href="{% url 'core:signup' %}" class="btn btn-primary px-4 py-2 font-weight-bold">Sign up</a>
+            <a href="{% url 'core:login' %}" class="btn btn-primary px-4 py-2 font-weight-bold">Log in</a>
         </div>
     </nav>
+-->
+    
     <!-- New Tab Section -->
-    <div class="px-6 py-3 flex space-x-6 border-b border-gray-200">
-        <a href="{% url 'inputs:general_inputs_dashboard' %}" class="text-lg font-semibold hover:text-gray-500">General</a>
-        <a href="{% url 'inputs:savings_inputs_dashboard' %}" class="text-lg font-semibold hover:text-gray-500">Savings</a>
-        <a href="{% url 'inputs:payments_inputs_dashboard' %}" class="text-lg font-semibold hover:text-gray-500">Payments</a>
-        <a href="{% url 'inputs:retirement_inputs_dashboard' %}" class="text-lg font-semibold hover:text-gray-500">Retirement</a>
-        <a href="{% url 'inputs:rates_inputs_dashboard' %}" class="text-lg font-semibold hover:text-gray-500">Rates</a>
-        <a href="{% url 'financial_situation:calculation' %}" class="text-lg font-semibold hover:text-gray-500">Calculation</a>
+    <!--
+    <div class="px-6 py-3 d-flex align-items-center border-bottom border-gray-200">
+        <a href="{% url 'inputs:general_inputs_dashboard' %}" class="nav-link text-lg font-weight-bold text-decoration-none">General</a>
+        <a href="{% url 'inputs:savings_inputs_dashboard' %}" class="nav-link text-lg font-weight-bold text-decoration-none">Savings</a>
+        <a href="{% url 'inputs:payments_inputs_dashboard' %}" class="nav-link text-lg font-weight-bold text-decoration-none">Payments</a>
+        <a href="{% url 'inputs:retirement_inputs_dashboard' %}" class="nav-link text-lg font-weight-bold text-decoration-none">Retirement</a>
+        <a href="{% url 'inputs:rates_inputs_dashboard' %}" class="nav-link text-lg font-weight-bold text-decoration-none">Rates</a>
+        <a href="{% url 'financial_situation:calculation' %}" class="nav-link text-lg font-weight-bold text-decoration-none">Calculation</a>
     </div>
+    
     <div class="px-6 py-6">
         {% block content %}
 
         {% endblock %}
     </div>
+-->
 </body>
 
 </html>
