@@ -57,10 +57,11 @@ def general_inputs_create(request):
     return render(
         request,
         "inputs/inputs_create.html",
-        {
-            "form": form,
-            "title": "New General Inputs",
-        },
+        {},
+        # {
+        #     "form": form,
+        #     "title": "New General Inputs",
+        # },
     )
 
 

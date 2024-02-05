@@ -63,6 +63,7 @@
   - If you expect to have a reverse mortgage, or an annuity or something like that, this would be able to be input here as negative amounts?
   - Maybe should be its own thing?
 - Since this is getting stored as a dictionary, can't have duplicate names. Need to fix.
+- Make a dropdown for selecting frequency (one time, Monthly, quarterly, biannually, yearly)
   
 ## Retirement
 - Change it so that retirement increase only changes at the start of a calendar year

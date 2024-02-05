@@ -1,8 +1,36 @@
-{% extends 'core/base.html' %}
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+    Open Modal
+  </button>
+  
+  <!-- Modal -->
+  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Modal Title</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>Modal content goes here.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+
+
+
+{% comment %} {% extends 'core/base.html' %}
 
 {% block title %}{{ title }}{% endblock %}
 
-{% block content %}
+{% block stuff %}
 <h1 class="mb-6 text-3xl">{{ title }}</h1>
 
 <form method="post" action="." enctype="multipart/form-data">
@@ -24,4 +52,4 @@
 
     <button class="mt-6 py-4 px-8 text-lg bg-teal-500 hover:bg-teal-700 rounded-xl text-white">Done</button>
 </form>
-{% endblock %}
+{% endblock %} {% endcomment %}

@@ -1,5 +1,6 @@
 
 {% load static %}
+
 <html>
 <head>
     <meta charset="utf-8">
@@ -7,6 +8,7 @@
     <title>{% block title %}{% endblock %} | Stochastic Finances </title>
 
     <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <script src="{% static 'js/bootstrap.min.js'%}"></script>
 </head>
 
 <body>
@@ -44,6 +46,11 @@
           </div>
         </div>
       </nav>
+      <div>
+        {% block stuff %}
+
+        {% endblock %}
+    </div>
     <!--
     <nav class="navbar py-3 px-6 border-bottom border-gray-200">
         <a href="/" class="navbar-brand text-xl font-weight-bold">Stochastic Finances Title</a>
