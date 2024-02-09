@@ -49,6 +49,7 @@ def general_inputs_create(request):
             item.save()
 
             return redirect("/inputs/general/")
+
     else:
         print("GET request")
         form = GeneralInputsForm()
@@ -57,11 +58,10 @@ def general_inputs_create(request):
     return render(
         request,
         "inputs/inputs_create.html",
-        {},
-        # {
-        #     "form": form,
-        #     "title": "New General Inputs",
-        # },
+        {
+            "form": form,
+            "title": "Create New General Inputs",
+        },
     )
 
 

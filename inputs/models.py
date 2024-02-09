@@ -1,12 +1,35 @@
+from datetime import date
+
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.db import models
+
+
+def validate_range_birthdate(input: date):
+    """Custom validation of the user's birthdate"""
+    if input.year < 1900:
+        raise ValidationError("Please enter a birthdate after 1900")
+
+
+def validate_range_age_yrs(input: int):
+    """Custom validation to ensure an input is between two values"""
+    if input < 0 or input > 110:
+        raise ValidationError(f"Please enter a value between 0 and 110")
+
+
+def validate_range_age_mos(input: int):
+    """Custom validation to ensure an input is between two values"""
+    if input < 0 or input > 11:
+        raise ValidationError(
+            f"Please enter a value between 0 (the month you were born) and 11"
+        )
 
 
 class GeneralInputsModel(models.Model):
     is_active = models.BooleanField(default=False)
-    birthdate = models.CharField(max_length=10, default="MM/DD/YYYY")
-    retirement_age_yrs = models.FloatField()
-    retirement_age_mos = models.FloatField()
+    birthdate = models.DateField(validators=[validate_range_birthdate])
+    retirement_age_yrs = models.IntegerField(validators=[validate_range_age_yrs])
+    retirement_age_mos = models.IntegerField(validators=[validate_range_age_mos])
     created_by = models.ForeignKey(
         User,
         related_name="general_inputs",

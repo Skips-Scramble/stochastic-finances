@@ -1,55 +1,42 @@
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
-    Open Modal
-  </button>
-  
-  <!-- Modal -->
-  <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Modal Title</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <p>Modal content goes here.</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Save changes</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  
+{% extends 'core/base.html' %}
 
-
-
-{% comment %} {% extends 'core/base.html' %}
-
-{% block title %}{{ title }}{% endblock %}
+{% block title %}
+{{ title }}
+{% endblock %}
 
 {% block stuff %}
-<h1 class="mb-6 text-3xl">{{ title }}</h1>
+<div class="container">
+  <br />
+  <h3>{{ title }}</h3>
 
-<form method="post" action="." enctype="multipart/form-data">
+  <form method="post" action="." id="createInputs" class="needs-validation" novalidate>
     {% csrf_token %}
-
-    <div class="space-y-4">
-        {{ form.as_p }}
-    </div>
-
-    {% if form.errors or form.non_field_errors %}
-        <div class="mb-3 p-6 bg-red-100 rounded-xl">
-            {% for field in form %}
-                {{ field.errors }}
-            {% endfor %}
-
-            {{ form.non_field_errors }}
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card shadow border-dark px-3 py-3 mb-3 text-black" style="border-width: 3px;">
+                <div class="card-body">
+                    {% for i in form %}
+                    <div class="mb-3">
+                        <label class="form-label">{{i.label_tag}}</label>
+                        {% if i.errors %}
+                        <input type="text" class="form-control is-invalid" name="{{ i.name }}" value="{{ i.value|default_if_none:'' }}">
+                        <div class="invalid-feedback">
+                            {{ i.errors|striptags }}
+                        </div>
+                        {% else %}
+                        {{ i }}
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
-    {% endif %}
-
-    <button class="mt-6 py-4 px-8 text-lg bg-teal-500 hover:bg-teal-700 rounded-xl text-white">Done</button>
+    </div>
+    <button class="btn btn-primary">Done</button>
+    <!--Add cancel button-->
 </form>
-{% endblock %} {% endcomment %}
+
+
+
+</div>
+{% endblock %}

@@ -1,0 +1,104 @@
+  <!-- Button trigger modal -->
+  <div class="container">
+    <br />
+    <h3>General Inputs</h3>
+    <div>
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Create New</button>
+    </div>
+    <br />
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Create New General Inputs</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+    
+            <!-- Form inside the modal -->
+            <form class="row g-3" id="generalInputs">
+
+              <div class="form-check">
+                <label class="form-check-label" for="isActive">Use for calculations</label>
+                <input class="form-check-input" type="checkbox" id="isActive">
+              </div>
+
+              <label for="birthdate" class="form-label">Birthdate</label>
+              <input type="date" class="form-control" id="birthdate" name="birthdate" required>
+
+              <label for="retirementAgeYrs" class="form-label">Retirement Age (Years)</label>
+              <input type="number" class="form-control" id="retirementAgeYrs" required>
+
+              <label for="retirementAgeMos" class="form-label">Retirement Age (Months)</label>
+              <input type="number" class="form-control" id="retirementAgeMos" required>
+
+              <div class="col-12">
+                <button class="btn btn-primary" type="submit">Submit form</button>
+                <button class="btn btn-default" type="button"  data-dismiss="modal">Cancel</button>
+              </div>
+            </form>
+    
+          </div>
+        </div>
+      </div>
+    </div>
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        var generalInputsForm = document.getElementById('generalInputs');
+    
+        generalInputsForm.addEventListener('submit', function (event) {
+          // Prevent the form from submitting
+          event.preventDefault();
+    
+          // Reset previous validation states
+          var inputs = generalInputsForm.querySelectorAll('.form-control');
+          inputs.forEach(function (input) {
+            input.classList.remove('is-invalid');
+            input.nextElementSibling.textContent = '';
+          });
+    
+          // Flag to track validation errors
+          var hasErrors = false;
+    
+          // Validate birthdate
+          var birthdateInput = document.getElementById('birthdate');
+          var birthdate = new Date(birthdateInput.value);
+          if (!birthdateInput.value || birthdate.getFullYear() < 1900) {
+            displayValidationError(birthdateInput, 'Please enter a valid birthdate after 1/1/1900.');
+            hasErrors = true;
+          }
+    
+          // Validate retirement age (Years)
+          var retirementAgeYrsInput = document.getElementById('retirementAgeYrs');
+          var retirementAgeYrs = parseInt(retirementAgeYrsInput.value);
+          if (!retirementAgeYrsInput.value || retirementAgeYrs < 0 || retirementAgeYrs >= 150) {
+            displayValidationError(retirementAgeYrsInput, 'Please enter a retirement age less than 150 years.');
+            hasErrors = true;
+          }
+    
+          // Validate retirement age (Months)
+          var retirementAgeMosInput = document.getElementById('retirementAgeMos');
+          var retirementAgeMos = parseInt(retirementAgeMosInput.value);
+          if (!retirementAgeMosInput.value || retirementAgeMos < 0 || retirementAgeMos > 11) {
+            displayValidationError(retirementAgeMosInput, 'Please enter a retirement age between 0 and 11 months.');
+            hasErrors = true;
+          }
+    
+          // If any validation errors occurred, do not submit the form
+          if (hasErrors) {
+            return;
+          }
+    
+          // If all validations pass, submit the form
+          generalInputsForm.submit();
+        });
+    
+        function displayValidationError(input, message) {
+          input.classList.add('is-invalid');
+          var errorFeedback = input.nextElementSibling;
+          errorFeedback.textContent = message;
+        }
+      });
+    </script>

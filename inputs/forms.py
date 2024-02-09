@@ -1,3 +1,5 @@
+from datetime import date
+
 from django import forms
 
 from .models import (
@@ -8,7 +10,7 @@ from .models import (
     SavingsInputsModel,
 )
 
-INPUT_CLASSES = "w-full py-4 px-6 rounded-xl border"
+INPUT_CLASSES = "form-control"
 
 
 class GeneralInputsForm(forms.ModelForm):
@@ -30,7 +32,7 @@ class GeneralInputsForm(forms.ModelForm):
         }
         widgets = {
             "is_active": forms.CheckboxInput(),
-            "birthdate": forms.TextInput(attrs={"class": INPUT_CLASSES}),
+            "birthdate": forms.DateInput(attrs={"class": INPUT_CLASSES}),
             "retirement_age_yrs": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
             "retirement_age_mos": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
         }

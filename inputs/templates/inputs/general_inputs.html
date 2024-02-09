@@ -1,89 +1,35 @@
 {% extends 'core/base.html' %}
 
-{% block title %}General Inputs{% endblock %}
+{% block title %}
+  General Inputs
+{% endblock %}
 
-{%block stuff %}
-<!-- Button trigger modal -->
-<br>
-<h3>General Inputs</h3>
-<div>
-  <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-    Launch demo modal
-  </button>
-</div>
-
-<!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        Let's see if this worked
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
-      </div>
-    </div>
+{% block stuff %}
+<div class="container">
+  <br />
+  <h3>General Inputs</h3>
+  <div>
+    <a href="{% url 'inputs:general_inputs_create'%}" class="btn btn-primary">Create New</a>
   </div>
+  <br />
+
+<div class="row">
+  {% for item in general_inputs %}
+    <div class="col-md-3">
+      <div class="card shadow {% if item.is_active %}border-primary{% else %}border-dark{% endif %} mb-3 text-black" style="max-width: 20rem; border-width: {% if item.is_active %}4px{% else %}3px{% endif %};">
+        <div class="card-header">General Inputs</div>
+        <div class="card-body">
+          <p class="card-text">Use this for calculations: {{ item.is_active }}</p>
+          <p class="card-text">Birthdate: {{ item.birthdate }}</p>
+          <p class="card-text">Retirement Age in Years: {{ item.retirement_age_yrs }}</p>
+          <p class="card-text">Retirement Age in Months: {{ item.retirement_age_mos }}</p>
+          <a href="{% url 'inputs:general_inputs_edit' item.id %}" class="btn btn-primary">Edit</a>
+          <a href="{% url 'inputs:general_inputs_delete' item.id %}" class="btn btn-secondary">Delete</a>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
 </div>
 
-{% for item in general_inputs %}
-    <div class = "container">
-    <form data-bitwarden-watching="1">
-        <fieldset>
-        <legend>General Inputs</legend>
-        <div class="form-check">
-            <input class="form-check-input" type="checkbox" value="" id="activeCheckBox" checked="">
-            <label class="form-check-label" for="activeCheckBox">
-            Active
-            </label>
-        </div>
-        <div class="form-group">
-            <label for="birthdate" class="form-label mt-4">Birthdate</label>
-            <input type="date" class="form-control" id="birthdateInput" aria-describedby="birthdateHelp" placeholder="TEST">
-        </div>
-        <div class="form-group has-danger">
-            <label for="retirementAgeYrs" class="form-label mt-4">Retirement Age in Years</label>
-            <input type="number" class="form-control" id="retirementAgeYrsInput" aria-describedby="retirementAgeYrsHelp" placeholder="e.g. 653452">
-        </div>
-        <div class="form-group">
-            <label for="retirementAgeMos" class="form-label mt-4">Retirement Age in Months</label>
-            <input type="number" class="form-control" id="retirementAgeMosInput" aria-describedby="retirementAgeMosHelp" placeholder="e.g. 6">
-        </div>
-        <br>
-        <button type="submit" class="btn btn-primary">Submit</button>
-        </fieldset>
-    </form>
-    </div>
-{% endfor %}
-{% endblock %} 
-
-<!---{% block content %}
-    <div class="mt-6 px-6 py-12 bg-gray-100 rounded-xl">
-        <h2 class="mb-6 text-4xl text-center">General Inputs</h2>
-        <div>
-            <a href="{% url 'inputs:general_inputs_create'%}" class="inline-block mt-6 mb-6 px-6 py-3 text-lg font-semibold bg-teal-500 text-white rounded-xl">Create New</a>
-        </div>
-
-        <div class="grid grid-cols-3 gap-3">
-            {% for item in general_inputs %}
-                <div class="p-6 bg-white rounded-b-xl">
-                    <h2 class="space-y-4">Active</h2>
-                    <h2 class="w-full py-4 px-6 rounded-xl border mb-4">{{ item.is_active }}</h2>
-                    <h2 class="space-y-4">Birthdate (MM/DD/YY)</h2>
-                    <h2 class="w-full py-4 px-6 rounded-xl border mb-4">{{ item.birthdate }}</h2>
-                    <h2 class="space-y-4">Retirement Age (years)</h2>
-                    <h2 class="w-full py-4 px-6 rounded-xl border mb-4">{{item.retirement_age_yrs}}</h2>
-                    <h2 class="space-y-4">Retirement Age (months)</h2>
-                    <h2 class="w-full py-4 px-6 rounded-xl border mb-4">{{item.retirement_age_mos}}</h2>
-                    <a href="{% url 'inputs:general_inputs_edit' item.id %}" class="inline-block mt-6 px-6 py-3 text-lg font-semibold bg-teal-500 text-white rounded-xl">Edit</a>
-                    <a href="{% url 'inputs:general_inputs_delete' item.id %}" class="inline-block mt-6 px-6 py-3 text-lg font-semibold bg-teal-500 text-white rounded-xl">Delete</a>
-                </div>
-            {% endfor %}
-        </div>
-    </div>
-{% endblock %}-->
+</div>
+{% endblock %}
