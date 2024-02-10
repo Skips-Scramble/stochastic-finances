@@ -41,7 +41,7 @@ def general_inputs_create(request):
     """This will validate/create a new general inputs item"""
     if request.method == "POST":
         print("POST request")
-        print(f"{request =}")
+        print(f"{request.POST =}")
         form = GeneralInputsForm(request.POST)
         for field in form:
             print(field)

@@ -36,7 +36,9 @@ class GeneralInputsForm(forms.ModelForm):
         }
         widgets = {
             "is_active": forms.CheckboxInput(),
-            "birthdate": forms.DateInput(attrs={"class": INPUT_CLASSES}),
+            "birthdate": forms.DateInput(
+                attrs={"class": INPUT_CLASSES}, format="%m/%d/%Y"
+            ),
             "retirement_age_yrs": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
             "retirement_age_mos": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
         }
