@@ -26,10 +26,22 @@ def validate_range_age_mos(input: int):
 
 
 class GeneralInputsModel(models.Model):
-    is_active = models.BooleanField(default=False)
-    birthdate = models.DateField(validators=[validate_range_birthdate])
-    retirement_age_yrs = models.IntegerField(validators=[validate_range_age_yrs])
-    retirement_age_mos = models.IntegerField(validators=[validate_range_age_mos])
+    is_active = models.BooleanField(
+        default=False,
+        help_text="This determines whether or not these inputs will be used to calculate your financial situation",
+    )
+    birthdate = models.DateField(
+        validators=[validate_range_birthdate],
+        help_text="Your birthdate (after 1900) in MM/DD/YYYY format",
+    )
+    retirement_age_yrs = models.IntegerField(
+        validators=[validate_range_age_yrs],
+        help_text="The age in years when you will retire. For example, if you are going to retire when you are 65 years and 3 months, put 65",
+    )
+    retirement_age_mos = models.IntegerField(
+        validators=[validate_range_age_mos],
+        help_text="The age in months when you will retire. For example, if you are going to retire when you are 65 years and 3 months, this would be 3",
+    )
     created_by = models.ForeignKey(
         User,
         related_name="general_inputs",

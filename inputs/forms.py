@@ -16,6 +16,10 @@ INPUT_CLASSES = "form-control"
 class GeneralInputsForm(forms.ModelForm):
     """Class to contain all pertinent general information"""
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.label_suffix = ""
+
     class Meta:
         model = GeneralInputsModel
         fields = [

@@ -41,14 +41,31 @@ def general_inputs_create(request):
     """This will validate/create a new general inputs item"""
     if request.method == "POST":
         print("POST request")
+        print(f"{request =}")
         form = GeneralInputsForm(request.POST)
+        for field in form:
+            print(field)
 
         if form.is_valid():
+            print("Valid form")
             item = form.save(commit=False)
             item.created_by = request.user
             item.save()
 
             return redirect("/inputs/general/")
+
+        else:
+            print("Not a valid form")
+            for field in form:
+                print(field)
+            return render(
+                request,
+                "inputs/inputs_create.html",
+                {
+                    "form": form,
+                    "title": "Create New General Inputs",
+                },
+            )
 
     else:
         print("GET request")
