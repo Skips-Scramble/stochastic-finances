@@ -60,7 +60,7 @@ class SavingsInputsForm(forms.ModelForm):
         labels = {
             "is_active": "Use this for calculations",
             "base_savings": "Current savings account",
-            "base_saved_per_mo": "How much do you save per month",
+            "base_saved_per_mo": "Savings per month",
             "base_savings_per_yr_increase": "Yearly savings contribution increase (%)",
             "savings_lower_limit": "The lowest amount of savings before you fully use retirement",
             "base_monthly_bills": "Usual monthly expenses (excluding rent, car, other terminal payments)",

@@ -14,14 +14,22 @@ def validate_range_birthdate(input: date):
 def validate_range_age_yrs(input: int):
     """Custom validation to ensure an input is between two values"""
     if input < 0 or input > 110:
-        raise ValidationError(f"Please enter a value between 0 and 110")
+        raise ValidationError("Please enter a value between 0 and 110")
 
 
 def validate_range_age_mos(input: int):
     """Custom validation to ensure an input is between two values"""
     if input < 0 or input > 11:
         raise ValidationError(
-            f"Please enter a value between 0 (the month you were born) and 11"
+            "Please enter a value between 0 (the month you were born) and 11"
+        )
+
+
+def validate_base_savings(input: float):
+    """Ensure base_savings is reasonable"""
+    if input < -10_000_000 or input > 10_000_000:
+        raise ValidationError(
+            "That's quite a lot of savings. Try to keep in under $10,000,000, plus or minus"
         )
 
 
@@ -57,7 +65,10 @@ class GeneralInputsModel(models.Model):
 
 class SavingsInputsModel(models.Model):
     is_active = models.BooleanField(default=False)
-    base_savings = models.FloatField()
+    base_savings = models.FloatField(
+        validators=[validate_base_savings],
+        help_text='This is the amount of money you save each month and contribute to your savings account(s). A negative amount would represent you are spending that amount each month. If this is the case, it would probably be better to put a 0 in this field and move those payments to the "Payemnts" section',
+    )
     base_saved_per_mo = models.FloatField()
     base_savings_per_yr_increase = models.FloatField()
     savings_lower_limit = models.FloatField()
