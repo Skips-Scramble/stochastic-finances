@@ -8,6 +8,7 @@ from .forms import (
     RetirementInputsForm,
     SavingsInputsForm,
 )
+from .full_descriptions import var_descriptions
 from .models import (
     GeneralInputsModel,
     PaymentsInputsModel,
@@ -63,6 +64,7 @@ def general_inputs_create(request):
                 "inputs/inputs_create.html",
                 {
                     "form": form,
+                    "descriptions": var_descriptions,
                     "title": "Create New General Inputs",
                 },
             )
@@ -77,6 +79,7 @@ def general_inputs_create(request):
         "inputs/inputs_create.html",
         {
             "form": form,
+            "descriptions": var_descriptions,
             "title": "Create New General Inputs",
         },
     )
@@ -104,6 +107,7 @@ def general_inputs_edit(request, pk):
         "inputs/inputs_create.html",
         {
             "form": form,
+            "descriptions": var_descriptions,
             "title": "Edit General Inputs",
         },
     )
@@ -150,6 +154,7 @@ def savings_inputs_create(request):
         "inputs/inputs_create.html",
         {
             "form": form,
+            "descriptions": var_descriptions,
             "title": "New Savings Inputs",
         },
     )
@@ -177,6 +182,7 @@ def savings_inputs_edit(request, pk):
         "inputs/inputs_create.html",
         {
             "form": form,
+            "descriptions": var_descriptions,
             "title": "Edit Savings Inputs",
         },
     )
@@ -223,6 +229,7 @@ def payments_inputs_create(request):
         "inputs/inputs_create.html",
         {
             "form": form,
+            "descriptions": var_descriptions,
             "title": "New Payments Inputs",
         },
     )
@@ -250,6 +257,7 @@ def payments_inputs_edit(request, pk):
         "inputs/inputs_create.html",
         {
             "form": form,
+            "descriptions": var_descriptions,
             "title": "Edit payments Inputs",
         },
     )
@@ -298,7 +306,8 @@ def retirement_inputs_create(request):
         "inputs/inputs_create.html",
         {
             "form": form,
-            "title": "New retirement Inputs",
+            "descriptions": var_descriptions,
+            "title": "New Retirement Inputs",
         },
     )
 
@@ -325,6 +334,7 @@ def retirement_inputs_edit(request, pk):
         "inputs/inputs_create.html",
         {
             "form": form,
+            "descriptions": var_descriptions,
             "title": "Edit retirement Inputs",
         },
     )
@@ -371,6 +381,7 @@ def rates_inputs_create(request):
         "inputs/inputs_create.html",
         {
             "form": form,
+            "descriptions": var_descriptions,
             "title": "New rates Inputs",
         },
     )
@@ -396,6 +407,7 @@ def rates_inputs_edit(request, pk):
         "inputs/inputs_create.html",
         {
             "form": form,
+            "descriptions": var_descriptions,
             "title": "Edit rates Inputs",
         },
     )

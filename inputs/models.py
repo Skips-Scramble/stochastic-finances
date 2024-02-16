@@ -4,51 +4,28 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
 
-
-def validate_range_birthdate(input: date):
-    """Custom validation of the user's birthdate"""
-    if input.year < 1900:
-        raise ValidationError("Please enter a birthdate after 1900")
-
-
-def validate_range_age_yrs(input: int):
-    """Custom validation to ensure an input is between two values"""
-    if input < 0 or input > 110:
-        raise ValidationError("Please enter a value between 0 and 110")
-
-
-def validate_range_age_mos(input: int):
-    """Custom validation to ensure an input is between two values"""
-    if input < 0 or input > 11:
-        raise ValidationError(
-            "Please enter a value between 0 (the month you were born) and 11"
-        )
-
-
-def validate_base_savings(input: float):
-    """Ensure base_savings is reasonable"""
-    if input < -10_000_000 or input > 10_000_000:
-        raise ValidationError(
-            "That's quite a lot of savings. Try to keep in under $10,000,000, plus or minus"
-        )
+from .model_validators import (
+    validate_base_per_yr_increase,
+    validate_base_saved_per_mo,
+    validate_base_savings,
+    validate_range_age_mos,
+    validate_range_age_yrs,
+    validate_range_birthdate,
+)
 
 
 class GeneralInputsModel(models.Model):
     is_active = models.BooleanField(
         default=False,
-        help_text="This determines whether or not these inputs will be used to calculate your financial situation",
     )
     birthdate = models.DateField(
         validators=[validate_range_birthdate],
-        help_text="Your birthdate (after 1900) in MM/DD/YYYY format",
     )
     retirement_age_yrs = models.IntegerField(
         validators=[validate_range_age_yrs],
-        help_text="The age in years when you will retire. For example, if you are going to retire when you are 65 years and 3 months, put 65",
     )
     retirement_age_mos = models.IntegerField(
         validators=[validate_range_age_mos],
-        help_text="The age in months when you will retire. For example, if you are going to retire when you are 65 years and 3 months, this would be 3",
     )
     created_by = models.ForeignKey(
         User,
@@ -64,13 +41,22 @@ class GeneralInputsModel(models.Model):
 
 
 class SavingsInputsModel(models.Model):
-    is_active = models.BooleanField(default=False)
+    is_active = models.BooleanField(
+        default=False,
+        help_text="This determines whether or not these inputs will be used to calculate your financial situation",
+    )
     base_savings = models.FloatField(
         validators=[validate_base_savings],
         help_text='This is the amount of money you save each month and contribute to your savings account(s). A negative amount would represent you are spending that amount each month. If this is the case, it would probably be better to put a 0 in this field and move those payments to the "Payemnts" section',
     )
-    base_saved_per_mo = models.FloatField()
-    base_savings_per_yr_increase = models.FloatField()
+    base_saved_per_mo = models.FloatField(
+        validators=[validate_base_saved_per_mo],
+        help_text="This is the average amount of money you save per month. Said another way, this is the average amount your savings account increases by each month (excluding interest). This could be negative.",
+    )
+    base_savings_per_yr_increase = models.FloatField(
+        validators=[validate_base_per_yr_increase],
+        help_text="The year-over-year savings increase (as a percent). For example, if you expect a 3% salary increase every year, you might put 3% here.",
+    )
     savings_lower_limit = models.FloatField()
     base_monthly_bills = models.FloatField(null=True, blank=True)
     created_by = models.ForeignKey(

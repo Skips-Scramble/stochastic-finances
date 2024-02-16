@@ -29,3 +29,19 @@ def validate_base_savings(input: float):
         raise ValidationError(
             "That's quite a lot of savings. Try to keep in under $10,000,000, plus or minus"
         )
+
+
+def validate_base_saved_per_mo(input: float):
+    """Ensure base_saved_per_mo is reasonable"""
+    if input < -10_000_000 or input > 10_000_000:
+        raise ValidationError(
+            "That's quite a lot of savings. Try to keep in under $10,000,000, plus or minus"
+        )
+
+
+def validate_base_per_yr_increase(input: float):
+    """Ensure base_savings_per_yr_increase is reasonable"""
+    if input < -1000 or input > 1000:
+        raise ValidationError(
+            "That's quite a high year-over-year savings increase. Try to keep in under 1,000%, plus or minus"
+        )
