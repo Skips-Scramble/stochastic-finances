@@ -69,6 +69,7 @@ def calculation(request):
             print(f"{rates_inputs_dict =}")
         else:
             bad_active_list.append("Rates")
+        if bad_active_list:
             return render(
                 request,
                 "financial_situation/non_active.html",

@@ -27,10 +27,10 @@ Savings Inputs
                     <p class="card-text">Usual monthly expenses: ${{ item.base_monthly_bills|floatformat:"0g" }}</p>
                     <a href="{% url 'inputs:savings_inputs_edit' item.id %}" class="btn btn-primary">Edit</a>
                     <a href="{% url 'inputs:savings_inputs_delete' item.id %}" class="btn btn-secondary">Delete</a>
-                  </div>
                 </div>
-              </div>
-            {% endfor %}
+            </div>
+        </div>
+    {% endfor %}
 </div>
 </div>
 {% endblock %}

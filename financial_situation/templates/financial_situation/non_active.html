@@ -1,12 +1,15 @@
 {% extends 'core/base.html' %}
 
-{% block title %}Results{% endblock %}
+{% block title %}
+Results
+{% endblock %}
 
-{% block content %}
-    <h2 class="mb-6 text-4xl text-center">Savings and Retirement Results</h2>
-        <h4 class="mb-6 text-2xl text-center">Please ensure at least one scenario is active from each of the following:</h4>
-        {% for error in errors %}
-            <li>{{error}}</li>
-        {% endfor %}
-
+{% block stuff %}
+<div class="container">
+    <div class="mb-6 h3 text-center text-black">Savings and Retirement Results</div>
+    <div class="mb-4 h4 text-center text-black">Please ensure at least one scenario is active from each of the following:</div>
+    {% for error in errors %}
+        <li>{{error}}</li>
+    {% endfor %}
+</div>
 {% endblock %}

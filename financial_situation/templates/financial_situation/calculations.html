@@ -1,18 +1,27 @@
 {% extends 'core/base.html' %}
 
-{% block title %}Results{% endblock %}
+{% block title %}
+Results
+{% endblock %}
 
-{% block content %}
-    <div class="mt-6 px-6 py-12 bg-gray-100 rounded-xl">
-        <h2 class="mb-6 text-4xl text-center">Savings and Retirement Results</h2>
-        <div class="grid grid-cols-3 gap-3">
-            {% for key, value in results.items %}
-                <div class="p-6 bg-white rounded-b-xl space-y-4">
-                    <h2>Age: {{key}}</h2>
-                    <h2>{{ value.0 }}</h2>
-                    <h2>{{ value.1 }}</h2>
+{% block stuff %}
+<div class="container">
+    <br />
+    <h3>Results</h3>
+    <br />
+
+    <div class="row">
+        {% for key, value in results.items %}
+            <div class="col-md-4">
+                <div class="card shadow border-dark mb-3 text-black" style="border-width: 3px;">
+                    <div class="card-body">
+                        <p class="card-text">Age: {{key}}</p>
+                        <p class="card-text">{{ value.0 }}</p>
+                        <p class="card-text">{{ value.1 }}</p>
+                    </div>
                 </div>
-            {% endfor %}
+            </div>
+        {% endfor %}
         </div>
-    </div>
+</div>
 {% endblock %}
