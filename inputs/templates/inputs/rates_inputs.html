@@ -1,31 +1,34 @@
 {% extends 'core/base.html' %}
 
-{% block title %}Rates Inputs{% endblock %}
+{% block title %}
+Rates Inputs
+{% endblock %}
 
-{% block content %}
-    <div class="mt-6 px-6 py-12 bg-gray-100 rounded-xl">
-        <h2 class="mb-6 text-4xl text-center">Rates Inputs</h2>
-        <div>
-            <a href="{% url 'inputs:rates_inputs_create'%}" class="inline-block mt-6 mb-6 px-6 py-3 text-lg font-semibold bg-teal-500 text-white rounded-xl">Create New</a>
-        </div>
-
-        <div class="grid grid-cols-3 gap-3">
-            {% for item in rates_inputs %}
-                <div class="p-6 bg-white rounded-b-xl">
-                    <h2 class="space-y-4">Active</h2>
-                    <h2 class="w-full py-4 px-6 rounded-xl border mb-4">{{ item.is_active }}</h2>
-                    <h2 class="space-y-4">Assumed savings account interest rate</h2>
-                    <h2 class="w-full py-4 px-6 rounded-xl border mb-4">{{ item.base_rf_interest_per_yr }}</h2>
-                    <h2 class="space-y-4">Assumed retirement interest rate</h2>
-                    <h2 class="w-full py-4 px-6 rounded-xl border mb-4">{{item.base_mkt_interest_per_yr}}</h2>
-                    <h2 class="space-y-4">How often do you assume savings rate will change (in months)</h2>
-                    <h2 class="w-full py-4 px-6 rounded-xl border mb-4">{{item.rf_interest_change_mos}}</h2>
-                    <h2 class="space-y-4">Assumed inflation per year</h2>
-                    <h2 class="w-full py-4 px-6 rounded-xl border mb-4">{{item.base_inflation_per_yr}}</h2>
-                    <a href="{% url 'inputs:rates_inputs_edit' item.id %}" class="inline-block mt-6 px-6 py-3 text-lg font-semibold bg-teal-500 text-white rounded-xl">Edit</a>
-                    <a href="{% url 'inputs:rates_inputs_delete' item.id %}" class="inline-block mt-6 px-6 py-3 text-lg font-semibold bg-teal-500 text-white rounded-xl">Delete</a>
-                </div>
-            {% endfor %}
-        </div>
+{% block stuff %}
+<div class="container">
+    <br />
+    <h3>Rates Inputs</h3>
+    <div>
+        <a href="{% url 'inputs:rates_inputs_create'%}" class="btn btn-primary">Create New</a>
     </div>
+<br />
+
+<div class="row">
+    {% for item in rates_inputs %}
+        <div class="col-md-4">
+            <div class="card shadow {% if item.is_active %}border-primary{% else %}border-dark{% endif %} mb-3 text-black" style="border-width: {% if item.is_active %}4px{% else %}3px{% endif %};">
+                <div class="card-header">Savings Inputs</div>
+                <div class="card-body">
+                    <p class="card-text">Use this for calculations: {{ item.is_active|yesno|title }}</p>
+                    <p class="card-text">Savings interest rate (%): {{ item.base_rf_interest_per_yr|floatformat:"2g" }}%</p>
+                    <p class="card-text">Retirementment interest rate (%): {{ item.base_mkt_interest_per_yr|floatformat:"2g" }}%</p>
+                    <p class="card-text">Inflation rate (%): {{ item.base_inflation_per_yr|floatformat:"2" }}%</p>
+                    <a href="{% url 'inputs:rates_inputs_edit' item.id %}" class="btn btn-primary">Edit</a>
+                    <a href="{% url 'inputs:rates_inputs_delete' item.id %}" class="btn btn-secondary">Delete</a>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+</div>
+</div>
 {% endblock %}
