@@ -1,3 +1,5 @@
+import pandas as pd
+import plotly.express as px
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 
@@ -91,6 +93,7 @@ def calculation(request):
     # print(f'base_bills is {full_dict['base_monthly_bills']}')
 
     (total_savings_df, total_retirement_df) = stochastic_finances_func.main(full_dict)
+
     results_dict = {}
     for age in range(40, 105, 5):
         savings_at_age = total_savings_df.loc[
@@ -108,10 +111,40 @@ def calculation(request):
     print(f"{results_dict = }")
     print(val for val in results_dict.values())
 
+    total_outputs = (
+        total_savings_df[["age_yrs", "age_mos", "average"]]
+        .assign(savings=lambda df: df.average.round().astype(int))
+        .loc[lambda df: df.age_mos == 0]
+        .merge(
+            total_retirement_df[["age_yrs", "age_mos", "average"]]
+            .assign(retirement=lambda df: df.average.round().astype(int))
+            .loc[lambda df: df.age_mos == 0],
+            on=["age_yrs", "age_mos"],
+            how="left",
+        )
+        .assign(
+            total=lambda df: df.savings + df.retirement,
+        )
+    )[["age_yrs", "savings", "retirement", "total"]]
+
+    total_for_graph = pd.melt(
+        total_outputs,
+        id_vars=["age_yrs"],
+        value_vars=["savings", "retirement", "total"],
+    )
+
+    savings_retirement_fig = px.line(
+        total_for_graph, x="age_yrs", y="value", color="variable"
+    )
+    savings_retirement_fig.update_xaxes(title_text="Age (years)", dtick=5)
+    savings_retirement_fig.update_yaxes(title_text="Amount")
+    savings_retirement_fig_html = savings_retirement_fig.to_html()
+
     return render(
         request,
         "financial_situation/calculations.html",
         {
             "results": results_dict,
+            "chart": savings_retirement_fig_html,
         },
     )
