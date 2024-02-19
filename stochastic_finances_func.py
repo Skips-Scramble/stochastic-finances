@@ -10,8 +10,8 @@ from scenarios.random_scenario import RandomScenario
 
 
 def main(assumptions) -> None:
-    # with open("input_assumptions_full.json") as json_data:
-    #     assumptions = json.load(json_data)
+    with open("input_assumptions_full.json") as json_data:
+        assumptions = json.load(json_data)
 
     # apply_validations(assumptions)
 
@@ -43,41 +43,48 @@ def main(assumptions) -> None:
             how="left",
         )
 
-    total_savings_df = base_age_df.filter(regex="^savings_account|^age").assign(
-        average=lambda df: df.filter(regex="^savings_account").mean(axis=1)
+    total_savings_df = (
+        base_age_df.filter(regex="^savings_account|^age").rename(
+            columns=lambda x: (
+                x.replace("savings_", "") if x.startswith("savings_") else x
+            )
+        )
+    ).assign(
+        avg=lambda df: df.filter(regex="^account").mean(axis=1),
+        account_type="savings",
     )
 
-    total_retirement_df = base_age_df.filter(regex="^retirement_account|^age").assign(
-        average=lambda df: df.filter(regex="^retirement_account").mean(axis=1)
+    total_retirement_df = (
+        base_age_df.filter(regex="^retirement_account|^age").rename(
+            columns=lambda x: (
+                x.replace("retirement_", "") if x.startswith("retirement_") else x
+            )
+        )
+    ).assign(
+        avg=lambda df: df.filter(regex="^account").mean(axis=1),
+        account_type="retirement",
     )
 
-    total_outputs = (
-        total_savings_df[["age_yrs", "age_mos", "average"]]
-        .assign(savings=lambda df: df.average.round().astype(int))
+    total_total_df_prep = (
+        total_savings_df.drop(["age_yrs", "age_mos", "account_type"], axis=1)
+        + total_retirement_df.drop(["age_yrs", "age_mos", "account_type"], axis=1)
+    ).assign(account_type="total")
+
+    total_total_df = pd.concat(
+        [total_savings_df[["age_yrs", "age_mos"]], total_total_df_prep], axis=1
+    )
+
+    total_outputs_df = (
+        pd.concat([total_savings_df, total_retirement_df, total_total_df])
+        .sort_values(["age_yrs", "age_mos"])
         .loc[lambda df: df.age_mos == 0]
-        .merge(
-            total_retirement_df[["age_yrs", "age_mos", "average"]]
-            .assign(retirement=lambda df: df.average.round().astype(int))
-            .loc[lambda df: df.age_mos == 0],
-            on=["age_yrs", "age_mos"],
-            how="left",
-        )
-        .assign(
-            total=lambda df: df.savings + df.retirement,
-        )
-    )[["age_yrs", "savings", "retirement", "total"]]
-
-    total_for_graph = pd.melt(
-        total_outputs,
-        id_vars=["age_yrs"],
-        value_vars=["savings", "retirement", "total"],
     )
 
     savings_retirement_fig = px.line(
-        total_for_graph, x="age_yrs", y="value", color="variable"
+        total_outputs_df, x="age_yrs", y="avg", color="account_type"
     )
     savings_retirement_fig.update_xaxes(title_text="Age (years)", dtick=5)
     savings_retirement_fig.update_yaxes(title_text="Amount")
     # savings_retirement_fig.show()
 
-    return total_savings_df, total_retirement_df
+    return total_savings_df, total_retirement_df, total_outputs_df
