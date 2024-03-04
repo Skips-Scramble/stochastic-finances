@@ -1,0 +1,34 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>{% block title %}{% endblock title %} | AppStack - Admin &amp; Dashboard Template</title>
+  {% include 'layouts/includes/meta.html' %}
+</head>
+
+<!--
+  HOW TO USE: 
+  data-theme: default (default), dark, light
+  data-layout: fluid (default), boxed
+  data-sidebar-position: left (default), right
+  data-sidebar-behavior: sticky (default), fixed, compact
+-->
+<body data-theme="default" data-layout="fluid" data-sidebar-position="left" data-sidebar-behavior="sticky">
+  <div class="main d-flex justify-content-center w-100">
+    <main class="content d-flex p-0">
+      <div class="container d-flex flex-column">
+        <div class="row h-100">
+          <div class="col-sm-10 col-md-8 col-lg-6 mx-auto d-table h-100">
+            <div class="d-table-cell align-middle">
+              {% block content %}
+              {% endblock content %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  {% include 'layouts/includes/scripts.html' %}
+</body>
+</html>

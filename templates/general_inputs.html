@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  General Inputs
+{% endblock %}
+
+{% block stuff %}
+<div class="container">
+  <br />
+  <h3>General Inputs</h3>
+  <div>
+    <a href="{% url 'inputs:general_inputs_create'%}" class="btn btn-primary">Create New</a>
+  </div>
+  <br />
+
+  <div class="row">
+    {% for item in general_inputs %}
+      <div class="col-md-4">
+        <div class="card shadow {% if item.is_active %}border-primary{% else %}border-dark{% endif %} mb-3 text-black" style="border-width: {% if item.is_active %}4px{% else %}3px{% endif %};">
+          <div class="card-header">General Inputs</div>
+          <div class="card-body">
+            <p class="card-text">Use this for calculations: {{ item.is_active|yesno|title }}</p>
+            <p class="card-text">Birthdate: {{ item.birthdate|date:"n/j/Y" }}</p>
+            <p class="card-text">Retirement Age in Years: {{ item.retirement_age_yrs }}</p>
+            <p class="card-text">Retirement Age in Months: {{ item.retirement_age_mos }}</p>
+            <a href="{% url 'inputs:general_inputs_edit' item.id %}" class="btn btn-primary">Edit</a>
+            <a href="{% url 'inputs:general_inputs_delete' item.id %}" class="btn btn-secondary">Delete</a>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+</div>
+{% endblock %}

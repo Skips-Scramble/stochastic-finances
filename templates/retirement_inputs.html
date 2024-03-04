@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Retirement Inputs
+{% endblock %}
+
+{% block stuff %}
+<div class="container">
+    <br />
+    <h3>Retirement Inputs</h3>
+    <div>
+        <a href="{% url 'inputs:retirement_inputs_create'%}" class="btn btn-primary">Create New</a>
+    </div>
+    <br />
+
+    <div class="row">
+        {% for item in retirement_inputs %}
+            <div class="col-md-4">
+                <div class="card shadow {% if item.is_active %}border-primary{% else %}border-dark{% endif %} mb-3 text-black" style="border-width: {% if item.is_active %}4px{% else %}3px{% endif %};">
+                    <div class="card-header">Retirement Inputs</div>
+                    <div class="card-body">
+                    <p class="card-text">Use this for calculations: {{ item.is_active|yesno|title }}</p>
+                    <p class="card-text">Current retriement account: ${{ item.base_retirement|floatformat:"0g" }}</p>
+                    <p class="card-text">Monthly retirement contributions: ${{ item.base_retirement_per_mo|floatformat:"0g" }}</p>
+                    <p class="card-text">Annual retirement increase: ${{ item.base_retirement_per_yr_increase|floatformat:"0g" }}</p>
+                    <p class="card-text">Retirement extra expenses: ${{ item.retirement_extra_expenses|floatformat:"0g" }}</p>
+
+                    <a href="{% url 'inputs:retirement_inputs_edit' item.id %}" class="btn btn-primary">Edit</a>
+                    <a href="{% url 'inputs:retirement_inputs_delete' item.id %}" class="btn btn-secondary">Delete</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

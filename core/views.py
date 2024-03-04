@@ -4,7 +4,31 @@ from .forms import SignupForm
 
 
 def index(request):
-    return render(request, "core/index.html")
+    return render(request, "index.html")
+
+
+def test_base(request):
+    return render(request, "layouts/_base.html")
+
+
+def home_page(request):
+    return render(request, "pages/home.html")
+
+
+def alerts_page(request):
+    return render(request, "pages/alerts.html")
+
+
+def buttons_page(request):
+    return render(request, "pages/buttons.html")
+
+
+def blank_page(request):
+    return render(request, "pages/blank.html")
+
+
+def account_login_page(request):
+    return render(request, "pages/blank.html")
 
 
 def signup(request):
@@ -18,4 +42,4 @@ def signup(request):
     else:
         form = SignupForm()
 
-    return render(request, "core/signup.html", {"form": form})
+    return render(request, "signup.html", {"form": form})

@@ -75,7 +75,7 @@ def calculation(request):
         if bad_active_list:
             return render(
                 request,
-                "financial_situation/non_active.html",
+                "non_active.html",
                 {
                     "errors": bad_active_list,
                 },
@@ -159,7 +159,7 @@ def calculation(request):
 
     return render(
         request,
-        "financial_situation/calculations.html",
+        "calculations.html",
         {
             "chart": savings_retirement_fig_html,
             "table": fig.to_html(),

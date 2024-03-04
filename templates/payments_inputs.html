@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Payments Inputs
+{% endblock %}
+
+{% block stuff %}
+<div class="container">
+    <br />
+    <h3>Payments Inputs</h3>
+    <div>
+        <a href="{% url 'inputs:payments_inputs_create'%}" class="btn btn-primary">Create New</a>
+    </div>
+<br />
+
+<div class="row">
+    {% for item in payments_inputs %}
+        <div class="col-md-4">
+            <div class="card shadow {% if item.is_active %}border-primary{% else %}border-dark{% endif %} mb-3 text-black" style="border-width: {% if item.is_active %}4px{% else %}3px{% endif %};">
+                <div class="card-header">Savings Inputs</div>
+                <div class="card-body">
+                    <p class="card-text">Use this for calculations: {{ item.is_active|yesno|title }}</p>
+                    <p class="card-text">Extra payment name: {{ item.pmt_name|title }}</p>
+                    <p class="card-text">Extra payment start age in years: {{ item.pmt_start_age_yrs }}</p>
+                    <p class="card-text">Extra payment start age in months: {{ item.pmt_start_age_mos}}</p>
+                    <p class="card-text">Extra payment length in years: {{ item.pmt_length_yrs}}</p>
+                    <p class="card-text">Extra payment length in months: {{ item.pmt_length_mos }}</p>
+                    <p class="card-text">Extra payment down payment: ${{ item.down_pmt|floatformat:"0g" }}</p>
+                    <p class="card-text">Extra payment monthly payment: ${{ item.monthly_pmt|floatformat:"0g" }}</p>
+                    <a href="{% url 'inputs:payments_inputs_edit' item.id %}" class="btn btn-primary">Edit</a>
+                    <a href="{% url 'inputs:payments_inputs_delete' item.id %}" class="btn btn-secondary">Delete</a>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+</div>
+</div>
+{% endblock %}

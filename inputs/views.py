@@ -22,7 +22,7 @@ from .models import (
 def get_started(request):
     return render(
         request,
-        "inputs/get_started.html",
+        "get_started.html",
     )
 
 
@@ -32,7 +32,7 @@ def general_inputs_dashboard(request):
 
     return render(
         request,
-        "inputs/general_inputs.html",
+        "general_inputs.html",
         {"general_inputs": general_inputs_models},
     )
 
@@ -61,7 +61,7 @@ def general_inputs_create(request):
                 print(field)
             return render(
                 request,
-                "inputs/inputs_create.html",
+                "inputs_create.html",
                 {
                     "form": form,
                     "descriptions": var_descriptions,
@@ -76,7 +76,7 @@ def general_inputs_create(request):
 
     return render(
         request,
-        "inputs/inputs_create.html",
+        "inputs_create.html",
         {
             "form": form,
             "descriptions": var_descriptions,
@@ -104,7 +104,7 @@ def general_inputs_edit(request, pk):
 
     return render(
         request,
-        "inputs/inputs_create.html",
+        "inputs_create.html",
         {
             "form": form,
             "descriptions": var_descriptions,
@@ -129,7 +129,7 @@ def savings_inputs_dashboard(request):
 
     return render(
         request,
-        "inputs/savings_inputs.html",
+        "savings_inputs.html",
         {"savings_inputs": savings_inputs_models},
     )
 
@@ -151,7 +151,7 @@ def savings_inputs_create(request):
 
     return render(
         request,
-        "inputs/inputs_create.html",
+        "inputs_create.html",
         {
             "form": form,
             "descriptions": var_descriptions,
@@ -179,7 +179,7 @@ def savings_inputs_edit(request, pk):
 
     return render(
         request,
-        "inputs/inputs_create.html",
+        "inputs_create.html",
         {
             "form": form,
             "descriptions": var_descriptions,
@@ -204,7 +204,7 @@ def payments_inputs_dashboard(request):
 
     return render(
         request,
-        "inputs/payments_inputs.html",
+        "payments_inputs.html",
         {"payments_inputs": payments_inputs_models},
     )
 
@@ -226,7 +226,7 @@ def payments_inputs_create(request):
 
     return render(
         request,
-        "inputs/inputs_create.html",
+        "inputs_create.html",
         {
             "form": form,
             "descriptions": var_descriptions,
@@ -254,7 +254,7 @@ def payments_inputs_edit(request, pk):
 
     return render(
         request,
-        "inputs/inputs_create.html",
+        "inputs_create.html",
         {
             "form": form,
             "descriptions": var_descriptions,
@@ -281,7 +281,7 @@ def retirement_inputs_dashboard(request):
 
     return render(
         request,
-        "inputs/retirement_inputs.html",
+        "retirement_inputs.html",
         {"retirement_inputs": retirement_inputs_models},
     )
 
@@ -303,7 +303,7 @@ def retirement_inputs_create(request):
 
     return render(
         request,
-        "inputs/inputs_create.html",
+        "inputs_create.html",
         {
             "form": form,
             "descriptions": var_descriptions,
@@ -331,7 +331,7 @@ def retirement_inputs_edit(request, pk):
 
     return render(
         request,
-        "inputs/inputs_create.html",
+        "inputs_create.html",
         {
             "form": form,
             "descriptions": var_descriptions,
@@ -356,7 +356,7 @@ def rates_inputs_dashboard(request):
 
     return render(
         request,
-        "inputs/rates_inputs.html",
+        "rates_inputs.html",
         {"rates_inputs": rates_inputs_models},
     )
 
@@ -378,7 +378,7 @@ def rates_inputs_create(request):
 
     return render(
         request,
-        "inputs/inputs_create.html",
+        "inputs_create.html",
         {
             "form": form,
             "descriptions": var_descriptions,
@@ -404,7 +404,7 @@ def rates_inputs_edit(request, pk):
 
     return render(
         request,
-        "inputs/inputs_create.html",
+        "inputs_create.html",
         {
             "form": form,
             "descriptions": var_descriptions,

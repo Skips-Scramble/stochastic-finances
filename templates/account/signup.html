@@ -1,0 +1,27 @@
+{% extends 'layouts/_auth.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Sign Up{% endblock %}
+
+{% block content %}
+  <div class="text-center mt-4">
+    <h1 class="h2">Get started</h1>
+    <p class="lead">
+      Start creating the best possible user experience for you customers.
+    </p>
+  </div>
+  
+  <div class="card">
+    <div class="card-body">
+      <div class="m-sm-4">
+        <form method="post">
+          {% csrf_token %}
+          {{ form|crispy }}
+          <div class="text-center mt-3">
+            <button type="submit" class="btn btn-lg btn-primary">Sign up</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endblock content %}
