@@ -1,0 +1,12 @@
+{% extends '_base.html' %}
+
+{% block title %}403{% endblock %}
+
+{% block content %}
+  <div class="text-center">
+    <h1 class="display-1 fw-bold">403</h1>
+    <p class="h1">Forbidden.</p>
+    <p class="h2 fw-normal mt-3 mb-4">CSRF verification failed. Request aborted.</p>
+    <a href="{% url 'home' %}" class="btn btn-primary btn-lg">Return to website</a>
+  </div>
+{% endblock content %}
