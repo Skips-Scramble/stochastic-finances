@@ -1,0 +1,56 @@
+{% extends 'layouts/_base.html' %}
+{% load static %}
+
+{% block title %}General Inputs{% endblock title %}
+
+{% block content %}
+<div class="container">
+  <br />
+  <h3>{{ title }}</h3>
+
+  <form method="post" action="." id="createInputs" class="needs-validation" novalidate>
+    {% csrf_token %}
+    {% load custom_filters %}
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card shadow border-dark px-3 py-3 mb-3 text-black" style="border-width: 3px;">
+                <div class="card-body">
+                    {% for field in form %}
+                            <div class="mb-3">
+                                <div class="tooltip-container" data-toggle="tooltip" data-placement="right" title="{{descriptions|dict_lookup:field.name}}">
+                                    <label class="form-label">
+                                        {{field.label_tag}}
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-exclamation-circle" viewBox="0 0 16 16">
+                                            <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                                            <path d="M7.002 11a1 1 0 1 1 2 0 1 1 0 0 1-2 0M7.1 4.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0z"/>
+                                        </svg>
+                                    </label>
+                                </div>
+                                {% if field.errors %}
+                                    <input type="text" class="form-control is-invalid" name="{{ field.name }}" value="{{ field.value|default_if_none:'' }}" id="{{field.id}}">
+                                    <div class="invalid-feedback">
+                                        {{ field.errors|striptags }}
+                                    </div>
+                                {% else %}
+                                    {{ field }}
+                                {% endif %}
+                            </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <button class="btn btn-primary">Save</button>
+    <a href="{% url 'general' %}" class="btn btn-secondary">Cancel</a>
+
+</form>
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+      })
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@floating-ui/dom@1.6.1"></script>
+
+
+</div>
+{% endblock %}
