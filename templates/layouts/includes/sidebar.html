@@ -37,27 +37,27 @@
       </li>
       <li class="sidebar-item{% if request.path == "/general/" %} active{% endif %}">
         <a class="sidebar-link" href="{% url 'general_inputs_dashboard' %}">
-          <i class="align-middle" data-feather="layout"></i> <span class="align-middle">General</span>
+          <i class="align-middle" data-feather="file-text"></i> <span class="align-middle">General</span>
         </a>
       </li>
       <li class="sidebar-item{% if request.path == "/savings/" %} active{% endif %}">
         <a class="sidebar-link" href="{% url 'savings_inputs_dashboard' %}">
-          <i class="align-middle" data-feather="dollar-sign"></i> <span class="align-middle">Savings</span>
+          <i class="align-middle fas fa-fw fa-dollar-sign"></i> <span class="align-middle">Savings</span>
         </a>
       </li>
       <li class="sidebar-item{% if request.path == "/retirement/" %} active{% endif %}">
         <a class="sidebar-link" href="{% url 'retirement_inputs_dashboard' %}">
-          <i class="align-middle" data-feather="layout"></i> <span class="align-middle">Retirement</span>
+          <i class="align-middle" data-feather="sunset"></i> <span class="align-middle">Retirement</span>
         </a>
       </li>
       <li class="sidebar-item{% if request.path == "/rates/" %} active{% endif %}">
         <a class="sidebar-link" href="{% url 'rates_inputs_dashboard' %}">
-          <i class="align-middle" data-feather="layout"></i> <span class="align-middle">Rates</span>
+          <i class="align-middle" data-feather="percent"></i> <span class="align-middle">Rates</span>
         </a>
       </li>
       <li class="sidebar-item{% if request.path == "/payments/" %} active{% endif %}">
         <a class="sidebar-link" href="{% url 'payments_inputs_dashboard' %}">
-          <i class="align-middle" data-feather="layout"></i> <span class="align-middle">Payments</span>
+          <i class="align-middle fas fa-fw fa-money-bill-alt"></i> <span class="align-middle">Payments</span>
         </a>
       </li>
       <li class="sidebar-item">
