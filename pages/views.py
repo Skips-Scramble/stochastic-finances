@@ -23,6 +23,18 @@ class BlankPageView(TemplateView):
     template_name = "pages/blank.html"
 
 
+@login_required
+def general_inputs_dashboard(request):
+    general_inputs_models = GeneralInputsModel.objects.filter(created_by=request.user)
+
+    return render(
+        request,
+        "pages/general_inputs.html",
+        {"general_inputs": general_inputs_models},
+    )
+
+
+@login_required
 def general_inputs_create(request):
     """This will validate/create a new general inputs item"""
     if request.method == "POST":
@@ -38,7 +50,7 @@ def general_inputs_create(request):
             item.created_by = request.user
             item.save()
 
-            return redirect("pages/general.html")
+            return redirect("/general/")
 
         else:
             print("Not a valid form")
@@ -46,7 +58,7 @@ def general_inputs_create(request):
                 print(field)
             return render(
                 request,
-                "pages/general.html",
+                "pages/inputs_create.html",
                 {
                     "form": form,
                     "descriptions": var_descriptions,
@@ -61,10 +73,48 @@ def general_inputs_create(request):
 
     return render(
         request,
-        "pages/general.html",
+        "pages/inputs_create.html",
         {
             "form": form,
             "descriptions": var_descriptions,
             "title": "Create New General Inputs",
         },
     )
+
+
+@login_required
+def general_inputs_edit(request, pk):
+    """This will edit a general inputs item"""
+    general_inputs = get_object_or_404(
+        GeneralInputsModel, pk=pk, created_by=request.user
+    )
+
+    if request.method == "POST":
+        form = GeneralInputsForm(request.POST, instance=general_inputs)
+
+        if form.is_valid():
+            form.save()
+
+            return redirect("general_inputs_dashboard")
+    else:
+        form = GeneralInputsForm(instance=general_inputs)
+
+    return render(
+        request,
+        "pages/inputs_create.html",
+        {
+            "form": form,
+            "descriptions": var_descriptions,
+            "title": "Edit General Inputs",
+        },
+    )
+
+
+@login_required
+def general_inputs_delete(request, pk):
+    general_inputs = get_object_or_404(
+        GeneralInputsModel, pk=pk, created_by=request.user
+    )
+    general_inputs.delete()
+
+    return redirect("general_inputs_dashboard")
