@@ -1,0 +1,37 @@
+{% extends 'layouts/_base.html' %}
+{% load static %}
+
+{% block title %}
+  Savings Inputs
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <br />
+    <h3>Savings Inputs</h3>
+    <div>
+        <a href="{% url 'savings_inputs_create'%}" class="btn btn-primary">Create New</a>
+    </div>
+<br />
+
+<div class="row">
+    {% for item in savings_inputs %}
+        <div class="col-md-4">
+            <div class="card shadow {% if item.is_active %}border-primary{% else %}border-dark{% endif %} mb-3 text-black" style="border-width: {% if item.is_active %}4px{% else %}3px{% endif %};">
+                <div class="card-header">Savings Inputs</div>
+                <div class="card-body">
+                    <p class="card-text">Use this for calculations: {{ item.is_active|yesno|title }}</p>
+                    <p class="card-text">Current savings account: ${{ item.base_savings|floatformat:"0g" }}</p>
+                    <p class="card-text">Savings per month: ${{ item.base_saved_per_mo|floatformat:"0g" }}</p>
+                    <p class="card-text">Yearly contribution increase: {{ item.base_savings_per_yr_increase|floatformat:"2" }}%</p>
+                    <p class="card-text">Savings lower limit: ${{ item.savings_lower_limit|floatformat:"0g" }}</p>
+                    <p class="card-text">Usual monthly expenses: ${{ item.base_monthly_bills|floatformat:"0g" }}</p>
+                    <a href="{% url 'savings_inputs_edit' item.id %}" class="btn btn-primary">Edit</a>
+                    <a href="{% url 'savings_inputs_delete' item.id %}" class="btn btn-secondary">Delete</a>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+</div>
+{% endblock %}

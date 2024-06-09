@@ -40,6 +40,26 @@
           <i class="align-middle" data-feather="layout"></i> <span class="align-middle">General</span>
         </a>
       </li>
+      <li class="sidebar-item{% if request.path == "/savings/" %} active{% endif %}">
+        <a class="sidebar-link" href="{% url 'savings_inputs_dashboard' %}">
+          <i class="align-middle" data-feather="dollar-sign"></i> <span class="align-middle">Savings</span>
+        </a>
+      </li>
+      <li class="sidebar-item{% if request.path == "/retirement/" %} active{% endif %}">
+        <a class="sidebar-link" href="{% url 'retirement_inputs_dashboard' %}">
+          <i class="align-middle" data-feather="layout"></i> <span class="align-middle">Retirement</span>
+        </a>
+      </li>
+      <li class="sidebar-item{% if request.path == "/rates/" %} active{% endif %}">
+        <a class="sidebar-link" href="{% url 'rates_inputs_dashboard' %}">
+          <i class="align-middle" data-feather="layout"></i> <span class="align-middle">Rates</span>
+        </a>
+      </li>
+      <li class="sidebar-item{% if request.path == "/payments/" %} active{% endif %}">
+        <a class="sidebar-link" href="{% url 'payments_inputs_dashboard' %}">
+          <i class="align-middle" data-feather="layout"></i> <span class="align-middle">Payments</span>
+        </a>
+      </li>
       <li class="sidebar-item">
         <a data-bs-target="#auth" data-bs-toggle="collapse" class="sidebar-link collapsed">
           <i class="align-middle" data-feather="users"></i> <span class="align-middle">Auth</span>
