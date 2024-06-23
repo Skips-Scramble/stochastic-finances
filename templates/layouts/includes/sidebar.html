@@ -60,6 +60,11 @@
           <i class="align-middle fas fa-fw fa-money-bill-alt"></i> <span class="align-middle">Payments</span>
         </a>
       </li>
+      <li class="sidebar-item{% if request.path == "/calculation/" %} active{% endif %}">
+        <a class="sidebar-link" href="{% url 'calculation' %}">
+          <i class="align-middle fas fa-fw fa-money-bill-alt"></i> <span class="align-middle">Calculation</span>
+        </a>
+      </li>
       <li class="sidebar-item">
         <a data-bs-target="#auth" data-bs-toggle="collapse" class="sidebar-link collapsed">
           <i class="align-middle" data-feather="users"></i> <span class="align-middle">Auth</span>

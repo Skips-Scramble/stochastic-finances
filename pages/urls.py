@@ -5,6 +5,7 @@ from .views import (
     BlankPageView,
     ButtonsPageView,
     HomePageView,
+    calculation,
     general_inputs_create,
     general_inputs_dashboard,
     general_inputs_delete,
@@ -100,4 +101,5 @@ urlpatterns = [
         rates_inputs_delete,
         name="rates_inputs_delete",
     ),
+    path("calculation", calculation, name="calculation"),
 ]
