@@ -495,7 +495,7 @@ def calculations(request):
             print("There were some bad active inputs")
             return render(
                 request,
-                "financial_situation/non_active.html",
+                "pages/non_active.html",
                 {
                     "errors": bad_active_list,
                 },
