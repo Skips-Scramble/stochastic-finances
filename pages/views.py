@@ -435,7 +435,7 @@ def rates_inputs_delete(request, pk):
 
 
 @login_required
-def calculation(request):
+def calculations(request):
     """This will run the financial calculations"""
     if request.method == "POST":
         print("Post request")
@@ -492,6 +492,7 @@ def calculation(request):
         else:
             bad_active_list.append("Rates")
         if bad_active_list:
+            print("There were some bad active inputs")
             return render(
                 request,
                 "financial_situation/non_active.html",
@@ -518,20 +519,25 @@ def calculation(request):
 
     results_dict = {}
     for age in range(40, 105, 5):
+        print(f"Processing calc for age {age}")
+        print(total_savings_df.head())
         savings_at_age = total_savings_df.loc[
             lambda df: (df.age_yrs == age) & (df.age_mos == 0)
         ]["avg"].iat[0]
+        print(f"{savings_at_age = }")
 
         retirement_at_age = total_retirement_df.loc[
             lambda df: (df.age_yrs == age) & (df.age_mos == 0)
         ]["avg"].iat[0]
+        print(f"{retirement_at_age = }")
 
         results_dict[age] = [
             f"Average savings at age {age} is ${savings_at_age:,.0f}",
             f"Average retirement at age {age} is ${retirement_at_age:,.0f}",
         ]
     print(f"{results_dict = }")
-    print(val for val in results_dict.values())
+    print("")
+    # print(val for val in results_dict.values())
 
     savings_retirement_fig = px.line(
         total_outputs_df, x="age_yrs", y="avg", color="account_type", height=600
@@ -539,6 +545,7 @@ def calculation(request):
     savings_retirement_fig.update_xaxes(title_text="Age (years)", dtick=5)
     savings_retirement_fig.update_yaxes(title_text="Amount")
     savings_retirement_fig_html = savings_retirement_fig.to_html()
+    print(f"savings_retirement_fig_html type: {type(savings_retirement_fig_html)}")
 
     table_view = (
         total_outputs_df[["age_yrs", "account_type", "avg"]]
@@ -551,6 +558,8 @@ def calculation(request):
         #     index_names=False,
         # )
     )
+    print("")
+    print(f"table_view type is {type(table_view)}")
 
     fig = go.Figure(
         data=[
@@ -578,7 +587,7 @@ def calculation(request):
 
     return render(
         request,
-        "financial_situation/calculations.html",
+        "pages/calculations.html",
         {
             "chart": savings_retirement_fig_html,
             "table": fig.to_html(),
