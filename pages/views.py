@@ -1,3 +1,5 @@
+import logging
+
 import plotly.express as px
 import plotly.graph_objects as go
 from django.contrib.auth.decorators import login_required
@@ -21,6 +23,8 @@ from .models import (
     SavingsInputsModel,
 )
 from .utils import ensure_active_inputs, model_to_dict
+
+logger = logging.getLogger(__name__)
 
 
 class HomePageView(TemplateView):
@@ -53,15 +57,16 @@ def general_inputs_dashboard(request):
 @login_required
 def general_inputs_create(request):
     """This will validate/create a new general inputs item"""
+    logger.debug("Creating general inputs")
     if request.method == "POST":
-        print("POST request")
-        print(f"{request.POST =}")
+        logger.debug("POST request")
+        # print(f"{request.POST =}")
         form = GeneralInputsForm(request.POST)
-        for field in form:
-            print(field)
+        # for field in form:
+        # print(field)
 
         if form.is_valid():
-            print("Valid form")
+            # print("Valid form")
             item = form.save(commit=False)
             item.created_by = request.user
             item.save()
@@ -69,9 +74,9 @@ def general_inputs_create(request):
             return redirect("/general/")
 
         else:
-            print("Not a valid form")
-            for field in form:
-                print(field)
+            # print("Not a valid form")
+            # for field in form:
+            # print(field)
             return render(
                 request,
                 "pages/inputs_create.html",
@@ -83,9 +88,9 @@ def general_inputs_create(request):
             )
 
     else:
-        print("GET request")
+        logger.debug("GET request")
         form = GeneralInputsForm()
-        print(form)
+        # print(form)
 
     return render(
         request,
