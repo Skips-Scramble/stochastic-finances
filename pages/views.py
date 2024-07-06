@@ -7,21 +7,11 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import TemplateView
 
 from . import stochastic_finances_func
-from .forms import (
-    GeneralInputsForm,
-    PaymentsInputsForm,
-    RatesInputsForm,
-    RetirementInputsForm,
-    SavingsInputsForm,
-)
+from .forms import (GeneralInputsForm, PaymentsInputsForm, RatesInputsForm,
+                    RetirementInputsForm, SavingsInputsForm)
 from .full_descriptions import var_descriptions
-from .models import (
-    GeneralInputsModel,
-    PaymentsInputsModel,
-    RatesInputsModel,
-    RetirementInputsModel,
-    SavingsInputsModel,
-)
+from .models import (GeneralInputsModel, PaymentsInputsModel, RatesInputsModel,
+                     RetirementInputsModel, SavingsInputsModel)
 from .utils import ensure_active_inputs, model_to_dict
 
 logger = logging.getLogger(__name__)
