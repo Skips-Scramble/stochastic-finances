@@ -76,3 +76,9 @@ $ python manage.py runserver
 
 # Load the site at http://127.0.0.1:8000
 ```
+
+## General Information
+To get the VS Code instance going using poetry:
+- Open a command window
+- Navigate to where the repo is
+- Then execute `code .`

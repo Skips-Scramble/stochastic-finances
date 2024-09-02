@@ -1,7 +1,12 @@
 from django import forms
 
-from .models import (GeneralInputsModel, PaymentsInputsModel, RatesInputsModel,
-                     RetirementInputsModel, SavingsInputsModel)
+from .models import (
+    GeneralInputsModel,
+    PaymentsInputsModel,
+    RatesInputsModel,
+    RetirementInputsModel,
+    SavingsInputsModel,
+)
 
 INPUT_CLASSES = "form-control"
 
