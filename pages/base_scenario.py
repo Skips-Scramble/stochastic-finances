@@ -67,9 +67,9 @@ class BaseScenario:
     @cached_property
     def birthdate(self) -> date:
         """Calculate birthdate"""
-        if isinstance(self.assumptions['birthdate'], date):
-            return self.assumptions['birthdate']
-        return datetime.strptime(self.assumptions['birthdate'], '%m/%d/%Y').date()
+        if isinstance(self.assumptions["birthdate"], date):
+            return self.assumptions["birthdate"]
+        return datetime.strptime(self.assumptions["birthdate"], "%m/%d/%Y").date()
 
     @cached_property
     def death_date(self) -> date:
@@ -80,8 +80,8 @@ class BaseScenario:
         # return date(2024, 12, 1)
         return calc_date_on_age(
             self.birthdate,
-            int(self.assumptions['retirement_age_yrs']),
-            int(self.assumptions['retirement_age_mos']),
+            int(self.assumptions["retirement_age_yrs"]),
+            int(self.assumptions["retirement_age_mos"]),
         )
 
     @cached_property
@@ -142,7 +142,7 @@ class BaseScenario:
     def monthly_inflation(self) -> float:
         """Calculate the monthly inflation rate"""
         return round(
-            (1 + self.assumptions['base_inflation_per_yr'] / 100) ** (1 / 12) - 1, 6
+            (1 + self.assumptions["base_inflation_per_yr"] / 100) ** (1 / 12) - 1, 6
         )
 
     @cached_property
@@ -150,7 +150,7 @@ class BaseScenario:
         """Calculate the minimum monthly savings threshold by month"""
         return [
             round(
-                self.assumptions['savings_lower_limit']
+                self.assumptions["savings_lower_limit"]
                 * (1 + self.monthly_inflation) ** count,
                 6,
             )
@@ -160,7 +160,7 @@ class BaseScenario:
     @cached_property
     def yearly_rf_interest(self) -> float:
         """Calculate the base risk-free interest APY"""
-        return round(self.assumptions['base_rf_interest_per_yr'] / 100, 6)
+        return round(self.assumptions["base_rf_interest_per_yr"] / 100, 6)
 
     @cached_property
     def monthly_rf_interest(self) -> float:
@@ -173,14 +173,14 @@ class BaseScenario:
         savings_increase_list = []
         for index, value in enumerate(self.pre_retire_month_count_list):
             if index == 0:
-                savings_increase_list.append(self.assumptions['base_saved_per_mo'])
+                savings_increase_list.append(self.assumptions["base_saved_per_mo"])
             elif value == 0:
                 savings_increase_list.append(0)
             elif index % 12 == 11:
                 savings_increase_list.append(
                     savings_increase_list[index - 1]
                     * round(
-                        1 + self.assumptions['base_savings_per_yr_increase'] / 100,
+                        1 + self.assumptions["base_savings_per_yr_increase"] / 100,
                         6,
                     )
                 )
@@ -193,11 +193,11 @@ class BaseScenario:
     def base_bills_list(self) -> list:
         """List of the base bills per month (inflation adjusted)"""
         monthly_inflation = round(
-            ((1 + self.assumptions['base_inflation_per_yr'] / 100) ** (1 / 12)) - 1, 6
+            ((1 + self.assumptions["base_inflation_per_yr"] / 100) ** (1 / 12)) - 1, 6
         )
         return [
             round(
-                self.assumptions['base_monthly_bills'] * (1 + monthly_inflation) ** i, 6
+                self.assumptions["base_monthly_bills"] * (1 + monthly_inflation) ** i, 6
             )
             for i in range(self.total_months)
         ]
@@ -207,7 +207,7 @@ class BaseScenario:
         """Calculate how much extra you will need post-retirement (for fun things)"""
         return [
             round(
-                self.assumptions['retirement_extra_expenses']
+                self.assumptions["retirement_extra_expenses"]
                 / 12
                 * (1 + self.monthly_inflation) ** count,
                 6,
@@ -219,21 +219,21 @@ class BaseScenario:
     def non_base_bills_lists(self) -> list[list]:
         """Return payments for each month"""
         non_base_bills_lists = []
-        for item in self.assumptions['payment_items']:
+        for item in self.assumptions["payment_items"]:
             item_pmt_start_date, item_pmt_end_date = calc_payment_item_dates(
                 self.birthdate,
-                item['pmt_start_age_yrs'],
-                item['pmt_start_age_mos'],
-                item['pmt_length_yrs'],
-                item['pmt_length_mos'],
+                item["pmt_start_age_yrs"],
+                item["pmt_start_age_mos"],
+                item["pmt_length_yrs"],
+                item["pmt_length_mos"],
             )
             non_base_bills_lists.append(
                 calc_item_monthly_pmt_list(
                     self.month_list,
                     item_pmt_start_date,
                     item_pmt_end_date,
-                    item['down_pmt'],
-                    item['monthly_pmt'],
+                    item["down_pmt"],
+                    item["monthly_pmt"],
                 )
             )
         if non_base_bills_lists == []:
@@ -243,7 +243,7 @@ class BaseScenario:
     @cached_property
     def yearly_mkt_interest(self) -> list:
         """Calculate yearly market interest as a percent"""
-        return round(self.assumptions['base_mkt_interest_per_yr'] / 100, 6)
+        return round(self.assumptions["base_mkt_interest_per_yr"] / 100, 6)
 
     @cached_property
     def monthly_mkt_interest(self) -> float:
@@ -257,14 +257,14 @@ class BaseScenario:
         for index, value in enumerate(self.pre_retire_month_count_list):
             if index == 0:
                 retirement_increase_list.append(
-                    self.assumptions['base_retirement_per_mo']
+                    self.assumptions["base_retirement_per_mo"]
                 )
             elif value == 0:
                 retirement_increase_list.append(0)
             elif index % 12 == 11:
                 retirement_increase_list.append(
                     retirement_increase_list[index - 1]
-                    + round(self.assumptions['base_retirement_per_yr_increase'] / 12, 6)
+                    + round(self.assumptions["base_retirement_per_yr_increase"] / 12, 6)
                 )
             else:
                 retirement_increase_list.append(retirement_increase_list[index - 1])
@@ -281,8 +281,8 @@ class BaseScenario:
         retirement_list = []
         for i in range(self.total_months):
             if i == 0:
-                savings = float(round(self.assumptions['base_savings'], 6))
-                retirement = float(round(self.assumptions['base_retirement'], 2))
+                savings = float(round(self.assumptions["base_savings"], 6))
+                retirement = float(round(self.assumptions["base_retirement"], 2))
             elif self.pre_retire_month_count_list[i] != 0:  # If you're not retired
                 savings = float(
                     round(
@@ -352,39 +352,39 @@ class BaseScenario:
     def create_base_df(self) -> pd.DataFrame:
         """Create the inital dataframe without any randomness applied"""
         data_1 = {
-            'count': self.count_list,
-            'pre_retire_month_cnt': self.pre_retire_month_count_list,
-            'post_retire_month_cnt': self.post_retire_month_count_list,
-            'month': self.month_list,
-            'age_yrs': self.age_by_year_list,
-            'age_mos': self.age_by_month_list,
-            'monthly_inflation': self.monthly_inflation,
-            'min_savings_threshold': self.monthly_savings_threshold_list,
-            'yearly_rf_interest': self.yearly_rf_interest,
-            'monthly_rf_interest': self.monthly_rf_interest,
-            'savings_increase': self.savings_increase_list,
-            'base_bills': self.base_bills_list,
-            'retire_extra': self.post_retire_extra_bills_list,
+            "count": self.count_list,
+            "pre_retire_month_cnt": self.pre_retire_month_count_list,
+            "post_retire_month_cnt": self.post_retire_month_count_list,
+            "month": self.month_list,
+            "age_yrs": self.age_by_year_list,
+            "age_mos": self.age_by_month_list,
+            "monthly_inflation": self.monthly_inflation,
+            "min_savings_threshold": self.monthly_savings_threshold_list,
+            "yearly_rf_interest": self.yearly_rf_interest,
+            "monthly_rf_interest": self.monthly_rf_interest,
+            "savings_increase": self.savings_increase_list,
+            "base_bills": self.base_bills_list,
+            "retire_extra": self.post_retire_extra_bills_list,
         }
         non_base_items_names = [
-            f'pmt_{i}' for i in range(len(self.non_base_bills_lists))
+            f"pmt_{i}" for i in range(len(self.non_base_bills_lists))
         ]
         non_base_items_lists = {
             k: v for (k, v) in zip(non_base_items_names, self.non_base_bills_lists)
         }
         data_3 = {
-            'savings_account': self.savings_retirement_account_list[0],
-            'yearly_mkt_interest': self.yearly_mkt_interest,
-            'monthly_mkt_interest': self.monthly_mkt_interest,
-            'retirement_increase': self.retirement_increase_list,
-            'retirement_account': self.savings_retirement_account_list[1],
+            "savings_account": self.savings_retirement_account_list[0],
+            "yearly_mkt_interest": self.yearly_mkt_interest,
+            "monthly_mkt_interest": self.monthly_mkt_interest,
+            "retirement_increase": self.retirement_increase_list,
+            "retirement_account": self.savings_retirement_account_list[1],
         }
 
         data = {**data_1, **non_base_items_lists, **data_3}
 
         return pd.DataFrame(data).rename(
             columns={
-                f'pmt_{i}': v['pmt_name']
-                for i, v in enumerate(self.assumptions['payment_items'])
+                f"pmt_{i}": v["pmt_name"]
+                for i, v in enumerate(self.assumptions["payment_items"])
             }
         )

@@ -20,7 +20,7 @@ class RandomScenario:
         every so often, based on assumptions
         """
         base_list = [
-            self.base_scenario.assumptions['base_rf_interest_per_yr'] / 100
+            self.base_scenario.assumptions["base_rf_interest_per_yr"] / 100
             for _ in range(self.base_scenario.total_months)
         ]
 
@@ -99,8 +99,8 @@ class RandomScenario:
         return [
             round(
                 np.random.normal(
-                    self.base_scenario.assumptions['base_mkt_interest_per_yr'],
-                    self.base_scenario.assumptions['base_mkt_interest_per_yr'] * 1.5,
+                    self.base_scenario.assumptions["base_mkt_interest_per_yr"],
+                    self.base_scenario.assumptions["base_mkt_interest_per_yr"] * 1.5,
                 )
                 / 100,
                 4,
@@ -126,10 +126,10 @@ class RandomScenario:
         for i in range(self.base_scenario.total_months):
             if i == 0:
                 savings = float(
-                    round(self.base_scenario.assumptions['base_savings'], 2)
+                    round(self.base_scenario.assumptions["base_savings"], 2)
                 )
                 retirement = float(
-                    round(self.base_scenario.assumptions['base_retirement'], 2)
+                    round(self.base_scenario.assumptions["base_retirement"], 2)
                 )
             elif (
                 self.base_scenario.pre_retire_month_count_list[i] != 0
@@ -210,16 +210,16 @@ class RandomScenario:
         """Create full dataframe with base and variable scenarios"""
         var_df = pd.DataFrame(
             {
-                'count': self.base_scenario.count_list,
-                'var_yearly_rf_interest': self.var_yearly_rf_interest,
-                'var_monthly_rf_interest': self.var_monthly_rf_interest,
-                'var_base_bills': self.var_base_bills_list,
-                'var_retire_extra': self.var_post_retire_extra_bills_list,
-                'var_savings_increase': self.var_savings_increase_list,
-                'var_savings_account': self.var_savings_retirement_account_list[0],
-                'var_yearly_mkt_interest': self.var_yearly_mkt_interest,
-                'var_monthly_mkt_interest': self.var_monthly_mkt_interest,
-                'var_retirement_account': self.var_savings_retirement_account_list[1],
+                "count": self.base_scenario.count_list,
+                "var_yearly_rf_interest": self.var_yearly_rf_interest,
+                "var_monthly_rf_interest": self.var_monthly_rf_interest,
+                "var_base_bills": self.var_base_bills_list,
+                "var_retire_extra": self.var_post_retire_extra_bills_list,
+                "var_savings_increase": self.var_savings_increase_list,
+                "var_savings_account": self.var_savings_retirement_account_list[0],
+                "var_yearly_mkt_interest": self.var_yearly_mkt_interest,
+                "var_monthly_mkt_interest": self.var_monthly_mkt_interest,
+                "var_retirement_account": self.var_savings_retirement_account_list[1],
             }
         )
-        return self.base_scenario.create_base_df().merge(var_df, on='count', how='left')
+        return self.base_scenario.create_base_df().merge(var_df, on="count", how="left")

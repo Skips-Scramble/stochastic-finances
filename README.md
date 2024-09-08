@@ -81,7 +81,7 @@ $ python manage.py runserver
 To get the VS Code instance going using poetry:
 - Open a command window
 - Navigate to where the repo is
-- Then execute `code .`
+- Then execute `poetry run code .`
 
 ### Ruff
 We are using ruff as our formatter and linter

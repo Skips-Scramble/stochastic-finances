@@ -28,19 +28,19 @@ logger = logging.getLogger(__name__)
 
 
 class HomePageView(TemplateView):
-    template_name = 'pages/home.html'
+    template_name = "pages/home.html"
 
 
 class AlertsPageView(TemplateView):
-    template_name = 'pages/alerts.html'
+    template_name = "pages/alerts.html"
 
 
 class ButtonsPageView(TemplateView):
-    template_name = 'pages/buttons.html'
+    template_name = "pages/buttons.html"
 
 
 class BlankPageView(TemplateView):
-    template_name = 'pages/blank.html'
+    template_name = "pages/blank.html"
 
 
 @login_required
@@ -49,17 +49,17 @@ def general_inputs_dashboard(request):
 
     return render(
         request,
-        'pages/general_inputs.html',
-        {'general_inputs': general_inputs_models},
+        "pages/general_inputs.html",
+        {"general_inputs": general_inputs_models},
     )
 
 
 @login_required
 def general_inputs_create(request):
     """This will validate/create a new general inputs item"""
-    logger.debug('Creating general inputs')
-    if request.method == 'POST':
-        logger.debug('POST request')
+    logger.debug("Creating general inputs")
+    if request.method == "POST":
+        logger.debug("POST request")
         # print(f"{request.POST =}")
         form = GeneralInputsForm(request.POST)
         # for field in form:
@@ -71,7 +71,7 @@ def general_inputs_create(request):
             item.created_by = request.user
             item.save()
 
-            return redirect('/general/')
+            return redirect("/general/")
 
         else:
             # print("Not a valid form")
@@ -79,26 +79,26 @@ def general_inputs_create(request):
             # print(field)
             return render(
                 request,
-                'pages/inputs_create.html',
+                "pages/inputs_create.html",
                 {
-                    'form': form,
-                    'descriptions': var_descriptions,
-                    'title': 'Create New General Inputs',
+                    "form": form,
+                    "descriptions": var_descriptions,
+                    "title": "Create New General Inputs",
                 },
             )
 
     else:
-        logger.debug('GET request')
+        logger.debug("GET request")
         form = GeneralInputsForm()
         # print(form)
 
     return render(
         request,
-        'pages/inputs_create.html',
+        "pages/inputs_create.html",
         {
-            'form': form,
-            'descriptions': var_descriptions,
-            'title': 'Create New General Inputs',
+            "form": form,
+            "descriptions": var_descriptions,
+            "title": "Create New General Inputs",
         },
     )
 
@@ -110,23 +110,23 @@ def general_inputs_edit(request, pk):
         GeneralInputsModel, pk=pk, created_by=request.user
     )
 
-    if request.method == 'POST':
+    if request.method == "POST":
         form = GeneralInputsForm(request.POST, instance=general_inputs)
 
         if form.is_valid():
             form.save()
 
-            return redirect('general_inputs_dashboard')
+            return redirect("general_inputs_dashboard")
     else:
         form = GeneralInputsForm(instance=general_inputs)
 
     return render(
         request,
-        'pages/inputs_create.html',
+        "pages/inputs_create.html",
         {
-            'form': form,
-            'descriptions': var_descriptions,
-            'title': 'Edit General Inputs',
+            "form": form,
+            "descriptions": var_descriptions,
+            "title": "Edit General Inputs",
         },
     )
 
@@ -138,7 +138,7 @@ def general_inputs_delete(request, pk):
     )
     general_inputs.delete()
 
-    return redirect('general_inputs_dashboard')
+    return redirect("general_inputs_dashboard")
 
 
 @login_required
@@ -147,15 +147,15 @@ def savings_inputs_dashboard(request):
 
     return render(
         request,
-        'pages/savings_inputs.html',
-        {'savings_inputs': savings_inputs_models},
+        "pages/savings_inputs.html",
+        {"savings_inputs": savings_inputs_models},
     )
 
 
 @login_required
 def savings_inputs_create(request):
     """This will validate/create a new savings inputs item"""
-    if request.method == 'POST':
+    if request.method == "POST":
         form = SavingsInputsForm(request.POST)
 
         if form.is_valid():
@@ -163,17 +163,17 @@ def savings_inputs_create(request):
             item.created_by = request.user
             item.save()
 
-            return redirect('/savings/')
+            return redirect("/savings/")
     else:
         form = SavingsInputsForm()
 
     return render(
         request,
-        'pages/inputs_create.html',
+        "pages/inputs_create.html",
         {
-            'form': form,
-            'descriptions': var_descriptions,
-            'title': 'New Savings Inputs',
+            "form": form,
+            "descriptions": var_descriptions,
+            "title": "New Savings Inputs",
         },
     )
 
@@ -185,23 +185,23 @@ def savings_inputs_edit(request, pk):
         SavingsInputsModel, pk=pk, created_by=request.user
     )
 
-    if request.method == 'POST':
+    if request.method == "POST":
         form = SavingsInputsForm(request.POST, instance=savings_inputs)
 
         if form.is_valid():
             form.save()
 
-            return redirect('/savings/')
+            return redirect("/savings/")
     else:
         form = SavingsInputsForm(instance=savings_inputs)
 
     return render(
         request,
-        'pages/inputs_create.html',
+        "pages/inputs_create.html",
         {
-            'form': form,
-            'descriptions': var_descriptions,
-            'title': 'Edit Savings Inputs',
+            "form": form,
+            "descriptions": var_descriptions,
+            "title": "Edit Savings Inputs",
         },
     )
 
@@ -213,7 +213,7 @@ def savings_inputs_delete(request, pk):
     )
     savings_inputs.delete()
 
-    return redirect('savings_inputs_dashboard')
+    return redirect("savings_inputs_dashboard")
 
 
 @login_required
@@ -222,15 +222,15 @@ def payments_inputs_dashboard(request):
 
     return render(
         request,
-        'pages/payments_inputs.html',
-        {'payments_inputs': payments_inputs_models},
+        "pages/payments_inputs.html",
+        {"payments_inputs": payments_inputs_models},
     )
 
 
 @login_required
 def payments_inputs_create(request):
     """This will validate/create a new payments inputs item"""
-    if request.method == 'POST':
+    if request.method == "POST":
         form = PaymentsInputsForm(request.POST)
 
         if form.is_valid():
@@ -238,17 +238,17 @@ def payments_inputs_create(request):
             item.created_by = request.user
             item.save()
 
-            return redirect('/payments/')
+            return redirect("/payments/")
     else:
         form = PaymentsInputsForm()
 
     return render(
         request,
-        'pages/inputs_create.html',
+        "pages/inputs_create.html",
         {
-            'form': form,
-            'descriptions': var_descriptions,
-            'title': 'New Payments Inputs',
+            "form": form,
+            "descriptions": var_descriptions,
+            "title": "New Payments Inputs",
         },
     )
 
@@ -260,23 +260,23 @@ def payments_inputs_edit(request, pk):
         PaymentsInputsModel, pk=pk, created_by=request.user
     )
 
-    if request.method == 'POST':
+    if request.method == "POST":
         form = PaymentsInputsForm(request.POST, instance=payments_inputs)
 
         if form.is_valid():
             form.save()
 
-            return redirect('/payments/')
+            return redirect("/payments/")
     else:
         form = PaymentsInputsForm(instance=payments_inputs)
 
     return render(
         request,
-        'pages/inputs_create.html',
+        "pages/inputs_create.html",
         {
-            'form': form,
-            'descriptions': var_descriptions,
-            'title': 'Edit payments Inputs',
+            "form": form,
+            "descriptions": var_descriptions,
+            "title": "Edit payments Inputs",
         },
     )
 
@@ -288,7 +288,7 @@ def payments_inputs_delete(request, pk):
     )
     payments_inputs.delete()
 
-    return redirect('payments_inputs_dashboard')
+    return redirect("payments_inputs_dashboard")
 
 
 @login_required
@@ -299,15 +299,15 @@ def retirement_inputs_dashboard(request):
 
     return render(
         request,
-        'pages/retirement_inputs.html',
-        {'retirement_inputs': retirement_inputs_models},
+        "pages/retirement_inputs.html",
+        {"retirement_inputs": retirement_inputs_models},
     )
 
 
 @login_required
 def retirement_inputs_create(request):
     """This will validate/create a new retirement inputs item"""
-    if request.method == 'POST':
+    if request.method == "POST":
         form = RetirementInputsForm(request.POST)
 
         if form.is_valid():
@@ -315,17 +315,17 @@ def retirement_inputs_create(request):
             item.created_by = request.user
             item.save()
 
-            return redirect('/retirement/')
+            return redirect("/retirement/")
     else:
         form = RetirementInputsForm()
 
     return render(
         request,
-        'pages/inputs_create.html',
+        "pages/inputs_create.html",
         {
-            'form': form,
-            'descriptions': var_descriptions,
-            'title': 'New Retirement Inputs',
+            "form": form,
+            "descriptions": var_descriptions,
+            "title": "New Retirement Inputs",
         },
     )
 
@@ -337,23 +337,23 @@ def retirement_inputs_edit(request, pk):
         RetirementInputsModel, pk=pk, created_by=request.user
     )
 
-    if request.method == 'POST':
+    if request.method == "POST":
         form = RetirementInputsForm(request.POST, instance=retirement_inputs)
 
         if form.is_valid():
             form.save()
 
-            return redirect('/retirement/')
+            return redirect("/retirement/")
     else:
         form = RetirementInputsForm(instance=retirement_inputs)
 
     return render(
         request,
-        'pages/inputs_create.html',
+        "pages/inputs_create.html",
         {
-            'form': form,
-            'descriptions': var_descriptions,
-            'title': 'Edit retirement Inputs',
+            "form": form,
+            "descriptions": var_descriptions,
+            "title": "Edit retirement Inputs",
         },
     )
 
@@ -365,7 +365,7 @@ def retirement_inputs_delete(request, pk):
     )
     retirement_inputs.delete()
 
-    return redirect('retirement_inputs_dashboard')
+    return redirect("retirement_inputs_dashboard")
 
 
 @login_required
@@ -374,15 +374,15 @@ def rates_inputs_dashboard(request):
 
     return render(
         request,
-        'pages/rates_inputs.html',
-        {'rates_inputs': rates_inputs_models},
+        "pages/rates_inputs.html",
+        {"rates_inputs": rates_inputs_models},
     )
 
 
 @login_required
 def rates_inputs_create(request):
     """This will validate/create a new rates inputs item"""
-    if request.method == 'POST':
+    if request.method == "POST":
         form = RatesInputsForm(request.POST)
 
         if form.is_valid():
@@ -390,17 +390,17 @@ def rates_inputs_create(request):
             item.created_by = request.user
             item.save()
 
-            return redirect('/rates/')
+            return redirect("/rates/")
     else:
         form = RatesInputsForm()
 
     return render(
         request,
-        'pages/inputs_create.html',
+        "pages/inputs_create.html",
         {
-            'form': form,
-            'descriptions': var_descriptions,
-            'title': 'New rates Inputs',
+            "form": form,
+            "descriptions": var_descriptions,
+            "title": "New rates Inputs",
         },
     )
 
@@ -410,23 +410,23 @@ def rates_inputs_edit(request, pk):
     """This will edit a rates inputs item"""
     rates_inputs = get_object_or_404(RatesInputsModel, pk=pk, created_by=request.user)
 
-    if request.method == 'POST':
+    if request.method == "POST":
         form = RatesInputsForm(request.POST, instance=rates_inputs)
 
         if form.is_valid():
             form.save()
 
-            return redirect('/rates/')
+            return redirect("/rates/")
     else:
         form = RatesInputsForm(instance=rates_inputs)
 
     return render(
         request,
-        'pages/inputs_create.html',
+        "pages/inputs_create.html",
         {
-            'form': form,
-            'descriptions': var_descriptions,
-            'title': 'Edit rates Inputs',
+            "form": form,
+            "descriptions": var_descriptions,
+            "title": "Edit rates Inputs",
         },
     )
 
@@ -436,86 +436,86 @@ def rates_inputs_delete(request, pk):
     rates_inputs = get_object_or_404(RatesInputsModel, pk=pk, created_by=request.user)
     rates_inputs.delete()
 
-    return redirect('rates_inputs_dashboard')
+    return redirect("rates_inputs_dashboard")
 
 
 @login_required
 def calculations(request):
     """This will run the financial calculations"""
-    if request.method == 'POST':
-        print('Post request')
+    if request.method == "POST":
+        print("Post request")
 
     else:
-        print('Get request')
+        print("Get request")
         bad_active_list = []
         general_inputs_model = GeneralInputsModel.objects.filter(
             created_by=request.user, is_active=True
         )
 
         if ensure_active_inputs(general_inputs_model, 1):
-            general_inputs_dict = model_to_dict(general_inputs_model[0], 'general')
-            print(f'{general_inputs_dict =}')
+            general_inputs_dict = model_to_dict(general_inputs_model[0], "general")
+            print(f"{general_inputs_dict =}")
         else:
-            bad_active_list.append('General')
+            bad_active_list.append("General")
 
         savings_inputs_model = SavingsInputsModel.objects.filter(
             created_by=request.user, is_active=True
         )
 
         if ensure_active_inputs(savings_inputs_model, 1):
-            savings_inputs_dict = model_to_dict(savings_inputs_model[0], 'savings')
-            print(f'{savings_inputs_dict =}')
+            savings_inputs_dict = model_to_dict(savings_inputs_model[0], "savings")
+            print(f"{savings_inputs_dict =}")
         else:
-            bad_active_list.append('Savings')
+            bad_active_list.append("Savings")
 
         payments_inputs_model = PaymentsInputsModel.objects.filter(
             created_by=request.user, is_active=True
         )
         payments_list = []
         for payment in payments_inputs_model:
-            print(model_to_dict(payment, 'payments'))
-            payments_list.append(model_to_dict(payment, 'payments'))
-        print(f'{payments_list = }')
+            print(model_to_dict(payment, "payments"))
+            payments_list.append(model_to_dict(payment, "payments"))
+        print(f"{payments_list = }")
 
         retirement_inputs_model = RetirementInputsModel.objects.filter(
             created_by=request.user, is_active=True
         )
         if ensure_active_inputs(retirement_inputs_model, 1):
             retirement_inputs_dict = model_to_dict(
-                retirement_inputs_model[0], 'retirement'
+                retirement_inputs_model[0], "retirement"
             )
-            print(f'{retirement_inputs_dict =}')
+            print(f"{retirement_inputs_dict =}")
         else:
-            bad_active_list.append('Retirement')
+            bad_active_list.append("Retirement")
 
         rates_inputs_model = RatesInputsModel.objects.filter(
             created_by=request.user, is_active=True
         )
         if ensure_active_inputs(rates_inputs_model, 1):
-            rates_inputs_dict = model_to_dict(rates_inputs_model[0], 'rates')
-            print(f'{rates_inputs_dict =}')
+            rates_inputs_dict = model_to_dict(rates_inputs_model[0], "rates")
+            print(f"{rates_inputs_dict =}")
         else:
-            bad_active_list.append('Rates')
+            bad_active_list.append("Rates")
         if bad_active_list:
-            print('There were some bad active inputs')
+            print("There were some bad active inputs")
             return render(
                 request,
-                'pages/non_active.html',
+                "pages/non_active.html",
                 {
-                    'errors': bad_active_list,
+                    "errors": bad_active_list,
                 },
             )
 
     full_dict = {
-        **{'name': 'Test Scenario'},
+        **{"name": "Test Scenario"},
         **general_inputs_dict,
         **savings_inputs_dict,
-        **{'payment_items': payments_list},
+        **{"payment_items": payments_list},
         **retirement_inputs_dict,
         **rates_inputs_dict,
     }
 
-    print(f'full_dict is {full_dict}')
+    print(f"full_dict is {full_dict}")
     # print(f'base_bills is {full_dict['base_monthly_bills']}')
 
     (total_savings_df, total_retirement_df, total_outputs_df) = (
@@ -524,37 +524,37 @@ def calculations(request):
 
     results_dict = {}
     for age in range(40, 105, 5):
-        print(f'Processing calc for age {age}')
+        print(f"Processing calc for age {age}")
         print(total_savings_df.head())
         savings_at_age = total_savings_df.loc[
             lambda df: (df.age_yrs == age) & (df.age_mos == 0)
-        ]['avg'].iat[0]
-        print(f'{savings_at_age = }')
+        ]["avg"].iat[0]
+        print(f"{savings_at_age = }")
 
         retirement_at_age = total_retirement_df.loc[
             lambda df: (df.age_yrs == age) & (df.age_mos == 0)
-        ]['avg'].iat[0]
-        print(f'{retirement_at_age = }')
+        ]["avg"].iat[0]
+        print(f"{retirement_at_age = }")
 
         results_dict[age] = [
-            f'Average savings at age {age} is ${savings_at_age:,.0f}',
-            f'Average retirement at age {age} is ${retirement_at_age:,.0f}',
+            f"Average savings at age {age} is ${savings_at_age:,.0f}",
+            f"Average retirement at age {age} is ${retirement_at_age:,.0f}",
         ]
-    print(f'{results_dict = }')
-    print('')
+    print(f"{results_dict = }")
+    print("")
     # print(val for val in results_dict.values())
 
     savings_retirement_fig = px.line(
-        total_outputs_df, x='age_yrs', y='avg', color='account_type', height=600
+        total_outputs_df, x="age_yrs", y="avg", color="account_type", height=600
     )
-    savings_retirement_fig.update_xaxes(title_text='Age (years)', dtick=5)
-    savings_retirement_fig.update_yaxes(title_text='Amount')
+    savings_retirement_fig.update_xaxes(title_text="Age (years)", dtick=5)
+    savings_retirement_fig.update_yaxes(title_text="Amount")
     savings_retirement_fig_html = savings_retirement_fig.to_html()
-    print(f'savings_retirement_fig_html type: {type(savings_retirement_fig_html)}')
+    print(f"savings_retirement_fig_html type: {type(savings_retirement_fig_html)}")
 
     table_view = (
-        total_outputs_df[['age_yrs', 'account_type', 'avg']]
-        .pivot(index='age_yrs', columns='account_type', values='avg')
+        total_outputs_df[["age_yrs", "account_type", "avg"]]
+        .pivot(index="age_yrs", columns="account_type", values="avg")
         .reset_index()
         # .to_html(
         #     classes="table table-hover table-primary table-striped table-bordered",
@@ -563,16 +563,16 @@ def calculations(request):
         #     index_names=False,
         # )
     )
-    print('')
-    print(f'table_view type is {type(table_view)}')
+    print("")
+    print(f"table_view type is {type(table_view)}")
 
     fig = go.Figure(
         data=[
             go.Table(
                 header=dict(
                     values=list(table_view.columns),
-                    fill_color='paleturquoise',
-                    align='left',
+                    fill_color="paleturquoise",
+                    align="left",
                 ),
                 cells=dict(
                     values=[
@@ -581,8 +581,8 @@ def calculations(request):
                         table_view.retirement,
                         table_view.total,
                     ],
-                    fill_color='lavender',
-                    align='left',
+                    fill_color="lavender",
+                    align="left",
                 ),
             )
         ],
@@ -592,9 +592,9 @@ def calculations(request):
 
     return render(
         request,
-        'pages/calculations.html',
+        "pages/calculations.html",
         {
-            'chart': savings_retirement_fig_html,
-            'table': fig.to_html(),
+            "chart": savings_retirement_fig_html,
+            "table": fig.to_html(),
         },
     )
