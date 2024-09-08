@@ -82,3 +82,11 @@ To get the VS Code instance going using poetry:
 - Open a command window
 - Navigate to where the repo is
 - Then execute `code .`
+
+### Ruff
+We are using ruff as our formatter and linter
+- [Getting Started](https://docs.astral.sh/ruff/tutorial/#getting-started)
+- `ruff check`
+- `ruff check --fix`
+- `ruff check <file location>`
+- `ruff format`
