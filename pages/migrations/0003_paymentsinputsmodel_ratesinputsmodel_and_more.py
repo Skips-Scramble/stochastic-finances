@@ -9,27 +9,27 @@ import pages.model_validators
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("pages", "0002_alter_generalinputsmodel_birthdate_and_more"),
+        ('pages', '0002_alter_generalinputsmodel_birthdate_and_more'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name="PaymentsInputsModel",
+            name='PaymentsInputsModel',
             fields=[
                 (
-                    "id",
+                    'id',
                     models.BigAutoField(
                         auto_created=True,
                         primary_key=True,
                         serialize=False,
-                        verbose_name="ID",
+                        verbose_name='ID',
                     ),
                 ),
-                ("is_active", models.BooleanField(default=False)),
-                ("pmt_name", models.CharField(blank=True, max_length=100, null=True)),
+                ('is_active', models.BooleanField(default=False)),
+                ('pmt_name', models.CharField(blank=True, max_length=100, null=True)),
                 (
-                    "pmt_start_age_yrs",
+                    'pmt_start_age_yrs',
                     models.IntegerField(
                         blank=True,
                         null=True,
@@ -37,7 +37,7 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
-                    "pmt_start_age_mos",
+                    'pmt_start_age_mos',
                     models.IntegerField(
                         blank=True,
                         null=True,
@@ -45,7 +45,7 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
-                    "pmt_length_yrs",
+                    'pmt_length_yrs',
                     models.IntegerField(
                         blank=True,
                         null=True,
@@ -53,7 +53,7 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
-                    "pmt_length_mos",
+                    'pmt_length_mos',
                     models.IntegerField(
                         blank=True,
                         null=True,
@@ -61,7 +61,7 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
-                    "down_pmt",
+                    'down_pmt',
                     models.FloatField(
                         blank=True,
                         null=True,
@@ -72,7 +72,7 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
-                    "monthly_pmt",
+                    'monthly_pmt',
                     models.FloatField(
                         blank=True,
                         null=True,
@@ -82,37 +82,37 @@ class Migration(migrations.Migration):
                         ],
                     ),
                 ),
-                ("modified_at", models.DateTimeField(auto_now=True)),
+                ('modified_at', models.DateTimeField(auto_now=True)),
                 (
-                    "created_by",
+                    'created_by',
                     models.ForeignKey(
                         blank=True,
                         null=True,
                         on_delete=django.db.models.deletion.CASCADE,
-                        related_name="payments_inputs",
+                        related_name='payments_inputs',
                         to=settings.AUTH_USER_MODEL,
                     ),
                 ),
             ],
             options={
-                "verbose_name_plural": "Payments_Inputs",
+                'verbose_name_plural': 'Payments_Inputs',
             },
         ),
         migrations.CreateModel(
-            name="RatesInputsModel",
+            name='RatesInputsModel',
             fields=[
                 (
-                    "id",
+                    'id',
                     models.BigAutoField(
                         auto_created=True,
                         primary_key=True,
                         serialize=False,
-                        verbose_name="ID",
+                        verbose_name='ID',
                     ),
                 ),
-                ("is_active", models.BooleanField(default=False)),
+                ('is_active', models.BooleanField(default=False)),
                 (
-                    "base_rf_interest_per_yr",
+                    'base_rf_interest_per_yr',
                     models.FloatField(
                         validators=[
                             pages.model_validators.validate_rates_per_yr,
@@ -121,7 +121,7 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
-                    "base_mkt_interest_per_yr",
+                    'base_mkt_interest_per_yr',
                     models.FloatField(
                         validators=[
                             pages.model_validators.validate_rates_per_yr,
@@ -130,7 +130,7 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
-                    "base_inflation_per_yr",
+                    'base_inflation_per_yr',
                     models.FloatField(
                         validators=[
                             pages.model_validators.validate_rates_per_yr,
@@ -138,37 +138,37 @@ class Migration(migrations.Migration):
                         ]
                     ),
                 ),
-                ("modified_at", models.DateTimeField(auto_now=True)),
+                ('modified_at', models.DateTimeField(auto_now=True)),
                 (
-                    "created_by",
+                    'created_by',
                     models.ForeignKey(
                         blank=True,
                         null=True,
                         on_delete=django.db.models.deletion.CASCADE,
-                        related_name="rates_inputs",
+                        related_name='rates_inputs',
                         to=settings.AUTH_USER_MODEL,
                     ),
                 ),
             ],
             options={
-                "verbose_name_plural": "Rates_Inputs",
+                'verbose_name_plural': 'Rates_Inputs',
             },
         ),
         migrations.CreateModel(
-            name="RetirementInputsModel",
+            name='RetirementInputsModel',
             fields=[
                 (
-                    "id",
+                    'id',
                     models.BigAutoField(
                         auto_created=True,
                         primary_key=True,
                         serialize=False,
-                        verbose_name="ID",
+                        verbose_name='ID',
                     ),
                 ),
-                ("is_active", models.BooleanField(default=False)),
+                ('is_active', models.BooleanField(default=False)),
                 (
-                    "base_retirement",
+                    'base_retirement',
                     models.FloatField(
                         validators=[
                             pages.model_validators.validate_base_retirement,
@@ -177,7 +177,7 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
-                    "base_retirement_per_mo",
+                    'base_retirement_per_mo',
                     models.FloatField(
                         validators=[
                             pages.model_validators.validate_base_retirement_per_mo,
@@ -186,7 +186,7 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
-                    "base_retirement_per_yr_increase",
+                    'base_retirement_per_yr_increase',
                     models.FloatField(
                         validators=[
                             pages.model_validators.validate_base_retirement_per_yr_increase,
@@ -195,7 +195,7 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
-                    "retirement_extra_expenses",
+                    'retirement_extra_expenses',
                     models.FloatField(
                         validators=[
                             pages.model_validators.validate_retirement_extra_expenses,
@@ -203,37 +203,37 @@ class Migration(migrations.Migration):
                         ]
                     ),
                 ),
-                ("modified_at", models.DateTimeField(auto_now=True)),
+                ('modified_at', models.DateTimeField(auto_now=True)),
                 (
-                    "created_by",
+                    'created_by',
                     models.ForeignKey(
                         blank=True,
                         null=True,
                         on_delete=django.db.models.deletion.CASCADE,
-                        related_name="retirement_inputs",
+                        related_name='retirement_inputs',
                         to=settings.AUTH_USER_MODEL,
                     ),
                 ),
             ],
             options={
-                "verbose_name_plural": "Retirement_Inputs",
+                'verbose_name_plural': 'Retirement_Inputs',
             },
         ),
         migrations.CreateModel(
-            name="SavingsInputsModel",
+            name='SavingsInputsModel',
             fields=[
                 (
-                    "id",
+                    'id',
                     models.BigAutoField(
                         auto_created=True,
                         primary_key=True,
                         serialize=False,
-                        verbose_name="ID",
+                        verbose_name='ID',
                     ),
                 ),
-                ("is_active", models.BooleanField(default=False)),
+                ('is_active', models.BooleanField(default=False)),
                 (
-                    "base_savings",
+                    'base_savings',
                     models.FloatField(
                         validators=[
                             pages.model_validators.validate_base_savings,
@@ -242,7 +242,7 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
-                    "base_saved_per_mo",
+                    'base_saved_per_mo',
                     models.FloatField(
                         validators=[
                             pages.model_validators.validate_base_saved_per_mo,
@@ -251,7 +251,7 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
-                    "base_savings_per_yr_increase",
+                    'base_savings_per_yr_increase',
                     models.FloatField(
                         validators=[
                             pages.model_validators.validate_base_per_yr_increase,
@@ -260,7 +260,7 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
-                    "savings_lower_limit",
+                    'savings_lower_limit',
                     models.FloatField(
                         validators=[
                             pages.model_validators.validate_savings_lower_limit,
@@ -269,7 +269,7 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
-                    "base_monthly_bills",
+                    'base_monthly_bills',
                     models.FloatField(
                         validators=[
                             pages.model_validators.validate_base_monthly_bills,
@@ -277,18 +277,18 @@ class Migration(migrations.Migration):
                         ]
                     ),
                 ),
-                ("modified_at", models.DateTimeField(auto_now=True)),
+                ('modified_at', models.DateTimeField(auto_now=True)),
                 (
-                    "created_by",
+                    'created_by',
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
-                        related_name="savings_inputs",
+                        related_name='savings_inputs',
                         to=settings.AUTH_USER_MODEL,
                     ),
                 ),
             ],
             options={
-                "verbose_name_plural": "Savings_Inputs",
+                'verbose_name_plural': 'Savings_Inputs',
             },
         ),
     ]

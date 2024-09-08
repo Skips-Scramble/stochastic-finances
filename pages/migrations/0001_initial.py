@@ -14,35 +14,35 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name="GeneralInputsModel",
+            name='GeneralInputsModel',
             fields=[
                 (
-                    "id",
+                    'id',
                     models.BigAutoField(
                         auto_created=True,
                         primary_key=True,
                         serialize=False,
-                        verbose_name="ID",
+                        verbose_name='ID',
                     ),
                 ),
-                ("is_active", models.BooleanField(default=False)),
-                ("birthdate", models.DateField()),
-                ("retirement_age_yrs", models.IntegerField()),
-                ("retirement_age_mos", models.IntegerField()),
-                ("modified_at", models.DateTimeField(auto_now=True)),
+                ('is_active', models.BooleanField(default=False)),
+                ('birthdate', models.DateField()),
+                ('retirement_age_yrs', models.IntegerField()),
+                ('retirement_age_mos', models.IntegerField()),
+                ('modified_at', models.DateTimeField(auto_now=True)),
                 (
-                    "created_by",
+                    'created_by',
                     models.ForeignKey(
                         blank=True,
                         null=True,
                         on_delete=django.db.models.deletion.CASCADE,
-                        related_name="general_inputs",
+                        related_name='general_inputs',
                         to=settings.AUTH_USER_MODEL,
                     ),
                 ),
             ],
             options={
-                "verbose_name_plural": "General_Inputs",
+                'verbose_name_plural': 'General_Inputs',
             },
         ),
     ]

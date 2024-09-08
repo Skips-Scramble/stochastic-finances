@@ -43,7 +43,7 @@ class GeneralInputsModel(models.Model):
 
     created_by = models.ForeignKey(
         CustomUser,
-        related_name="general_inputs",
+        related_name='general_inputs',
         on_delete=models.CASCADE,
         null=True,
         blank=True,
@@ -51,7 +51,7 @@ class GeneralInputsModel(models.Model):
     modified_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name_plural = "General_Inputs"
+        verbose_name_plural = 'General_Inputs'
 
 
 class SavingsInputsModel(models.Model):
@@ -75,13 +75,13 @@ class SavingsInputsModel(models.Model):
     )
     created_by = models.ForeignKey(
         CustomUser,
-        related_name="savings_inputs",
+        related_name='savings_inputs',
         on_delete=models.CASCADE,
     )
     modified_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name_plural = "Savings_Inputs"
+        verbose_name_plural = 'Savings_Inputs'
 
 
 class PaymentsInputsModel(models.Model):
@@ -107,7 +107,7 @@ class PaymentsInputsModel(models.Model):
     )
     created_by = models.ForeignKey(
         CustomUser,
-        related_name="payments_inputs",
+        related_name='payments_inputs',
         on_delete=models.CASCADE,
         null=True,
         blank=True,
@@ -115,7 +115,7 @@ class PaymentsInputsModel(models.Model):
     modified_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name_plural = "Payments_Inputs"
+        verbose_name_plural = 'Payments_Inputs'
 
 
 class RetirementInputsModel(models.Model):
@@ -134,7 +134,7 @@ class RetirementInputsModel(models.Model):
     )
     created_by = models.ForeignKey(
         CustomUser,
-        related_name="retirement_inputs",
+        related_name='retirement_inputs',
         on_delete=models.CASCADE,
         null=True,
         blank=True,
@@ -142,7 +142,7 @@ class RetirementInputsModel(models.Model):
     modified_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name_plural = "Retirement_Inputs"
+        verbose_name_plural = 'Retirement_Inputs'
 
 
 class RatesInputsModel(models.Model):
@@ -158,7 +158,7 @@ class RatesInputsModel(models.Model):
     )
     created_by = models.ForeignKey(
         CustomUser,
-        related_name="rates_inputs",
+        related_name='rates_inputs',
         on_delete=models.CASCADE,
         null=True,
         blank=True,
@@ -166,4 +166,4 @@ class RatesInputsModel(models.Model):
     modified_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name_plural = "Rates_Inputs"
+        verbose_name_plural = 'Rates_Inputs'
