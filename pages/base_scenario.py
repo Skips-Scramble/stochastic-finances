@@ -5,7 +5,7 @@ from functools import cached_property
 import pandas as pd
 from dateutil.relativedelta import relativedelta
 
-DEATH_YEARS = 110
+DEATH_YEARS = 111
 
 
 def calc_date_on_age(birthdate: date, age_yrs: int, age_mos: int) -> datetime.date:

@@ -2,22 +2,63 @@
 {% load static %}
 {% block title %}Calculations{% endblock %}
 {% block content %}
-    <div class="container">
-        <br />
-        <h3>Results</h3>
-        <br />
-        <div class = "container">
-          {{ table|safe }}
-        </div>
-      <div class = "container">
-          <h5 class="card-title mb-0">Savings and Retirement</h5>
-      </div>
-      <div class="card-body d-flex w-100">
-          <div class="align-self-center chart chart-lg">
-              <canvas id="chartjs-dashboard-bar"></canvas>
+<div class="row mb-2 mb-xl-3">
+  <div class="col-auto d-none d-sm-block">
+    <h3>Dashboard</h3>
+  </div>
+</div>
+<div class="row">
+  <div class="col-12 col-sm-6 col-xxl-4 d-flex">
+    <div class="card flex-fill">
+      <div class="card-body py-4">
+        <div class="d-flex align-items-start">
+          <div class="flex-grow-1">
+            <h3 class="mb-2">{{ prob_of_positive | safe }}%</h3>
+            <p class="mb-2">Probability of having enough for your life</p>
           </div>
+        </div>
       </div>
     </div>
+  </div>
+  <div class="col-12 col-sm-6 col-xxl-4 d-flex">
+    <div class="card flex-fill">
+      <div class="card-body py-4">
+        <div class="d-flex align-items-start">
+          <div class="flex-grow-1">
+            <h3 class="mb-2">{{ avg_savings_at_retirement | safe }}</h3>
+            <p class="mb-2">Average savings at retirement</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-12 col-sm-6 col-xxl-4 d-flex">
+    <div class="card flex-fill">
+      <div class="card-body py-4">
+        <div class="d-flex align-items-start">
+          <div class="flex-grow-1">
+            <h3 class="mb-2">{{ avg_retirement_at_retirement | safe }}</h3>
+            <p class="mb-2">Average retirement at retirement</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-12 col-lg-12 d-flex">
+    <div class="card flex-fill w-100">
+      <div class="card-header">
+        <h5 class="card-title mb-0">Average Savings and Retirement</h5>
+      </div>
+      <div class="card-body d-flex w-100">
+        <div class="align-self-center chart chart-lg">
+          <canvas id="chartjs-dashboard-bar"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock content %}
 {% block javascript %}
     <script>
@@ -33,7 +74,7 @@
           borderColor: window.theme.primary,
           hoverBackgroundColor: window.theme.primary,
           hoverBorderColor: window.theme.primary,
-          data: {{ retirment_by_age | safe }},
+          data: {{ retirement_by_age | safe }},
           barPercentage: .325,
           categoryPercentage: .5
         }, {
@@ -51,15 +92,19 @@
         maintainAspectRatio: false,
         cornerRadius: 15,
         legend: {
-          display: false
+          display: true
         },
         scales: {
           yAxes: [{
             gridLines: {
-              display: false
+              display: true
             },
             ticks: {
-              stepSize: 20
+              callback: function(value) {
+                // Format the y-axis values as dollars
+                return '$' + value.toLocaleString();
+              },
+              stepsize: 20
             },
             stacked: true,
           }],

@@ -1,7 +1,6 @@
 import logging
 
-import plotly.express as px
-import plotly.graph_objects as go
+import pandas as pd
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.generic import TemplateView
@@ -522,6 +521,74 @@ def calculations(request):
         stochastic_finances_func.main(full_dict)
     )
 
+    # Generate values for cards
+    # Probability of having enough money through death
+
+    print("Total_savings_df:")
+    print(total_savings_df.head())
+
+    death_age = 110
+    death_months = 0
+
+    total_all_at_death = (
+        pd.concat(
+            [
+                total_savings_df.loc[
+                    lambda df: (df.age_yrs == death_age) & (df.age_mos == death_months)
+                ],
+                total_retirement_df.loc[
+                    lambda df: (df.age_yrs == death_age) & (df.age_mos == death_months)
+                ],
+            ]
+        )
+        .drop(
+            columns=["avg", "account_type", "account_0"]
+        )  # Don't want to include base account - not stochastic
+        .groupby(["age_yrs", "age_mos"])
+        .sum()
+    )
+
+    print("total_all_at_death")
+    print(total_all_at_death.head())
+
+    negative_count = (
+        (total_all_at_death.reset_index().drop(columns=["age_yrs", "age_mos"]) < 0)
+        .sum(axis=1)
+        .iat[0]
+    )
+
+    print(f"{negative_count = }")
+
+    total_scenarios_count = (
+        total_all_at_death.reset_index().drop(columns=["age_yrs", "age_mos"]).shape[1]
+    )
+
+    print(f"total scenarios is {total_scenarios_count}")
+
+    ####
+    # Average savings at retirement
+    ####
+
+    avg_savings_at_retirement = total_savings_df.loc[
+        lambda df: (df.age_yrs == general_inputs_dict["retirement_age_yrs"])
+        & (df.age_mos == general_inputs_dict["retirement_age_mos"])
+    ]["avg"].iat[0]
+
+    avg_savings_at_retirement_fmt = f"${float(avg_savings_at_retirement):,.0f}"
+
+    ####
+    # Average retirement at retirement
+    ####
+
+    avg_retirement_at_retirement = total_retirement_df.loc[
+        lambda df: (df.age_yrs == general_inputs_dict["retirement_age_yrs"])
+        & (df.age_mos == general_inputs_dict["retirement_age_mos"])
+    ]["avg"].iat[0]
+
+    avg_retirement_at_retirement_fmt = f"${float(avg_retirement_at_retirement):,.0f}"
+
+    print(f"{avg_retirement_at_retirement_fmt = }")
+
     ages_for_chart = total_savings_df.loc[
         lambda df: (df.age_yrs % 5 == 0) & (df.age_mos == 0)
     ]["age_yrs"].to_list()
@@ -548,81 +615,18 @@ def calculations(request):
 
     print(f"{retirement_for_chart = }")
 
-    results_dict = {}
-    for age in range(40, 105, 5):
-        print(f"Processing calc for age {age}")
-        # print(total_savings_df.head())
-        savings_at_age = total_savings_df.loc[
-            lambda df: (df.age_yrs == age) & (df.age_mos == 0)
-        ]["avg"].iat[0]
-        print(f"{savings_at_age = }")
-
-        retirement_at_age = total_retirement_df.loc[
-            lambda df: (df.age_yrs == age) & (df.age_mos == 0)
-        ]["avg"].iat[0]
-        print(f"{retirement_at_age = }")
-
-        results_dict[age] = [
-            f"Average savings at age {age} is ${savings_at_age:,.0f}",
-            f"Average retirement at age {age} is ${retirement_at_age:,.0f}",
-        ]
-    print(f"{results_dict = }")
-    print("")
-    # print(val for val in results_dict.values())
-
-    savings_retirement_fig = px.line(
-        total_outputs_df, x="age_yrs", y="avg", color="account_type", height=600
-    )
-    savings_retirement_fig.update_xaxes(title_text="Age (years)", dtick=5)
-    savings_retirement_fig.update_yaxes(title_text="Amount")
-    savings_retirement_fig_html = savings_retirement_fig.to_html()
-    print(f"savings_retirement_fig_html type: {type(savings_retirement_fig_html)}")
-
-    table_view = (
-        total_outputs_df[["age_yrs", "account_type", "avg"]]
-        .pivot(index="age_yrs", columns="account_type", values="avg")
-        .reset_index()
-        # .to_html(
-        #     classes="table table-hover table-primary table-striped table-bordered",
-        #     columns=["age_yrs", "savings", "retirement", "total"],
-        #     index=False,
-        #     index_names=False,
-        # )
-    )
-    print("")
-    print(f"table_view type is {type(table_view)}")
-
-    fig = go.Figure(
-        data=[
-            go.Table(
-                header=dict(
-                    values=list(table_view.columns),
-                    fill_color="paleturquoise",
-                    align="left",
-                ),
-                cells=dict(
-                    values=[
-                        table_view.age_yrs,
-                        table_view.savings,
-                        table_view.retirement,
-                        table_view.total,
-                    ],
-                    fill_color="lavender",
-                    align="left",
-                ),
-            )
-        ],
-    )
-
-    # fig.show()
-
     return render(
         request,
         "pages/calculations.html",
         {
-            "table": fig.to_html(),
+            "prob_of_positive": round(
+                (1 - (negative_count / total_scenarios_count)) * 100, 0
+            ),
+            "avg_savings_at_retirement": avg_savings_at_retirement_fmt,
+            "avg_retirement_at_retirement": avg_retirement_at_retirement_fmt,
             "age_labels": ages_for_chart,
             "savings_by_age": savings_for_chart,
-            "retirment_by_age": retirement_for_chart,
+            "retirement_by_age": retirement_for_chart,
+            "y_axis_range": [x for x in range(0, 3_000_000, 250_000)],
         },
     )
