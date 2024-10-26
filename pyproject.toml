@@ -21,6 +21,7 @@ pydantic_core = ">=2.14.6"
 whitenoise = ">=5.2.0"
 crispy-bootstrap4 = "^2024.1"
 pre-commit = "^3.8.0"
+djlint = "^1.35.2"
 
 
 [tool.poetry.group.dev.dependencies]

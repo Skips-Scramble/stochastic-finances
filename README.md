@@ -83,6 +83,12 @@ To get the VS Code instance going using poetry:
 - Navigate to where the repo is
 - Then execute `poetry run code .`
 
+### Poetry
+Add packages
+  - `poetry add <package name>`
+    - This will automatically choose the right version for you
+  - This will rebuild for you as well
+
 ### Ruff
 We are using ruff as our formatter and linter
 - [Getting Started](https://docs.astral.sh/ruff/tutorial/#getting-started)
@@ -90,3 +96,8 @@ We are using ruff as our formatter and linter
 - `ruff check --fix`
 - `ruff check <file location>`
 - `ruff format`
+
+### Djlint
+I don't think ruff lints and formats djando html files, so we use djlint
+  - `djlint /path/to/file.html --check`
+  - `djlint /path/to/file.html --reformat`

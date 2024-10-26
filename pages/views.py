@@ -522,10 +522,36 @@ def calculations(request):
         stochastic_finances_func.main(full_dict)
     )
 
+    ages_for_chart = total_savings_df.loc[
+        lambda df: (df.age_yrs % 5 == 0) & (df.age_mos == 0)
+    ]["age_yrs"].to_list()
+
+    print(f"{ages_for_chart = }")
+
+    savings_for_chart = (
+        total_savings_df.loc[lambda df: (df.age_yrs % 5 == 0) & (df.age_mos == 0)][
+            "avg"
+        ]
+        .round()
+        .to_list()
+    )
+
+    print(f"{savings_for_chart = }")
+
+    retirement_for_chart = (
+        total_retirement_df.loc[lambda df: (df.age_yrs % 5 == 0) & (df.age_mos == 0)][
+            "avg"
+        ]
+        .round()
+        .to_list()
+    )
+
+    print(f"{retirement_for_chart = }")
+
     results_dict = {}
     for age in range(40, 105, 5):
         print(f"Processing calc for age {age}")
-        print(total_savings_df.head())
+        # print(total_savings_df.head())
         savings_at_age = total_savings_df.loc[
             lambda df: (df.age_yrs == age) & (df.age_mos == 0)
         ]["avg"].iat[0]
@@ -594,7 +620,9 @@ def calculations(request):
         request,
         "pages/calculations.html",
         {
-            "chart": savings_retirement_fig_html,
             "table": fig.to_html(),
+            "age_labels": ages_for_chart,
+            "savings_by_age": savings_for_chart,
+            "retirment_by_age": retirement_for_chart,
         },
     )
