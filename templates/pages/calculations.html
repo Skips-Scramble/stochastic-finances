@@ -59,6 +59,61 @@
             </div>
         </div>
     </div>
+    <div class="col-12 col-xl-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title">Calculations by Age</h5>
+            </div>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th rowspan="1" style="width:10%; border-right: 1px solid black;"></th>
+                        <th colspan="3"
+                            style="width:25%;
+                                   text-align: center;
+                                   border-right: 1px solid black">Total</th>
+                        <th colspan="3"
+                            style="width:25%;
+                                   text-align: center;
+                                   border-right: 1px solid black">Savings</th>
+                        <th colspan="3" style="width:25%; text-align: center;">Retirement</th>
+                    </tr>
+                    <tr>
+                        <th style="text-align: center; border-right: 1px solid black;">Age</th>
+                        <!-- Sub-headers for Total -->
+                        <th style="text-align: center;">Avg</th>
+                        <th style="text-align: center;">15th Percentile</th>
+                        <th style="text-align: center; border-right: 1px solid black;">85th Percentile</th>
+                        <!-- Sub-headers for Savings -->
+                        <th style="text-align: center;">Avg</th>
+                        <th style="text-align: center;">15th Percentile</th>
+                        <th style="text-align: center; border-right: 1px solid black;">85th Percentile</th>
+                        <!-- Sub-headers for Retirement -->
+                        <th style="text-align: center;">Avg</th>
+                        <th style="text-align: center;">15th Percentile</th>
+                        <th style="text-align: center;">85th Percentile</th>
+                    </tr>
+                </thead>
+                {% load humanize %}
+                <tbody>
+                    {% for age in table_data %}
+                        <tr>
+                            <td style="text-align: center; border-right: 1px solid black;">{{ age.age_yrs }}</td>
+                            <td style="text-align: center;">${{ age.avg_tot|floatformat:0|intcomma }}</td>
+                            <td style="text-align: center;">${{ age.pct_15_tot|floatformat:0|intcomma }}</td>
+                            <td style="text-align: center; border-right: 1px solid black;">${{ age.pct_85_tot|floatformat:0|intcomma }}</td>
+                            <td style="text-align: center;">${{ age.avg_savings|floatformat:0|intcomma }}</td>
+                            <td style="text-align: center;">${{ age.pct_15_savings|floatformat:0|intcomma }}</td>
+                            <td style="text-align: center; border-right: 1px solid black;">${{ age.pct_85_savings|floatformat:0|intcomma }}</td>
+                            <td style="text-align: center;">${{ age.avg_retirement|floatformat:0|intcomma }}</td>
+                            <td style="text-align: center;">${{ age.pct_15_retirement|floatformat:0|intcomma }}</td>
+                            <td style="text-align: center;">${{ age.pct_85_retirement|floatformat:0|intcomma }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 {% endblock content %}
 {% block javascript %}
     <script>

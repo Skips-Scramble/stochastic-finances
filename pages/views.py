@@ -522,7 +522,10 @@ def calculations(request):
     )
 
     # Generate values for cards
+
+    ####
     # Probability of having enough money through death
+    ####
 
     print("Total_savings_df:")
     print(total_savings_df.head())
@@ -589,6 +592,10 @@ def calculations(request):
 
     print(f"{avg_retirement_at_retirement_fmt = }")
 
+    ####
+    # Get data for chart
+    ####
+
     ages_for_chart = total_savings_df.loc[
         lambda df: (df.age_yrs % 5 == 0) & (df.age_mos == 0)
     ]["age_yrs"].to_list()
@@ -615,6 +622,76 @@ def calculations(request):
 
     print(f"{retirement_for_chart = }")
 
+    ####
+    # Get data for table
+    ####
+
+    savings_metrics_by_age_df = total_savings_df.loc[lambda df: df.age_mos == 0].assign(
+        pct_15_savings=lambda df: df.drop(
+            columns=["age_yrs", "age_mos", "avg", "account_type"]
+        ).quantile(0.15, axis=1),
+        pct_85_savings=lambda df: df.drop(
+            columns=["age_yrs", "age_mos", "avg", "account_type"]
+        ).quantile(0.85, axis=1),
+        avg_savings=lambda df: df.avg,
+    )[["age_yrs", "age_mos", "avg_savings", "pct_15_savings", "pct_85_savings"]]
+
+    retirement_metrics_by_age_df = total_retirement_df.loc[
+        lambda df: df.age_mos == 0
+    ].assign(
+        pct_15_retirement=lambda df: df.drop(
+            columns=["age_yrs", "age_mos", "avg", "account_type"]
+        ).quantile(0.15, axis=1),
+        pct_85_retirement=lambda df: df.drop(
+            columns=["age_yrs", "age_mos", "avg", "account_type"]
+        ).quantile(0.85, axis=1),
+        avg_retirement=lambda df: df.avg,
+    )[
+        [
+            "age_yrs",
+            "age_mos",
+            "avg_retirement",
+            "pct_15_retirement",
+            "pct_85_retirement",
+        ]
+    ]
+
+    total_metrics_by_age_df = (
+        (
+            pd.concat(
+                [
+                    total_savings_df.loc[lambda df: df.age_mos == 0],
+                    total_retirement_df.loc[lambda df: df.age_mos == 0],
+                ]
+            )
+            .groupby(["age_yrs", "age_mos"])
+            .sum()
+        )
+        .assign(
+            pct_15_tot=lambda df: df.drop(columns=["avg", "account_type"]).quantile(
+                0.15, axis=1
+            ),
+            pct_85_tot=lambda df: df.drop(columns=["avg", "account_type"]).quantile(
+                0.85, axis=1
+            ),
+            avg_tot=lambda df: df.drop(columns=["avg", "account_type"]).mean(axis=1),
+        )
+        .reset_index()
+    )[["age_yrs", "age_mos", "avg_tot", "pct_15_tot", "pct_85_tot"]]
+
+    print("Total metrics by age")
+    print(total_metrics_by_age_df.head())
+
+    all_metrics_combined_df = total_metrics_by_age_df.merge(
+        savings_metrics_by_age_df, on=["age_yrs", "age_mos"], how="left"
+    ).merge(retirement_metrics_by_age_df, on=["age_yrs", "age_mos"], how="left")
+
+    print(all_metrics_combined_df.head())
+
+    table_data = all_metrics_combined_df.to_dict(orient="records")
+
+    print(f"{table_data = }")
+
     return render(
         request,
         "pages/calculations.html",
@@ -628,5 +705,6 @@ def calculations(request):
             "savings_by_age": savings_for_chart,
             "retirement_by_age": retirement_for_chart,
             "y_axis_range": [x for x in range(0, 3_000_000, 250_000)],
+            "table_data": table_data,
         },
     )
