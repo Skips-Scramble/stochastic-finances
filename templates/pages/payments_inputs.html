@@ -28,6 +28,7 @@
                     <p class="card-text">Extra payment length in months: {{ item.pmt_length_mos }}</p>
                     <p class="card-text">Extra payment down payment: ${{ item.down_pmt|floatformat:"0g" }}</p>
                     <p class="card-text">Extra payment monthly payment: ${{ item.monthly_pmt|floatformat:"0g" }}</p>
+                    <p class="card-text">Inflation Adjusted: {{ item.inflation_adj|yesno|title }}</p>
                     <a href="{% url 'payments_inputs_edit' item.id %}" class="btn btn-primary">Edit</a>
                     <a href="{% url 'payments_inputs_delete' item.id %}" class="btn btn-secondary">Delete</a>
                   </div>

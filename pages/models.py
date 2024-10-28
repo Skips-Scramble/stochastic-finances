@@ -105,6 +105,8 @@ class PaymentsInputsModel(models.Model):
     monthly_pmt = models.FloatField(
         null=True, blank=True, validators=[validate_monthly_pmt, decimal_validator]
     )
+    inflation_adj = models.BooleanField(default=False)
+
     created_by = models.ForeignKey(
         CustomUser,
         related_name="payments_inputs",

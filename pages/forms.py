@@ -89,6 +89,7 @@ class PaymentsInputsForm(forms.ModelForm):
             "pmt_length_mos",
             "down_pmt",
             "monthly_pmt",
+            "inflation_adj",
         ]
         labels = {
             "is_active": "Use this for calculations",
@@ -99,6 +100,7 @@ class PaymentsInputsForm(forms.ModelForm):
             "pmt_length_mos": "Extra payment length in months",
             "down_pmt": "Extra payment down payment",
             "monthly_pmt": "Extra payment monthly payment",
+            "inflation_adj": "Will this go up with inflation",
         }
         widgets = {
             "is_active": forms.CheckboxInput(),
@@ -109,6 +111,7 @@ class PaymentsInputsForm(forms.ModelForm):
             "pmt_length_mos": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
             "down_pmt": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
             "monthly_pmt": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
+            "inflation_adj": forms.CheckboxInput(),
         }
 
 
