@@ -36,19 +36,32 @@ def calc_payment_item_dates(
 
 def calc_item_monthly_pmt_list(
     months_list: list,
+    inflation_rate: float,
     item_pmt_start_date: datetime.date,
     item_pmt_end_date: datetime.date,
     item_down_pmt: int,
     item_monthly_pmt: float,
+    inflation_adj: bool,
 ):
-    """Docstring"""
+    """Calculate the (down) payments by months, and inflation adjust if requested"""
+
+    inflation_factor = inflation_rate if inflation_adj else 0
+
     item_pmt_list = []
-    for month in months_list:
-        if month >= item_pmt_start_date and month <= item_pmt_end_date:
+    for index, month in enumerate(months_list):
+        if item_pmt_start_date <= month <= item_pmt_end_date:
             if month == item_pmt_start_date:
-                item_pmt_list.append(round(item_monthly_pmt, 2) + item_down_pmt)
+                item_pmt_list.append(
+                    round(
+                        (item_monthly_pmt + item_down_pmt)
+                        * (1 + inflation_factor) ** (index),
+                        2,
+                    )
+                )
             else:
-                item_pmt_list.append(round(item_monthly_pmt, 2))
+                item_pmt_list.append(
+                    round(item_monthly_pmt * (1 + inflation_factor) ** (index), 2)
+                )
         else:
             item_pmt_list.append(round(0, 2))
 
@@ -230,10 +243,12 @@ class BaseScenario:
             non_base_bills_lists.append(
                 calc_item_monthly_pmt_list(
                     self.month_list,
+                    self.monthly_inflation,
                     item_pmt_start_date,
                     item_pmt_end_date,
                     item["down_pmt"],
                     item["monthly_pmt"],
+                    item["inflation_adj"],
                 )
             )
         if non_base_bills_lists == []:

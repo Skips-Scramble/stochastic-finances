@@ -1,0 +1,28 @@
+{
+	"birthdate": "1/1/2000",
+	"retirement_age_yrs": 60,
+	"retirement_age_mos": 6,
+	"base_savings": 35000,
+	"base_saved_per_mo": 1000,
+	"base_savings_per_yr_increase": 1.5,
+	"savings_lower_limit": 30000,
+	"base_monthly_bills": 1000,
+	"payment_items": [
+		{
+			"pmt_name": "Mortgage",
+			"pmt_start_age_yrs": 40,
+			"pmt_start_age_mos": 0,
+			"pmt_length_yrs": 30,
+			"pmt_length_mos": 0,
+			"down_pmt": 30000,
+			"monthly_pmt": 1200
+		}
+	],
+	"base_retirement": 20000,
+	"base_retirement_per_mo": 500,
+	"base_retirement_per_yr_increase": 1200,
+	"retirement_extra_expenses": 5000,
+	"base_rf_interest_per_yr": 1.0,
+	"base_mkt_interest_per_yr": 4.0,
+	"base_inflation_per_yr": 3.0
+}
