@@ -453,7 +453,7 @@ def calculations(request):
 
         if ensure_active_inputs(general_inputs_model, 1):
             general_inputs_dict = model_to_dict(general_inputs_model[0], "general")
-            print(f"{general_inputs_dict =}")
+            # print(f"{general_inputs_dict =}")
         else:
             bad_active_list.append("General")
 
@@ -463,7 +463,7 @@ def calculations(request):
 
         if ensure_active_inputs(savings_inputs_model, 1):
             savings_inputs_dict = model_to_dict(savings_inputs_model[0], "savings")
-            print(f"{savings_inputs_dict =}")
+            # print(f"{savings_inputs_dict =}")
         else:
             bad_active_list.append("Savings")
 
@@ -472,8 +472,18 @@ def calculations(request):
         )
         payments_list = []
         for payment in payments_inputs_model:
-            print(model_to_dict(payment, "payments"))
-            payments_list.append(model_to_dict(payment, "payments"))
+            # print(model_to_dict(payment, "payments"))
+            payment_dict = model_to_dict(payment, "payments")
+            # if payment_dict["recurring_purchase"]:
+            #     new_dict = copy.deepcopy(payment_dict)
+            #     orig_age_in_mos = (
+            #         payment_dict["pmt_start_age_yrs"] * 12
+            #         + payment_dict["pmt_start_age_yrs"]
+            #     )
+            #     new_dict["pm_start_age_yrs"] = orig_age_in_mos // 12
+            #     new_dict["pm_start_age_mos"] = orig_age_in_mos % 12
+            #     payments_list.append(new_dict)
+            payments_list.append(payment_dict)
         print(f"{payments_list = }")
 
         retirement_inputs_model = RetirementInputsModel.objects.filter(
@@ -483,7 +493,7 @@ def calculations(request):
             retirement_inputs_dict = model_to_dict(
                 retirement_inputs_model[0], "retirement"
             )
-            print(f"{retirement_inputs_dict =}")
+            # print(f"{retirement_inputs_dict =}")
         else:
             bad_active_list.append("Retirement")
 
@@ -492,7 +502,7 @@ def calculations(request):
         )
         if ensure_active_inputs(rates_inputs_model, 1):
             rates_inputs_dict = model_to_dict(rates_inputs_model[0], "rates")
-            print(f"{rates_inputs_dict =}")
+            # print(f"{rates_inputs_dict =}")
         else:
             bad_active_list.append("Rates")
         if bad_active_list:
@@ -690,7 +700,7 @@ def calculations(request):
 
     table_data = all_metrics_combined_df.to_dict(orient="records")
 
-    print(f"{table_data = }")
+    # print(f"{table_data = }")
 
     return render(
         request,

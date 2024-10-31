@@ -106,6 +106,15 @@ class PaymentsInputsModel(models.Model):
         null=True, blank=True, validators=[validate_monthly_pmt, decimal_validator]
     )
     inflation_adj = models.BooleanField(default=False)
+    recurring_purchase = models.BooleanField(default=False)
+    recurring_timeframe = models.CharField(
+        max_length=12,
+        choices=[
+            ("quarterly", "Quarterly"),
+            ("yearly", "Yearly"),
+        ],
+        default="quarterly",
+    )
 
     created_by = models.ForeignKey(
         CustomUser,

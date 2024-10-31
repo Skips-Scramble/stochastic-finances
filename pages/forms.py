@@ -90,6 +90,8 @@ class PaymentsInputsForm(forms.ModelForm):
             "down_pmt",
             "monthly_pmt",
             "inflation_adj",
+            "recurring_purchase",
+            "recurring_timeframe",
         ]
         labels = {
             "is_active": "Use this for calculations",
@@ -101,6 +103,8 @@ class PaymentsInputsForm(forms.ModelForm):
             "down_pmt": "Extra payment down payment",
             "monthly_pmt": "Extra payment monthly payment",
             "inflation_adj": "Will this go up with inflation",
+            "recurring_purchase": "Will this be purchased again?",
+            "recurring_timeframe": "Frequency",
         }
         widgets = {
             "is_active": forms.CheckboxInput(),
@@ -112,6 +116,14 @@ class PaymentsInputsForm(forms.ModelForm):
             "down_pmt": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
             "monthly_pmt": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
             "inflation_adj": forms.CheckboxInput(),
+            "recurring_purchase": forms.CheckboxInput(),
+            "recurring_timeframe": forms.Select(
+                choices=[
+                    ("quarterly", "Quarterly"),
+                    ("yearly", "Yearly"),
+                ],
+                attrs={"class": INPUT_CLASSES},
+            ),
         }
 
 
