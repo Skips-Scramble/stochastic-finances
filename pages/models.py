@@ -107,6 +107,7 @@ class PaymentsInputsModel(models.Model):
     )
     inflation_adj = models.BooleanField(default=False)
     recurring_purchase = models.BooleanField(default=False)
+    recurring_purchase_inf_adj = models.BooleanField(default=False)
     recurring_timeframe = models.CharField(
         max_length=12,
         choices=[
@@ -115,6 +116,7 @@ class PaymentsInputsModel(models.Model):
         ],
         default="quarterly",
     )
+    recurring_length = models.IntegerField(null=True, blank=True)
 
     created_by = models.ForeignKey(
         CustomUser,

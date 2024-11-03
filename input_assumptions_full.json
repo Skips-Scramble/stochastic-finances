@@ -12,10 +12,15 @@
 			"pmt_name": "Mortgage",
 			"pmt_start_age_yrs": 40,
 			"pmt_start_age_mos": 0,
-			"pmt_length_yrs": 30,
-			"pmt_length_mos": 0,
+			"pmt_length_yrs": 0,
+			"pmt_length_mos": 3,
 			"down_pmt": 30000,
-			"monthly_pmt": 1200
+			"monthly_pmt": 1200,
+			"inflation_adj": false,
+			"recurring_purchase": true,
+			"recurring_purchase_inf_adj": false,
+			"recurring_timeframe": "yearly",
+			"recurring_length": 5
 		}
 	],
 	"base_retirement": 20000,

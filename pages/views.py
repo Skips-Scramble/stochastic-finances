@@ -472,18 +472,8 @@ def calculations(request):
         )
         payments_list = []
         for payment in payments_inputs_model:
-            # print(model_to_dict(payment, "payments"))
-            payment_dict = model_to_dict(payment, "payments")
-            # if payment_dict["recurring_purchase"]:
-            #     new_dict = copy.deepcopy(payment_dict)
-            #     orig_age_in_mos = (
-            #         payment_dict["pmt_start_age_yrs"] * 12
-            #         + payment_dict["pmt_start_age_yrs"]
-            #     )
-            #     new_dict["pm_start_age_yrs"] = orig_age_in_mos // 12
-            #     new_dict["pm_start_age_mos"] = orig_age_in_mos % 12
-            #     payments_list.append(new_dict)
-            payments_list.append(payment_dict)
+            print(model_to_dict(payment, "payments"))
+            payments_list.append(model_to_dict(payment, "payments"))
         print(f"{payments_list = }")
 
         retirement_inputs_model = RetirementInputsModel.objects.filter(

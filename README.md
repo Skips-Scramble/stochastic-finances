@@ -98,7 +98,7 @@ We are using ruff as our formatter and linter
 - `ruff format`
 
 ### Djlint
-I don't think ruff lints and formats djando html files, so we use djlint
+I don't think ruff lints and formats django html files, so we use djlint
 Make sure you are in a poetry shell, or prefix with `poetry run`
   - `djlint /path/to/file.html --check`
   - `djlint /path/to/file.html --reformat`

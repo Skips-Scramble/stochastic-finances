@@ -1,15 +1,4 @@
 import typing
-from datetime import date, datetime
-
-from dateutil.relativedelta import relativedelta
-
-DEATH_YEARS = 111
-
-
-def calc_date_on_age(birthdate: date, age_yrs: int, age_mos: int) -> datetime.date:
-    """Calculates a date based on a birthdate and a given age in years and months"""
-    months_add = age_yrs * 12 + age_mos
-    return (birthdate + relativedelta(months=months_add)).replace(day=1)
 
 
 inputs_by_model_dict = {
@@ -31,7 +20,9 @@ inputs_by_model_dict = {
         "monthly_pmt",
         "inflation_adj",
         "recurring_purchase",
+        "recurring_purchase_inf_adj",
         "recurring_timeframe",
+        "recurring_length",
     ],
     "retirement": [
         "base_retirement",

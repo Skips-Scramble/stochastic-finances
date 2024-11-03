@@ -1,3 +1,4 @@
+import copy
 from dataclasses import dataclass
 from datetime import date, datetime
 from functools import cached_property
@@ -14,53 +15,93 @@ def calc_date_on_age(birthdate: date, age_yrs: int, age_mos: int) -> datetime.da
     return (birthdate + relativedelta(months=months_add)).replace(day=1)
 
 
-def calc_payment_item_dates(
+def calc_pmt_list(
     birthdate: datetime.date,
+    months_list: list,
     pmt_start_age_yrs: int,
     pmt_start_age_mos: int,
     pmt_length_yrs: int,
     pmt_length_mos: int,
+    recurring: bool,
+    recurring_inflation: bool,
+    recurring_timeframe: str,
+    recurring_length: int,
+    item_down_pmt: int,
+    item_monthly_pmt: float,
+    inflation_rate: float,
+    inflation_adj: bool,
 ) -> (datetime.date, datetime.date):
     """Calculate beginning and end date of a given payment"""
-    item_pmt_start_date = calc_date_on_age(
+    freq_dict = {"quarterly": 3, "yearly": 12}
+
+    item_pmt_initial_start_date = calc_date_on_age(
         birthdate,
         pmt_start_age_yrs,
         pmt_start_age_mos,
     )
 
     months_add = pmt_length_yrs * 12 + pmt_length_mos - 1
-    return item_pmt_start_date, (
-        item_pmt_start_date + relativedelta(months=months_add)
-    ).replace(day=1)
 
+    initial_pmt_mos_list = [
+        item_pmt_initial_start_date + relativedelta(months=x)
+        for x in range(months_add + 1)
+    ]
 
-def calc_item_monthly_pmt_list(
-    months_list: list,
-    inflation_rate: float,
-    item_pmt_start_date: datetime.date,
-    item_pmt_end_date: datetime.date,
-    item_down_pmt: int,
-    item_monthly_pmt: float,
-    inflation_adj: bool,
-):
-    """Calculate the (down) payments by months, and inflation adjust if requested"""
+    pmt_mos_list = copy.deepcopy(initial_pmt_mos_list)
+    dwn_pmt_mos_list = [initial_pmt_mos_list[0]]
+    if recurring:
+        recurring_mos = freq_dict[recurring_timeframe]
+        while max(pmt_mos_list) < max(initial_pmt_mos_list) + relativedelta(
+            months=freq_dict[recurring_timeframe] * (recurring_length - 1)
+        ):
+            pmt_mos_list += [
+                month + relativedelta(months=recurring_mos)
+                for month in initial_pmt_mos_list
+            ]
 
-    inflation_factor = inflation_rate if inflation_adj else 0
+            dwn_pmt_mos_list.append(
+                initial_pmt_mos_list[0] + relativedelta(months=recurring_mos)
+            )
+
+            recurring_mos += freq_dict[recurring_timeframe]
 
     item_pmt_list = []
     for index, month in enumerate(months_list):
-        if item_pmt_start_date <= month <= item_pmt_end_date:
-            if month == item_pmt_start_date:
+        if month in pmt_mos_list:
+            if month in dwn_pmt_mos_list:
+                if month == item_pmt_initial_start_date:
+                    item_pmt_list.append(
+                        round(
+                            (item_monthly_pmt + item_down_pmt)
+                            * (1 + inflation_rate * inflation_adj) ** (index),
+                            2,
+                        )
+                    )
+                else:
+                    item_pmt_list.append(
+                        round(
+                            (item_monthly_pmt + item_down_pmt)
+                            * (1 + inflation_rate * recurring_inflation) ** (index),
+                            2,
+                        )
+                    )
+            else:
+                # if inflation_adj and recurring_inflation:
+                #     item_pmt_list.append(round(
+                #         item_monthly_pmt
+                #         * (1 + inflation_rate)
+                #         ** (index),
+                #         2,
+                #     ))
+                # elif inflation_adj:
+
                 item_pmt_list.append(
                     round(
-                        (item_monthly_pmt + item_down_pmt)
-                        * (1 + inflation_factor) ** (index),
+                        item_monthly_pmt
+                        * (1 + inflation_rate * max(recurring_inflation, inflation_adj))
+                        ** (index),
                         2,
                     )
-                )
-            else:
-                item_pmt_list.append(
-                    round(item_monthly_pmt * (1 + inflation_factor) ** (index), 2)
                 )
         else:
             item_pmt_list.append(round(0, 2))
@@ -233,21 +274,21 @@ class BaseScenario:
         """Return payments for each month"""
         non_base_bills_lists = []
         for item in self.assumptions["payment_items"]:
-            item_pmt_start_date, item_pmt_end_date = calc_payment_item_dates(
-                self.birthdate,
-                item["pmt_start_age_yrs"],
-                item["pmt_start_age_mos"],
-                item["pmt_length_yrs"],
-                item["pmt_length_mos"],
-            )
             non_base_bills_lists.append(
-                calc_item_monthly_pmt_list(
+                calc_pmt_list(
+                    self.birthdate,
                     self.month_list,
-                    self.monthly_inflation,
-                    item_pmt_start_date,
-                    item_pmt_end_date,
+                    item["pmt_start_age_yrs"],
+                    item["pmt_start_age_mos"],
+                    item["pmt_length_yrs"],
+                    item["pmt_length_mos"],
+                    item["recurring_purchase"],
+                    item["recurring_purchase_inf_adj"],
+                    item["recurring_timeframe"],
+                    item["recurring_length"],
                     item["down_pmt"],
                     item["monthly_pmt"],
+                    self.monthly_inflation,
                     item["inflation_adj"],
                 )
             )
