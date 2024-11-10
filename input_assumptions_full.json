@@ -16,9 +16,8 @@
 			"pmt_length_mos": 3,
 			"down_pmt": 30000,
 			"monthly_pmt": 1200,
-			"inflation_adj": false,
+			"inflation_adj": true,
 			"recurring_purchase": true,
-			"recurring_purchase_inf_adj": false,
 			"recurring_timeframe": "yearly",
 			"recurring_length": 5
 		}

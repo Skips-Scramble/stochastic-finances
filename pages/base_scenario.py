@@ -1,4 +1,3 @@
-import copy
 from dataclasses import dataclass
 from datetime import date, datetime
 from functools import cached_property
@@ -7,6 +6,7 @@ import pandas as pd
 from dateutil.relativedelta import relativedelta
 
 DEATH_YEARS = 111
+FREQ_DICT = {"quarterly": 3, "yearly": 12}
 
 
 def calc_date_on_age(birthdate: date, age_yrs: int, age_mos: int) -> datetime.date:
@@ -22,84 +22,37 @@ def calc_pmt_list(
     pmt_start_age_mos: int,
     pmt_length_yrs: int,
     pmt_length_mos: int,
-    recurring: bool,
-    recurring_inflation: bool,
-    recurring_timeframe: str,
-    recurring_length: int,
     item_down_pmt: int,
     item_monthly_pmt: float,
     inflation_rate: float,
     inflation_adj: bool,
-) -> (datetime.date, datetime.date):
-    """Calculate beginning and end date of a given payment"""
-    freq_dict = {"quarterly": 3, "yearly": 12}
+) -> list:
+    """Calculate list of payment amounts"""
 
-    item_pmt_initial_start_date = calc_date_on_age(
+    pmt_start_date = calc_date_on_age(
         birthdate,
         pmt_start_age_yrs,
         pmt_start_age_mos,
     )
 
-    months_add = pmt_length_yrs * 12 + pmt_length_mos - 1
-
-    initial_pmt_mos_list = [
-        item_pmt_initial_start_date + relativedelta(months=x)
-        for x in range(months_add + 1)
-    ]
-
-    pmt_mos_list = copy.deepcopy(initial_pmt_mos_list)
-    dwn_pmt_mos_list = [initial_pmt_mos_list[0]]
-    if recurring:
-        recurring_mos = freq_dict[recurring_timeframe]
-        while max(pmt_mos_list) < max(initial_pmt_mos_list) + relativedelta(
-            months=freq_dict[recurring_timeframe] * (recurring_length - 1)
-        ):
-            pmt_mos_list += [
-                month + relativedelta(months=recurring_mos)
-                for month in initial_pmt_mos_list
-            ]
-
-            dwn_pmt_mos_list.append(
-                initial_pmt_mos_list[0] + relativedelta(months=recurring_mos)
-            )
-
-            recurring_mos += freq_dict[recurring_timeframe]
+    pmt_end_date = pmt_start_date + relativedelta(
+        months=(pmt_length_yrs * 12 + pmt_length_mos - 1)
+    )
 
     item_pmt_list = []
     for index, month in enumerate(months_list):
-        if month in pmt_mos_list:
-            if month in dwn_pmt_mos_list:
-                if month == item_pmt_initial_start_date:
-                    item_pmt_list.append(
-                        round(
-                            (item_monthly_pmt + item_down_pmt)
-                            * (1 + inflation_rate * inflation_adj) ** (index),
-                            2,
-                        )
-                    )
-                else:
-                    item_pmt_list.append(
-                        round(
-                            (item_monthly_pmt + item_down_pmt)
-                            * (1 + inflation_rate * recurring_inflation) ** (index),
-                            2,
-                        )
-                    )
+        if pmt_start_date <= month <= pmt_end_date:
+            if month == pmt_start_date:
+                months_to_start = index
+                initial_down_pmt = item_down_pmt * (1 + inflation_rate) ** (index)
+                initial_monthly_pmt = item_monthly_pmt * (1 + inflation_rate) ** (index)
+                item_pmt_list.append(round(initial_down_pmt + initial_monthly_pmt, 2))
             else:
-                # if inflation_adj and recurring_inflation:
-                #     item_pmt_list.append(round(
-                #         item_monthly_pmt
-                #         * (1 + inflation_rate)
-                #         ** (index),
-                #         2,
-                #     ))
-                # elif inflation_adj:
-
                 item_pmt_list.append(
                     round(
-                        item_monthly_pmt
-                        * (1 + inflation_rate * max(recurring_inflation, inflation_adj))
-                        ** (index),
+                        initial_monthly_pmt
+                        * (1 + inflation_rate * inflation_adj)
+                        ** (index - months_to_start),
                         2,
                     )
                 )
@@ -282,16 +235,38 @@ class BaseScenario:
                     item["pmt_start_age_mos"],
                     item["pmt_length_yrs"],
                     item["pmt_length_mos"],
-                    item["recurring_purchase"],
-                    item["recurring_purchase_inf_adj"],
-                    item["recurring_timeframe"],
-                    item["recurring_length"],
                     item["down_pmt"],
                     item["monthly_pmt"],
                     self.monthly_inflation,
                     item["inflation_adj"],
                 )
             )
+            if item["recurring_purchase"]:
+                base_date = calc_date_on_age(
+                    self.birthdate, item["pmt_start_age_yrs"], item["pmt_start_age_mos"]
+                )
+                for purchase_num in range(item["recurring_length"]):
+                    months_from_base = FREQ_DICT[item["recurring_timeframe"]] * (
+                        purchase_num + 1
+                    )
+                    start_date = base_date + relativedelta(months=months_from_base)
+                    start_age_yrs = relativedelta(start_date, self.birthdate).years
+                    start_age_mos = relativedelta(start_date, self.birthdate).months
+
+                    non_base_bills_lists.append(
+                        calc_pmt_list(
+                            self.birthdate,
+                            self.month_list,
+                            start_age_yrs,
+                            start_age_mos,
+                            item["pmt_length_yrs"],
+                            item["pmt_length_mos"],
+                            item["down_pmt"],
+                            item["monthly_pmt"],
+                            self.monthly_inflation,
+                            item["inflation_adj"],
+                        )
+                    )
         if non_base_bills_lists == []:
             non_base_bills_lists = [[0 for _ in range(self.total_months)]]
         return non_base_bills_lists

@@ -30,7 +30,6 @@
                     <p class="card-text">Extra payment monthly payment: ${{ item.monthly_pmt|floatformat:"0g" }}</p>
                     <p class="card-text">Inflation Adjusted: {{ item.inflation_adj|yesno|title }}</p>
                     <p class="card-text">Recurring Purchase: {{ item.recurring_purchase|yesno|title }}</p>
-                    <p class="card-text">Recurring purchases inflation adjusted: {{ item.recurring_purchase_inf_adj|yesno|title }}</p>
                     <p class="card-text">Recurring Timeframe: {{item.recurring_timeframe }}</p>
                     <p class="card-text">Number of occurances: {{item.recurring_length }}</p>
                     <a href="{% url 'payments_inputs_edit' item.id %}" class="btn btn-primary">Edit</a>

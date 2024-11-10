@@ -107,7 +107,6 @@ class PaymentsInputsModel(models.Model):
     )
     inflation_adj = models.BooleanField(default=False)
     recurring_purchase = models.BooleanField(default=False)
-    recurring_purchase_inf_adj = models.BooleanField(default=False)
     recurring_timeframe = models.CharField(
         max_length=12,
         choices=[
