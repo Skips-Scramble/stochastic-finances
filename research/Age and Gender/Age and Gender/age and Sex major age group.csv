@@ -1,0 +1,769 @@
+Payer,Service,Age Group,Sex,2002,2004,2006,2008,2010,2012,2014,2016,2018,2020
+Medicaid,Dental Services,Total,Total,3709,4264,4791,6246,8392,8493,9773,11889,12644,12637
+Medicaid,Dental Services,0-18,Total,2085,2591,2938,3737,5012,4989,5216,6195,6340,6246
+Medicaid,Dental Services,19-64,Total,1370,1425,1592,2138,2903,3009,4023,4982,5358,5433
+Medicaid,Dental Services,65+,Total,255,249,262,371,476,495,535,712,946,959
+Medicaid,Dental Services,Total,Males,1563,1824,2043,2682,3639,3712,4254,5237,5569,5559
+Medicaid,Dental Services,0-18,Males,1033,1285,1456,1865,2501,2497,2603,3088,3169,3125
+Medicaid,Dental Services,19-64,Males,452,462,505,702,991,1064,1477,1916,2084,2114
+Medicaid,Dental Services,65+,Males,78,77,82,115,146,151,174,234,316,320
+Medicaid,Dental Services,Total,Females,2146,2441,2748,3564,4752,4781,5519,6651,7075,7078
+Medicaid,Dental Services,0-18,Females,1051,1305,1481,1872,2510,2493,2613,3107,3171,3121
+Medicaid,Dental Services,19-64,Females,918,963,1087,1436,1912,1944,2545,3066,3274,3319
+Medicaid,Dental Services,65+,Females,177,172,179,256,330,344,361,478,630,639
+Medicare,Dental Services,Total,Total,79,71,103,221,242,368,408,513,1201,2531
+Medicare,Dental Services,0-18,Total,0,0,0,0,0,0,[56,0,0,0
+Medicare,Dental Services,19-64,Total,4,4,12,27,31,51,61,80,184,393
+Medicare,Dental Services,65+,Total,74,67,91,194,210,317,347,433,1017,2138
+Medicare,Dental Services,Total,Males,36,32,46,99,108,166,181,228,534,1119
+Medicare,Dental Services,0-18,Males,0,0,0,0,0,0,0,0,0,0
+Medicare,Dental Services,19-64,Males,2,2,6,13,15,24,28,38,85,179
+Medicare,Dental Services,65+,Males,34,30,40,86,94,142,152,190,448,940
+Medicare,Dental Services,Total,Females,43,39,57,122,133,202,227,285,667,1412
+Medicare,Dental Services,0-18,Females,0,0,0,0,0,0,0,0,0,0
+Medicare,Dental Services,19-64,Females,2,2,6,14,17,27,32,42,99,214
+Medicare,Dental Services,65+,Females,41,37,51,108,117,175,195,243,568,1198
+Other Payers and Programs,Dental Services,Total,Total,2265,2537,2964,3390,4092,4461,4691,5166,5737,14204
+Other Payers and Programs,Dental Services,0-18,Total,882,1048,1204,1414,1757,2155,2306,2562,2824,4872
+Other Payers and Programs,Dental Services,19-64,Total,1160,1280,1390,1635,1831,1758,1886,1889,2017,6251
+Other Payers and Programs,Dental Services,65+,Total,223,209,370,341,504,548,499,715,896,3082
+Other Payers and Programs,Dental Services,Total,Males,1013,1039,1244,1462,1821,2017,2029,2374,2701,6383
+Other Payers and Programs,Dental Services,0-18,Males,410,515,561,692,806,1026,1074,1255,1403,2469
+Other Payers and Programs,Dental Services,19-64,Males,497,459,519,668,771,754,783,811,851,2479
+Other Payers and Programs,Dental Services,65+,Males,106,65,163,102,244,237,172,309,447,1435
+Other Payers and Programs,Dental Services,Total,Females,1252,1498,1720,1928,2271,2444,2662,2792,3035,7821
+Other Payers and Programs,Dental Services,0-18,Females,472,534,643,721,951,1129,1232,1307,1421,2403
+Other Payers and Programs,Dental Services,19-64,Females,663,821,871,967,1060,1004,1104,1078,1166,3771
+Other Payers and Programs,Dental Services,65+,Females,117,144,207,239,260,311,327,406,449,1647
+Out-of-Pocket,Dental Services,Total,Total,32553,36332,42194,47628,45255,46772,47257,53020,57303,53747
+Out-of-Pocket,Dental Services,0-18,Total,7539,8547,9963,10674,9993,9637,9580,10568,10685,9744
+Out-of-Pocket,Dental Services,19-64,Total,18693,20083,22504,25577,23516,23500,23181,25749,27487,25067
+Out-of-Pocket,Dental Services,65+,Total,6321,7702,9727,11377,11745,13635,14496,16703,19132,18936
+Out-of-Pocket,Dental Services,Total,Males,14264,15861,18356,20952,19511,20333,20669,24004,25765,24083
+Out-of-Pocket,Dental Services,0-18,Males,3304,3703,4075,4612,4257,3966,3918,4856,5555,5201
+Out-of-Pocket,Dental Services,19-64,Males,8050,8612,9809,11129,9946,10159,10029,11196,11256,10042
+Out-of-Pocket,Dental Services,65+,Males,2911,3546,4472,5211,5308,6209,6722,7952,8954,8841
+Out-of-Pocket,Dental Services,Total,Females,18288,20471,23838,26676,25744,26439,26588,29016,31538,29664
+Out-of-Pocket,Dental Services,0-18,Females,4235,4844,5888,6061,5736,5671,5662,5712,5130,4543
+Out-of-Pocket,Dental Services,19-64,Females,10643,11471,12695,14448,13570,13342,13152,14553,16231,15026
+Out-of-Pocket,Dental Services,65+,Females,3410,4156,5255,6166,6437,7426,7774,8751,10178,10095
+Private health Insurance,Dental Services,Total,Total,35030,38985,41715,45277,47919,49605,52564,55609,60504,56193
+Private health Insurance,Dental Services,0-18,Total,8588,10657,11683,12182,11914,14143,13395,13852,14118,12782
+Private health Insurance,Dental Services,19-64,Total,23345,24413,25823,28422,29936,28274,30241,31972,35056,32323
+Private health Insurance,Dental Services,65+,Total,3097,3915,4208,4673,6069,7188,8928,9784,11331,11088
+Private health Insurance,Dental Services,Total,Males,15649,17466,18281,20088,21510,21583,23658,25020,27935,24881
+Private health Insurance,Dental Services,0-18,Males,4043,5281,5612,5981,5467,6281,6020,6839,7326,6427
+Private health Insurance,Dental Services,19-64,Males,10168,10243,10848,12049,13088,12149,13207,13689,14984,12844
+Private health Insurance,Dental Services,65+,Males,1438,1942,1821,2058,2955,3154,4431,4492,5624,5609
+Private health Insurance,Dental Services,Total,Females,19381,21519,23433,25189,26409,28022,28906,30589,32569,31313
+Private health Insurance,Dental Services,0-18,Females,4545,5376,6071,6201,6447,7862,7375,7013,6792,6355
+Private health Insurance,Dental Services,19-64,Females,13178,14170,14975,16373,16848,16124,17034,18284,20071,19479
+Private health Insurance,Dental Services,65+,Females,1659,1973,2388,2615,3114,4035,4497,5292,5707,5479
+Total,Dental Services,Total,Total,73636,82189,91766,102762,105899,109700,114694,126197,137389,139313
+Total,Dental Services,0-18,Total,19093,22843,25787,28007,28676,30925,30497,33178,33966,33643
+Total,Dental Services,19-64,Total,44572,47205,51321,57799,58218,56591,59392,64672,70102,69467
+Total,Dental Services,65+,Total,9970,12142,14658,16956,19005,22184,24805,28347,33321,36203
+Total,Dental Services,Total,Males,32525,36222,39970,45283,46589,47811,50791,56863,62504,62026
+Total,Dental Services,0-18,Males,8790,10784,11705,13150,13031,13769,13615,16039,17453,17222
+Total,Dental Services,19-64,Males,19169,19777,21687,24561,24811,24149,25525,27648,29262,27659
+Total,Dental Services,65+,Males,4566,5661,6578,7572,8747,9893,11651,13176,15790,17145
+Total,Dental Services,Total,Females,41111,45968,51796,57480,59310,61889,63903,69333,74885,77288
+Total,Dental Services,0-18,Females,10303,12059,14082,14857,15644,17156,16882,17139,16514,16421
+Total,Dental Services,19-64,Females,25404,27427,29633,33239,33407,32442,33867,37023,40840,41808
+Total,Dental Services,65+,Females,5404,6482,8080,9384,10258,12291,13154,15171,17532,19058
+Medicaid,Durable Medical Equipment,Total,Total,2709,2896,3749,4189,4918,5331,6536,7628,8053,8541
+Medicaid,Durable Medical Equipment,0-18,Total,769,814,1135,1238,1447,1597,1818,2154,2341,2526
+Medicaid,Durable Medical Equipment,19-64,Total,1329,1501,1955,2165,2573,2788,3606,4183,4337,4694
+Medicaid,Durable Medical Equipment,65+,Total,611,581,659,787,899,945,1112,1290,1375,1321
+Medicaid,Durable Medical Equipment,Total,Males,1121,1205,1586,1747,2080,2255,2777,3249,3490,3741
+Medicaid,Durable Medical Equipment,0-18,Males,422,445,634,673,787,869,982,1165,1282,1400
+Medicaid,Durable Medical Equipment,19-64,Males,544,610,775,858,1040,1125,1476,1713,1805,1944
+Medicaid,Durable Medical Equipment,65+,Males,155,150,177,216,253,260,319,371,403,397
+Medicaid,Durable Medical Equipment,Total,Females,1589,1691,2163,2442,2838,3076,3759,4379,4563,4800
+Medicaid,Durable Medical Equipment,0-18,Females,347,369,501,564,660,728,836,989,1059,1126
+Medicaid,Durable Medical Equipment,19-64,Females,786,891,1180,1307,1532,1663,2130,2470,2532,2749
+Medicaid,Durable Medical Equipment,65+,Females,456,432,482,571,646,685,793,920,972,924
+Medicare,Durable Medical Equipment,Total,Total,5273,6231,6886,7892,7508,8087,7774,7632,8874,11134
+Medicare,Durable Medical Equipment,0-18,Total,1,1,1,1,1,0,0,0,0,0
+Medicare,Durable Medical Equipment,19-64,Total,1042,1301,1520,1704,1713,1840,1743,1740,1962,2130
+Medicare,Durable Medical Equipment,65+,Total,4230,4928,5365,6187,5793,6247,6031,5891,6912,9003
+Medicare,Durable Medical Equipment,Total,Males,2289,2721,3052,3535,3413,3694,3568,3523,4091,5109
+Medicare,Durable Medical Equipment,0-18,Males,0,1,1,1,1,0,0,0,0,0
+Medicare,Durable Medical Equipment,19-64,Males,552,671,778,866,876,938,890,894,1002,1063
+Medicare,Durable Medical Equipment,65+,Males,1736,2049,2274,2668,2536,2756,2678,2629,3088,4047
+Medicare,Durable Medical Equipment,Total,Females,2985,3510,3834,4357,4095,4393,4206,4109,4783,6025
+Medicare,Durable Medical Equipment,0-18,Females,0,1,1,0,0,0,0,0,0,0
+Medicare,Durable Medical Equipment,19-64,Females,490,630,742,838,837,902,852,846,960,1068
+Medicare,Durable Medical Equipment,65+,Females,2494,2879,3092,3519,3257,3491,3353,3262,3823,4957
+Other Payers and Programs,Durable Medical Equipment,Total,Total,790,784,911,961,931,1062,1104,1202,1280,1173
+Other Payers and Programs,Durable Medical Equipment,0-18,Total,155,135,147,175,158,191,199,237,223,172
+Other Payers and Programs,Durable Medical Equipment,19-64,Total,459,468,548,552,521,576,569,633,683,688
+Other Payers and Programs,Durable Medical Equipment,65+,Total,176,181,216,234,252,294,336,333,374,312
+Other Payers and Programs,Durable Medical Equipment,Total,Males,344,367,400,398,403,476,520,571,578,514
+Other Payers and Programs,Durable Medical Equipment,0-18,Males,80,64,70,83,78,92,101,115,106,83
+Other Payers and Programs,Durable Medical Equipment,19-64,Males,195,212,242,221,211,247,240,280,308,307
+Other Payers and Programs,Durable Medical Equipment,65+,Males,69,91,89,94,113,137,179,176,164,124
+Other Payers and Programs,Durable Medical Equipment,Total,Females,447,417,511,563,528,586,584,631,702,659
+Other Payers and Programs,Durable Medical Equipment,0-18,Females,75,71,78,92,80,99,99,122,117,89
+Other Payers and Programs,Durable Medical Equipment,19-64,Females,264,256,306,330,309,329,328,353,376,381
+Other Payers and Programs,Durable Medical Equipment,65+,Females,107,90,127,141,139,158,157,157,209,189
+Out-of-Pocket,Durable Medical Equipment,Total,Total,16016,18204,21053,22463,19739,20617,22296,23140,23984,23841
+Out-of-Pocket,Durable Medical Equipment,0-18,Total,1392,1460,1907,2059,1611,1699,1792,1666,1737,1457
+Out-of-Pocket,Durable Medical Equipment,19-64,Total,9336,11094,13253,13610,11921,11827,12650,13323,13107,13017
+Out-of-Pocket,Durable Medical Equipment,65+,Total,5288,5650,5893,6793,6207,7092,7853,8151,9139,9366
+Out-of-Pocket,Durable Medical Equipment,Total,Males,6721,7117,8624,9149,8086,8966,9628,10268,10223,10011
+Out-of-Pocket,Durable Medical Equipment,0-18,Males,666,653,841,916,704,779,838,853,892,759
+Out-of-Pocket,Durable Medical Equipment,19-64,Males,3901,4199,5389,5541,4766,4988,5236,5757,5724,5335
+Out-of-Pocket,Durable Medical Equipment,65+,Males,2154,2265,2394,2692,2616,3198,3553,3658,3606,3917
+Out-of-Pocket,Durable Medical Equipment,Total,Females,9295,11088,12429,13313,11653,11652,12668,12872,13761,13830
+Out-of-Pocket,Durable Medical Equipment,0-18,Females,725,808,1066,1143,907,919,953,813,845,698
+Out-of-Pocket,Durable Medical Equipment,19-64,Females,5436,6895,7863,8069,7156,6839,7415,7566,7383,7682
+Out-of-Pocket,Durable Medical Equipment,65+,Females,3134,3385,3500,4101,3591,3893,4300,4493,5533,5450
+Private health Insurance,Durable Medical Equipment,Total,Total,4852,5095,7038,7137,6859,8162,8847,10436,11928,10431
+Private health Insurance,Durable Medical Equipment,0-18,Total,504,531,784,782,730,910,1063,1133,1109,775
+Private health Insurance,Durable Medical Equipment,19-64,Total,2921,3123,4583,4603,4449,5235,5674,6815,7944,6809
+Private health Insurance,Durable Medical Equipment,65+,Total,1427,1442,1672,1752,1680,2018,2110,2488,2875,2847
+Private health Insurance,Durable Medical Equipment,Total,Males,2270,2335,3113,3136,3085,3535,3922,4728,5198,4618
+Private health Insurance,Durable Medical Equipment,0-18,Males,233,248,353,339,348,403,512,649,594,410
+Private health Insurance,Durable Medical Equipment,19-64,Males,1254,1305,1933,1955,2009,2264,2424,2950,3515,3030
+Private health Insurance,Durable Medical Equipment,65+,Males,784,783,826,842,728,868,987,1130,1088,1178
+Private health Insurance,Durable Medical Equipment,Total,Females,2582,2760,3926,4001,3775,4627,4925,5707,6730,5813
+Private health Insurance,Durable Medical Equipment,0-18,Females,272,283,431,443,382,506,551,484,515,365
+Private health Insurance,Durable Medical Equipment,19-64,Females,1667,1818,2650,2648,2440,2971,3251,3866,4429,3779
+Private health Insurance,Durable Medical Equipment,65+,Females,643,659,845,910,952,1150,1123,1357,1787,1669
+Total,Durable Medical Equipment,Total,Total,29641,33210,39637,42642,39955,43259,46558,50037,54119,55120
+Total,Durable Medical Equipment,0-18,Total,2822,2941,3974,4255,3947,4397,4873,5190,5411,4930
+Total,Durable Medical Equipment,19-64,Total,15088,17487,21858,22634,21177,22266,24242,26695,28033,27339
+Total,Durable Medical Equipment,65+,Total,11732,12783,13805,15754,14831,16596,17443,18153,20675,22850
+Total,Durable Medical Equipment,Total,Males,12744,13744,16775,17965,17066,18925,20415,22339,23579,23993
+Total,Durable Medical Equipment,0-18,Males,1401,1410,1898,2012,1918,2144,2433,2782,2875,2652
+Total,Durable Medical Equipment,19-64,Males,6445,6996,9118,9441,8902,9562,10267,11594,12354,11679
+Total,Durable Medical Equipment,65+,Males,4898,5338,5759,6512,6246,7219,7716,7963,8351,9661
+Total,Durable Medical Equipment,Total,Females,16897,19466,22862,24677,22890,24334,26142,27698,30539,31127
+Total,Durable Medical Equipment,0-18,Females,1421,1531,2076,2243,2030,2253,2440,2408,2536,2278
+Total,Durable Medical Equipment,19-64,Females,8643,10490,12740,13193,12274,12705,13976,15101,15679,15660
+Total,Durable Medical Equipment,65+,Females,6833,7445,8046,9241,8585,9377,9727,10189,12324,13189
+Medicaid,Home Health Care,Total,Total,9664,13389,16822,21375,25414,27046,29111,32657,35055,40139
+Medicaid,Home Health Care,0-18,Total,2101,2481,3399,4632,5560,6214,6711,7811,7537,9262
+Medicaid,Home Health Care,19-64,Total,3747,5207,6339,8402,10733,11677,12268,13608,14233,15704
+Medicaid,Home Health Care,65+,Total,3816,5701,7084,8340,9121,9155,10132,11238,13286,15173
+Medicaid,Home Health Care,Total,Males,3504,4751,5922,7768,9648,10266,11031,12424,13462,15759
+Medicaid,Home Health Care,0-18,Males,1136,1345,1820,2505,3033,3369,3632,4217,4095,5045
+Medicaid,Home Health Care,19-64,Males,1548,2103,2430,3236,4348,4652,4894,5429,5917,6651
+Medicaid,Home Health Care,65+,Males,819,1303,1672,2027,2267,2245,2504,2778,3450,4063
+Medicaid,Home Health Care,Total,Females,6161,8638,10900,13607,15766,16780,18080,20233,21593,24381
+Medicaid,Home Health Care,0-18,Females,964,1136,1579,2127,2527,2845,3079,3594,3441,4217
+Medicaid,Home Health Care,19-64,Females,2199,3104,3909,5166,6385,7024,7373,8179,8316,9053
+Medicaid,Home Health Care,65+,Females,2997,4398,5412,6313,6853,6911,7627,8460,9835,11111
+Medicare,Home Health Care,Total,Total,11338,15536,21060,27052,31721,33508,34283,37155,40462,43786
+Medicare,Home Health Care,0-18,Total,0,0,0,1,1,1,0,0,0,0
+Medicare,Home Health Care,19-64,Total,958,1352,2004,3427,4236,4639,4717,4790,4902,5374
+Medicare,Home Health Care,65+,Total,10379,14184,19056,23625,27484,28868,29566,32365,35561,38411
+Medicare,Home Health Care,Total,Males,4001,5412,7331,9606,11368,12370,12963,14252,15784,18058
+Medicare,Home Health Care,0-18,Males,0,0,0,0,0,0,0,0,0,0
+Medicare,Home Health Care,19-64,Males,462,640,946,1554,1904,2115,2174,2214,2291,2647
+Medicare,Home Health Care,65+,Males,3539,4772,6385,8052,9463,10254,10789,12038,13492,15411
+Medicare,Home Health Care,Total,Females,7337,10124,13728,17446,20353,21138,21320,22903,24679,25728
+Medicare,Home Health Care,0-18,Females,0,0,0,0,0,0,0,0,0,0
+Medicare,Home Health Care,19-64,Females,496,712,1058,1872,2333,2524,2543,2576,2610,2727
+Medicare,Home Health Care,65+,Females,6841,9412,12671,15573,18020,18613,18777,20327,22068,23000
+Other Payers and Programs,Home Health Care,Total,Total,2893,3003,2759,2681,2554,2957,3023,3348,3809,13302
+Other Payers and Programs,Home Health Care,0-18,Total,226,131,120,129,140,184,193,332,422,1297
+Other Payers and Programs,Home Health Care,19-64,Total,1177,1399,1304,1192,1094,1284,1212,1291,1285,4109
+Other Payers and Programs,Home Health Care,65+,Total,1490,1473,1335,1360,1319,1488,1617,1725,2102,7896
+Other Payers and Programs,Home Health Care,Total,Males,1373,1153,1094,1035,1032,1369,1384,1913,1993,5879
+Other Payers and Programs,Home Health Care,0-18,Males,153,65,76,74,75,98,103,236,312,780
+Other Payers and Programs,Home Health Care,19-64,Males,603,625,581,557,518,776,700,886,707,2012
+Other Payers and Programs,Home Health Care,65+,Males,617,463,437,404,439,495,581,792,973,3087
+Other Payers and Programs,Home Health Care,Total,Females,1520,1850,1666,1646,1521,1587,1639,1434,1816,7423
+Other Payers and Programs,Home Health Care,0-18,Females,73,65,44,55,65,86,91,96,110,517
+Other Payers and Programs,Home Health Care,19-64,Females,574,774,724,635,577,508,512,405,578,2097
+Other Payers and Programs,Home Health Care,65+,Females,873,1010,898,956,880,993,1036,933,1129,4809
+Out-of-Pocket,Home Health Care,Total,Total,6020,6174,5844,5860,5765,7508,8524,9041,11874,12226
+Out-of-Pocket,Home Health Care,0-18,Total,433,484,448,432,364,444,491,410,608,494
+Out-of-Pocket,Home Health Care,19-64,Total,1589,1777,1690,1635,1442,1737,1915,2018,2782,3112
+Out-of-Pocket,Home Health Care,65+,Total,3999,3913,3707,3793,3959,5327,6118,6613,8484,8620
+Out-of-Pocket,Home Health Care,Total,Males,2479,2562,2542,2473,2344,3040,3475,3767,5019,5356
+Out-of-Pocket,Home Health Care,0-18,Males,241,269,257,239,194,246,266,290,445,360
+Out-of-Pocket,Home Health Care,19-64,Males,679,759,832,754,645,769,843,1121,1589,1781
+Out-of-Pocket,Home Health Care,65+,Males,1559,1534,1453,1479,1505,2025,2366,2356,2985,3214
+Out-of-Pocket,Home Health Care,Total,Females,3542,3612,3303,3388,3422,4468,5048,5274,6855,6870
+Out-of-Pocket,Home Health Care,0-18,Females,193,215,191,193,170,198,225,120,162,134
+Out-of-Pocket,Home Health Care,19-64,Females,910,1018,858,881,797,968,1073,897,1193,1331
+Out-of-Pocket,Home Health Care,65+,Females,2439,2379,2254,2314,2455,3302,3751,4258,5499,5405
+Private health Insurance,Home Health Care,Total,Total,6549,6538,5567,5197,5072,7058,9730,11507,14351,15550
+Private health Insurance,Home Health Care,0-18,Total,847,842,701,604,555,786,1071,1342,1527,1838
+Private health Insurance,Home Health Care,19-64,Total,3750,3728,3165,2781,2719,3681,5069,5907,7262,7858
+Private health Insurance,Home Health Care,65+,Total,1952,1969,1701,1812,1798,2591,3590,4257,5562,5854
+Private health Insurance,Home Health Care,Total,Males,2867,2789,2381,2169,2152,3126,4225,5023,6344,7087
+Private health Insurance,Home Health Care,0-18,Males,497,494,406,345,321,465,633,792,906,1092
+Private health Insurance,Home Health Care,19-64,Males,1757,1746,1482,1303,1259,1756,2420,2818,3563,3951
+Private health Insurance,Home Health Care,65+,Males,613,548,493,521,572,905,1172,1413,1875,2044
+Private health Insurance,Home Health Care,Total,Females,3682,3750,3185,3028,2919,3931,5505,6484,8007,8464
+Private health Insurance,Home Health Care,0-18,Females,350,348,295,259,233,321,438,551,621,745
+Private health Insurance,Home Health Care,19-64,Females,1994,1982,1682,1478,1460,1925,2649,3089,3699,3908
+Private health Insurance,Home Health Care,65+,Females,1339,1420,1208,1290,1226,1685,2418,2844,3687,3811
+Total,Home Health Care,Total,Total,36465,44641,52052,62165,70525,78076,84670,93707,105552,125003
+Total,Home Health Care,0-18,Total,3607,3938,4668,5798,6620,7629,8467,9895,10094,12891
+Total,Home Health Care,19-64,Total,11222,13463,14502,17437,20224,23018,25181,27614,30463,36157
+Total,Home Health Care,65+,Total,21636,27240,32883,38930,43681,47429,51022,56198,64995,75954
+Total,Home Health Care,Total,Males,14223,16667,19270,23051,26543,30172,33078,37379,42602,52138
+Total,Home Health Care,0-18,Males,2027,2173,2558,3163,3624,4178,4635,5535,5759,7278
+Total,Home Health Care,19-64,Males,5049,5873,6271,7404,8673,10069,11031,12467,14067,17041
+Total,Home Health Care,65+,Males,7147,8621,10441,12483,14247,15925,17413,19377,22776,27819
+Total,Home Health Care,Total,Females,22242,27974,32782,39114,43982,47904,51593,56328,62950,72865
+Total,Home Health Care,0-18,Females,1580,1765,2110,2635,2996,3450,3832,4360,4335,5613
+Total,Home Health Care,19-64,Females,6173,7590,8230,10032,11551,12950,14151,15146,16397,19116
+Total,Home Health Care,65+,Females,14489,18619,22442,26446,29434,31505,33609,36821,42218,48135
+Medicaid,Hospital Care,Total,Total,84466,96807,108904,122938,142170,150635,171744,190070,197854,221377
+Medicaid,Hospital Care,0-18,Total,27713,32083,38198,42718,47758,49152,48980,48015,51771,55421
+Medicaid,Hospital Care,19-64,Total,44055,51573,57596,65122,77297,83584,104506,123734,125852,141810
+Medicaid,Hospital Care,65+,Total,12698,13151,13110,15097,17115,17899,18258,18321,20231,24146
+Medicaid,Hospital Care,Total,Males,34207,39472,44795,51184,59938,64094,75527,85736,90182,102396
+Medicaid,Hospital Care,0-18,Males,14614,16940,20027,22606,25313,26146,26277,25983,27752,30019
+Medicaid,Hospital Care,19-64,Males,15841,18637,20761,23895,29291,32287,43099,53214,55050,63098
+Medicaid,Hospital Care,65+,Males,3752,3894,4007,4683,5333,5661,6150,6539,7380,9279
+Medicaid,Hospital Care,Total,Females,50259,57335,64109,71753,82232,86541,96217,104333,107673,118981
+Medicaid,Hospital Care,0-18,Females,13099,15142,18171,20112,22445,23006,22703,22032,24018,25402
+Medicaid,Hospital Care,19-64,Females,28213,32935,36835,41227,48006,51297,61406,70519,70802,78713
+Medicaid,Hospital Care,65+,Females,8946,9257,9103,10414,11781,12238,12108,11782,12852,14867
+Medicare,Hospital Care,Total,Total,143680,162883,184931,205900,220763,237963,253439,274094,300556,321074
+Medicare,Hospital Care,0-18,Total,52,59,76,85,82,88,83,78,78,75
+Medicare,Hospital Care,19-64,Total,22153,27077,33162,38212,43299,48261,52161,54797,56571,55896
+Medicare,Hospital Care,65+,Total,121475,135747,151693,167603,177383,189614,201194,219219,243907,265102
+Medicare,Hospital Care,Total,Males,65500,74237,84680,94685,101878,110379,118193,128994,142280,153201
+Medicare,Hospital Care,0-18,Males,26,29,39,44,44,49,46,44,49,49
+Medicare,Hospital Care,19-64,Males,11844,14244,17343,19679,22063,24553,26484,27722,28678,28343
+Medicare,Hospital Care,65+,Males,53630,59964,67298,74961,79771,85776,91663,101228,113554,124808
+Medicare,Hospital Care,Total,Females,78180,88646,100251,111216,118886,127584,135246,145100,158276,167873
+Medicare,Hospital Care,0-18,Females,26,29,37,41,38,39,37,34,30,26
+Medicare,Hospital Care,19-64,Females,10309,12834,15819,18533,21236,23707,25677,27076,27893,27553
+Medicare,Hospital Care,65+,Females,67845,75783,84395,92641,97612,103838,109531,117990,130353,140294
+Other Payers and Programs,Hospital Care,Total,Total,77318,91430,104760,112139,134433,145852,158409,166797,181774,288681
+Other Payers and Programs,Hospital Care,0-18,Total,12000,15620,17165,17499,19759,22645,23573,19268,13699,20553
+Other Payers and Programs,Hospital Care,19-64,Total,50330,57023,67560,75283,91315,96494,105609,111715,122561,194184
+Other Payers and Programs,Hospital Care,65+,Total,14988,18788,20035,19357,23359,26713,29227,35814,45515,73943
+Other Payers and Programs,Hospital Care,Total,Males,40955,47752,54739,58991,72403,79297,84813,90633,97254,164815
+Other Payers and Programs,Hospital Care,0-18,Males,6326,8298,9273,9246,11440,11777,12246,10346,7630,12015
+Other Payers and Programs,Hospital Care,19-64,Males,26350,29345,34588,38997,47536,52514,56127,58770,62101,102191
+Other Payers and Programs,Hospital Care,65+,Males,8279,10109,10878,10748,13427,15007,16440,21516,27523,50608
+Other Payers and Programs,Hospital Care,Total,Females,36363,43678,50022,53148,62030,66555,73596,76164,84520,123866
+Other Payers and Programs,Hospital Care,0-18,Females,5674,7322,7892,8254,8319,10868,11328,8922,6068,8538
+Other Payers and Programs,Hospital Care,19-64,Females,23980,27678,32972,36286,43779,43980,49481,52945,60460,91993
+Other Payers and Programs,Hospital Care,65+,Females,6709,8679,9158,8609,9932,11707,12787,14297,17991,23335
+Out-of-Pocket,Hospital Care,Total,Total,15169,18159,20920,23059,27001,30965,32433,31579,34295,32372
+Out-of-Pocket,Hospital Care,0-18,Total,1821,2294,2799,2970,3435,4057,3975,3584,3237,3230
+Out-of-Pocket,Hospital Care,19-64,Total,9734,11614,13134,14283,16725,19154,19866,21058,24101,23234
+Out-of-Pocket,Hospital Care,65+,Total,3614,4251,4987,5805,6842,7755,8592,6937,6957,5908
+Out-of-Pocket,Hospital Care,Total,Males,6253,7681,8918,9740,11333,12824,13453,13581,14849,15733
+Out-of-Pocket,Hospital Care,0-18,Males,971,1207,1492,1560,1808,2126,2068,2030,1990,1942
+Out-of-Pocket,Hospital Care,19-64,Males,3600,4482,5097,5510,6331,7207,7420,8255,9556,10345
+Out-of-Pocket,Hospital Care,65+,Males,1682,1991,2329,2670,3194,3491,3965,3296,3304,3446
+Out-of-Pocket,Hospital Care,Total,Females,8916,10478,12002,13319,15668,18141,18980,17998,19446,16639
+Out-of-Pocket,Hospital Care,0-18,Females,850,1087,1306,1410,1626,1930,1907,1554,1248,1288
+Out-of-Pocket,Hospital Care,19-64,Females,6133,7132,8037,8773,10394,11947,12446,12803,14545,12889
+Out-of-Pocket,Hospital Care,65+,Females,1932,2259,2658,3136,3648,4264,4627,3641,3653,2462
+Private health Insurance,Hospital Care,Total,Total,165850,196047,231694,257595,284428,312553,324502,372858,408178,404329
+Private health Insurance,Hospital Care,0-18,Total,26588,31305,36078,35289,41843,39925,37860,40091,39098,38726
+Private health Insurance,Hospital Care,19-64,Total,119572,139488,169174,192193,208061,233915,249917,289533,319264,311544
+Private health Insurance,Hospital Care,65+,Total,19690,25254,26443,30113,34524,38713,36724,43234,49815,54059
+Private health Insurance,Hospital Care,Total,Males,79116,89439,108542,116165,135659,146430,151103,160513,181182,192778
+Private health Insurance,Hospital Care,0-18,Males,13518,15117,20179,20229,22400,21010,19783,21051,20517,20238
+Private health Insurance,Hospital Care,19-64,Males,56219,61801,73098,80661,93848,105058,113504,116876,135107,143915
+Private health Insurance,Hospital Care,65+,Males,9379,12521,15265,15275,19411,20362,17816,22585,25559,28625
+Private health Insurance,Hospital Care,Total,Females,86734,106609,123152,141430,148768,166123,173399,212346,226996,211551
+Private health Insurance,Hospital Care,0-18,Females,13070,16188,15899,15060,19443,18915,18077,19040,18582,18489
+Private health Insurance,Hospital Care,19-64,Females,63353,77687,96075,111532,114213,128857,136414,172656,184158,167629
+Private health Insurance,Hospital Care,65+,Females,10311,12733,11178,14838,15113,18351,18908,20649,24256,25434
+Total,Hospital Care,Total,Total,486482,565327,651209,721630,808795,877968,940526,1035398,1122658,1267833
+Total,Hospital Care,0-18,Total,68173,81360,94315,98562,112877,115867,114472,111037,107883,118006
+Total,Hospital Care,19-64,Total,245843,286776,340626,385093,436696,481407,532059,600836,648349,726669
+Total,Hospital Care,65+,Total,172466,197191,216268,237975,259222,280693,293995,323525,366425,423158
+Total,Hospital Care,Total,Males,226031,258581,301674,330764,381210,413024,443089,479457,525748,628922
+Total,Hospital Care,0-18,Males,35454,41592,51011,53684,61006,61109,60421,59455,57938,64263
+Total,Hospital Care,19-64,Males,113854,128509,150887,168742,199069,221619,246634,264837,290491,347892
+Total,Hospital Care,65+,Males,76723,88480,99777,108338,121136,130296,136034,155165,177319,216767
+Total,Hospital Care,Total,Females,260451,306745,349535,390866,427584,464944,497438,555940,596910,638911
+Total,Hospital Care,0-18,Females,32719,39768,43305,44878,51871,54758,54051,51582,49946,53743
+Total,Hospital Care,19-64,Females,131989,158266,189739,216351,237627,259788,285425,335999,357859,378776
+Total,Hospital Care,65+,Females,95743,108711,116491,129637,138086,150397,157961,168360,189106,206392
+Medicaid,Nursing Care Facilities and Continuing Care Retirement Communities,Total,Total,35561,39760,41563,44039,46335,47728,49246,50675,51497,53492
+Medicaid,Nursing Care Facilities and Continuing Care Retirement Communities,0-18,Total,321,390,445,493,593,671,766,537,547,578
+Medicaid,Nursing Care Facilities and Continuing Care Retirement Communities,19-64,Total,5836,7069,7901,8720,9617,9983,11025,11449,11872,12573
+Medicaid,Nursing Care Facilities and Continuing Care Retirement Communities,65+,Total,29405,32301,33217,34826,36125,37075,37456,38689,39078,40341
+Medicaid,Nursing Care Facilities and Continuing Care Retirement Communities,Total,Males,10519,12047,12962,14087,15217,15968,17014,18233,19082,20306
+Medicaid,Nursing Care Facilities and Continuing Care Retirement Communities,0-18,Males,188,222,245,274,327,371,427,304,318,325
+Medicaid,Nursing Care Facilities and Continuing Care Retirement Communities,19-64,Males,3126,3788,4235,4692,5186,5384,6006,6405,6668,7147
+Medicaid,Nursing Care Facilities and Continuing Care Retirement Communities,65+,Males,7205,8037,8482,9121,9703,10213,10581,11524,12096,12834
+Medicaid,Nursing Care Facilities and Continuing Care Retirement Communities,Total,Females,25042,27713,28601,29952,31118,31760,32232,32442,32415,33186
+Medicaid,Nursing Care Facilities and Continuing Care Retirement Communities,0-18,Females,132,168,200,219,266,300,339,233,229,253
+Medicaid,Nursing Care Facilities and Continuing Care Retirement Communities,19-64,Females,2710,3281,3666,4028,4430,4599,5019,5044,5204,5426
+Medicaid,Nursing Care Facilities and Continuing Care Retirement Communities,65+,Females,22200,24264,24735,25705,26422,26861,26874,27165,26982,27507
+Medicare,Nursing Care Facilities and Continuing Care Retirement Communities,Total,Total,15026,18260,22378,27606,32289,33883,35492,37006,37618,39832
+Medicare,Nursing Care Facilities and Continuing Care Retirement Communities,0-18,Total,0,0,0,0,0,0,0,0,0,0
+Medicare,Nursing Care Facilities and Continuing Care Retirement Communities,19-64,Total,887,1211,1735,2295,2974,3414,3838,4134,4207,4715
+Medicare,Nursing Care Facilities and Continuing Care Retirement Communities,65+,Total,14139,17049,20642,25310,29315,30469,31654,32872,33410,35116
+Medicare,Nursing Care Facilities and Continuing Care Retirement Communities,Total,Males,5090,6237,7842,9885,11885,12832,13801,14782,15393,16485
+Medicare,Nursing Care Facilities and Continuing Care Retirement Communities,0-18,Males,0,0,0,0,0,0,0,0,0,0
+Medicare,Nursing Care Facilities and Continuing Care Retirement Communities,19-64,Males,458,621,888,1163,1506,1740,1957,2108,2146,2459
+Medicare,Nursing Care Facilities and Continuing Care Retirement Communities,65+,Males,4631,5615,6955,8722,10379,11092,11844,12674,13246,14027
+Medicare,Nursing Care Facilities and Continuing Care Retirement Communities,Total,Females,9936,12024,14535,17720,20404,21052,21692,22224,22225,23346
+Medicare,Nursing Care Facilities and Continuing Care Retirement Communities,0-18,Females,0,0,0,0,0,0,0,0,0,0
+Medicare,Nursing Care Facilities and Continuing Care Retirement Communities,19-64,Females,429,590,847,1132,1468,1674,1881,2026,2061,2257
+Medicare,Nursing Care Facilities and Continuing Care Retirement Communities,65+,Females,9508,11434,13688,16588,18936,19377,19811,20198,20164,21090
+Other Payers and Programs,Nursing Care Facilities and Continuing Care Retirement Communities,Total,Total,8266,9447,10783,12434,14111,15434,16459,17250,19655,41369
+Other Payers and Programs,Nursing Care Facilities and Continuing Care Retirement Communities,0-18,Total,53,63,71,69,81,106,128,133,198,384
+Other Payers and Programs,Nursing Care Facilities and Continuing Care Retirement Communities,19-64,Total,1105,1354,1639,1930,2287,2559,2938,3373,3484,7557
+Other Payers and Programs,Nursing Care Facilities and Continuing Care Retirement Communities,65+,Total,7109,8030,9073,10435,11743,12769,13393,13744,15973,33428
+Other Payers and Programs,Nursing Care Facilities and Continuing Care Retirement Communities,Total,Males,2561,2989,3516,4172,4876,5460,5990,7164,7611,16313
+Other Payers and Programs,Nursing Care Facilities and Continuing Care Retirement Communities,0-18,Males,33,38,33,39,45,63,64,55,73,116
+Other Payers and Programs,Nursing Care Facilities and Continuing Care Retirement Communities,19-64,Males,589,720,873,1026,1216,1359,1580,1867,1954,4297
+Other Payers and Programs,Nursing Care Facilities and Continuing Care Retirement Communities,65+,Males,1939,2231,2611,3107,3614,4038,4346,5241,5584,11900
+Other Payers and Programs,Nursing Care Facilities and Continuing Care Retirement Communities,Total,Females,5705,6458,7267,8262,9236,9975,10469,10086,12044,25056
+Other Payers and Programs,Nursing Care Facilities and Continuing Care Retirement Communities,0-18,Females,20,25,39,30,36,43,64,78,125,268
+Other Payers and Programs,Nursing Care Facilities and Continuing Care Retirement Communities,19-64,Females,516,635,766,904,1070,1200,1358,1506,1530,3260
+Other Payers and Programs,Nursing Care Facilities and Continuing Care Retirement Communities,65+,Females,5170,5799,6462,7328,8129,8731,9047,8502,10389,21529
+Out-of-Pocket,Nursing Care Facilities and Continuing Care Retirement Communities,Total,Total,27745,31045,33359,37153,37097,38773,39276,43143,43557,45545
+Out-of-Pocket,Nursing Care Facilities and Continuing Care Retirement Communities,0-18,Total,101,131,97,98,76,118,89,120,123,125
+Out-of-Pocket,Nursing Care Facilities and Continuing Care Retirement Communities,19-64,Total,3762,4551,5095,5869,5848,6033,5894,6079,5901,6242
+Out-of-Pocket,Nursing Care Facilities and Continuing Care Retirement Communities,65+,Total,23882,26363,28167,31185,31173,32622,33293,36944,37533,39178
+Out-of-Pocket,Nursing Care Facilities and Continuing Care Retirement Communities,Total,Males,8561,9872,10715,12431,12712,13388,13692,14674,14854,15787
+Out-of-Pocket,Nursing Care Facilities and Continuing Care Retirement Communities,0-18,Males,62,83,44,60,40,81,25,92,91,79
+Out-of-Pocket,Nursing Care Facilities and Continuing Care Retirement Communities,19-64,Males,2007,2417,2721,3119,3114,3196,3230,3290,3121,3150
+Out-of-Pocket,Nursing Care Facilities and Continuing Care Retirement Communities,65+,Males,6492,7371,7950,9253,9558,10111,10437,11292,11642,12558
+Out-of-Pocket,Nursing Care Facilities and Continuing Care Retirement Communities,Total,Females,19184,21173,22644,24721,24385,25385,25584,28469,28703,29758
+Out-of-Pocket,Nursing Care Facilities and Continuing Care Retirement Communities,0-18,Females,39,47,53,38,36,37,64,28,32,46
+Out-of-Pocket,Nursing Care Facilities and Continuing Care Retirement Communities,19-64,Females,1755,2134,2374,2751,2734,2837,2664,2790,2780,3092
+Out-of-Pocket,Nursing Care Facilities and Continuing Care Retirement Communities,65+,Females,17391,18992,20216,21932,21615,22511,22856,25652,25891,26620
+Private health Insurance,Nursing Care Facilities and Continuing Care Retirement Communities,Total,Total,7902,6561,7815,9188,10619,11523,12077,13879,15337,16652
+Private health Insurance,Nursing Care Facilities and Continuing Care Retirement Communities,0-18,Total,50,43,27,31,27,49,29,33,47,72
+Private health Insurance,Nursing Care Facilities and Continuing Care Retirement Communities,19-64,Total,1145,937,1205,1444,1753,1750,1905,2874,2949,3241
+Private health Insurance,Nursing Care Facilities and Continuing Care Retirement Communities,65+,Total,6707,5580,6583,7712,8838,9724,10143,10971,12341,13339
+Private health Insurance,Nursing Care Facilities and Continuing Care Retirement Communities,Total,Males,1968,2067,2543,3074,3660,3795,4067,4400,4736,5371
+Private health Insurance,Nursing Care Facilities and Continuing Care Retirement Communities,0-18,Males,32,30,15,19,17,29,20,23,31,25
+Private health Insurance,Nursing Care Facilities and Continuing Care Retirement Communities,19-64,Males,608,494,641,767,931,929,1019,972,970,1029
+Private health Insurance,Nursing Care Facilities and Continuing Care Retirement Communities,65+,Males,1328,1544,1887,2288,2712,2836,3029,3404,3735,4317
+Private health Insurance,Nursing Care Facilities and Continuing Care Retirement Communities,Total,Females,5934,4493,5272,6114,6958,7728,8010,9479,10601,11280
+Private health Insurance,Nursing Care Facilities and Continuing Care Retirement Communities,0-18,Females,18,13,12,12,10,19,9,10,16,46
+Private health Insurance,Nursing Care Facilities and Continuing Care Retirement Communities,19-64,Females,537,443,564,677,823,821,887,1903,1979,2211
+Private health Insurance,Nursing Care Facilities and Continuing Care Retirement Communities,65+,Females,5379,4036,4696,5424,6126,6888,7114,7566,8606,9023
+Total,Nursing Care Facilities and Continuing Care Retirement Communities,Total,Total,94500,105073,115897,130419,140451,147341,152551,161954,167664,196890
+Total,Nursing Care Facilities and Continuing Care Retirement Communities,0-18,Total,524,626,640,691,778,943,1012,824,915,1159
+Total,Nursing Care Facilities and Continuing Care Retirement Communities,19-64,Total,12735,15123,17575,20259,22479,23738,25600,27911,28414,34328
+Total,Nursing Care Facilities and Continuing Care Retirement Communities,65+,Total,81242,89323,97682,109469,117194,122659,125939,133219,138335,161403
+Total,Nursing Care Facilities and Continuing Care Retirement Communities,Total,Males,28699,33211,37578,43650,48351,51442,54564,59253,61675,74262
+Total,Nursing Care Facilities and Continuing Care Retirement Communities,0-18,Males,316,374,336,392,430,543,536,475,513,546
+Total,Nursing Care Facilities and Continuing Care Retirement Communities,19-64,Males,6789,8040,9357,10766,11954,12608,13792,14643,14858,18082
+Total,Nursing Care Facilities and Continuing Care Retirement Communities,65+,Males,21594,24798,27884,32492,35967,38291,40237,44135,46304,55634
+Total,Nursing Care Facilities and Continuing Care Retirement Communities,Total,Females,65802,71861,78319,86769,92101,95899,97986,102701,105988,122627
+Total,Nursing Care Facilities and Continuing Care Retirement Communities,0-18,Females,208,253,304,299,348,400,476,349,402,613
+Total,Nursing Care Facilities and Continuing Care Retirement Communities,19-64,Females,5946,7083,8218,9492,10525,11131,11808,13268,13555,16246
+Total,Nursing Care Facilities and Continuing Care Retirement Communities,65+,Females,59647,64525,69797,76978,81227,84369,85702,89084,92031,105768
+Medicaid,Other Health Residential and Personal Care,Total,Total,40207,46860,53329,60037,69691,75873,84805,100801,109982,121543
+Medicaid,Other Health Residential and Personal Care,0-18,Total,5535,5770,6940,7999,8961,8886,7723,7203,8058,7104
+Medicaid,Other Health Residential and Personal Care,19-64,Total,25681,30893,33675,37218,43916,46397,59973,73440,80571,85252
+Medicaid,Other Health Residential and Personal Care,65+,Total,8991,10197,12713,14820,16815,20590,17110,20158,21353,29188
+Medicaid,Other Health Residential and Personal Care,Total,Males,20984,24791,27644,31153,37107,39388,45024,54411,59046,64956
+Medicaid,Other Health Residential and Personal Care,0-18,Males,3404,3549,4223,4903,5485,5469,4749,4424,5061,4395
+Medicaid,Other Health Residential and Personal Care,19-64,Males,14613,17725,19169,21129,25257,26515,34165,42191,45951,49461
+Medicaid,Other Health Residential and Personal Care,65+,Males,2967,3516,4253,5120,6365,7404,6110,7796,8034,11100
+Medicaid,Other Health Residential and Personal Care,Total,Females,19223,22069,25684,28885,32583,36486,39781,46390,50936,56587
+Medicaid,Other Health Residential and Personal Care,0-18,Females,2131,2220,2717,3095,3476,3417,2974,2779,2997,2709
+Medicaid,Other Health Residential and Personal Care,19-64,Females,11068,13168,14507,16089,18658,19883,25808,31248,34619,35791
+Medicaid,Other Health Residential and Personal Care,65+,Females,6024,6680,8461,9701,10449,13186,10999,12363,13319,18087
+Medicare,Other Health Residential and Personal Care,Total,Total,2368,3042,3711,4226,4776,5090,5187,4889,4916,4430
+Medicare,Other Health Residential and Personal Care,0-18,Total,1,1,1,1,1,1,0,0,0,0
+Medicare,Other Health Residential and Personal Care,19-64,Total,304,440,588,947,1128,1227,1255,1139,1084,902
+Medicare,Other Health Residential and Personal Care,65+,Total,2064,2601,3122,3279,3647,3862,3931,3750,3832,3527
+Medicare,Other Health Residential and Personal Care,Total,Males,966,1264,1570,1804,2059,2212,2286,2177,2226,2062
+Medicare,Other Health Residential and Personal Care,0-18,Males,0,0,0,0,0,0,0,0,0,0
+Medicare,Other Health Residential and Personal Care,19-64,Males,169,242,321,501,593,643,656,595,572,490
+Medicare,Other Health Residential and Personal Care,65+,Males,796,1021,1249,1303,1466,1569,1630,1582,1654,1573
+Medicare,Other Health Residential and Personal Care,Total,Females,1403,1778,2141,2422,2717,2878,2901,2712,2690,2367
+Medicare,Other Health Residential and Personal Care,0-18,Females,0,0,0,0,0,0,0,0,0,0
+Medicare,Other Health Residential and Personal Care,19-64,Females,135,198,268,446,535,585,599,544,512,413
+Medicare,Other Health Residential and Personal Care,65+,Females,1267,1580,1874,1976,2182,2293,2301,2168,2178,1954
+Other Payers and Programs,Other Health Residential and Personal Care,Total,Total,25491,28856,32445,36025,39250,41576,44822,51199,56267,64502
+Other Payers and Programs,Other Health Residential and Personal Care,0-18,Total,5708,6448,7384,8510,8924,9317,9645,10951,12972,16180
+Other Payers and Programs,Other Health Residential and Personal Care,19-64,Total,17231,19069,21329,24246,25367,27436,29255,32576,34830,38863
+Other Payers and Programs,Other Health Residential and Personal Care,65+,Total,2552,3339,3732,3270,4958,4823,5923,7672,8465,9459
+Other Payers and Programs,Other Health Residential and Personal Care,Total,Males,12540,14606,16421,18905,20309,22389,22716,26974,30285,33118
+Other Payers and Programs,Other Health Residential and Personal Care,0-18,Males,2865,3328,3811,4518,4664,5221,4988,5854,7018,8443
+Other Payers and Programs,Other Health Residential and Personal Care,19-64,Males,8487,9538,10666,12866,13308,14584,14967,17787,18793,20544
+Other Payers and Programs,Other Health Residential and Personal Care,65+,Males,1188,1739,1944,1522,2337,2584,2761,3333,4473,4131
+Other Payers and Programs,Other Health Residential and Personal Care,Total,Females,12951,14250,16025,17119,18941,19187,22106,24225,25982,31384
+Other Payers and Programs,Other Health Residential and Personal Care,0-18,Females,2843,3119,3573,3992,4261,4096,4656,5097,5953,7737
+Other Payers and Programs,Other Health Residential and Personal Care,19-64,Females,8744,9530,10663,11380,12059,12852,14288,14789,16038,18319
+Other Payers and Programs,Other Health Residential and Personal Care,65+,Females,1364,1600,1789,1747,2621,2239,3162,4339,3991,5329
+Out-of-Pocket,Other Health Residential and Personal Care,Total,Total,3471,4187,4697,4167,4783,5521,5923,5225,6196,6645
+Out-of-Pocket,Other Health Residential and Personal Care,0-18,Total,699,807,1062,1061,1252,1246,1323,1206,1329,1937
+Out-of-Pocket,Other Health Residential and Personal Care,19-64,Total,2565,3138,3512,2993,3342,4014,4232,3633,4360,4167
+Out-of-Pocket,Other Health Residential and Personal Care,65+,Total,208,241,123,114,188,261,368,387,507,541
+Out-of-Pocket,Other Health Residential and Personal Care,Total,Males,1426,1831,2323,2211,2208,2680,2891,2779,3344,3131
+Out-of-Pocket,Other Health Residential and Personal Care,0-18,Males,365,455,610,639,690,650,673,633,685,912
+Out-of-Pocket,Other Health Residential and Personal Care,19-64,Males,974,1267,1664,1515,1429,1844,2021,1958,2402,1968
+Out-of-Pocket,Other Health Residential and Personal Care,65+,Males,87,109,49,57,89,186,197,188,256,252
+Out-of-Pocket,Other Health Residential and Personal Care,Total,Females,2045,2356,2374,1957,2575,2841,3032,2447,2853,3514
+Out-of-Pocket,Other Health Residential and Personal Care,0-18,Females,334,353,452,422,562,596,650,573,644,1026
+Out-of-Pocket,Other Health Residential and Personal Care,19-64,Females,1591,1871,1848,1477,1914,2170,2211,1675,1958,2199
+Out-of-Pocket,Other Health Residential and Personal Care,65+,Females,120,132,74,57,99,75,171,199,251,289
+Private health Insurance,Other Health Residential and Personal Care,Total,Total,4472,5830,6668,7485,8902,10038,10579,12117,12573,13552
+Private health Insurance,Other Health Residential and Personal Care,0-18,Total,559,615,1002,1049,920,959,925,1267,1203,1201
+Private health Insurance,Other Health Residential and Personal Care,19-64,Total,2542,3289,4078,5015,6019,7098,7513,8517,9060,10420
+Private health Insurance,Other Health Residential and Personal Care,65+,Total,1372,1926,1588,1421,1963,1982,2141,2332,2310,1932
+Private health Insurance,Other Health Residential and Personal Care,Total,Males,2319,3011,3533,3810,3994,4765,4695,5922,5955,6898
+Private health Insurance,Other Health Residential and Personal Care,0-18,Males,260,411,732,692,593,583,508,883,808,838
+Private health Insurance,Other Health Residential and Personal Care,19-64,Males,1474,1700,2159,2552,2680,3431,3390,4291,4365,5362
+Private health Insurance,Other Health Residential and Personal Care,65+,Males,585,900,643,566,721,752,797,747,782,698
+Private health Insurance,Other Health Residential and Personal Care,Total,Females,2153,2819,3135,3675,4908,5273,5883,6195,6618,6654
+Private health Insurance,Other Health Residential and Personal Care,0-18,Females,299,204,270,357,327,376,417,384,395,363
+Private health Insurance,Other Health Residential and Personal Care,19-64,Females,1068,1589,1919,2463,3339,3667,4122,4226,4695,5058
+Private health Insurance,Other Health Residential and Personal Care,65+,Females,786,1027,946,856,1242,1229,1344,1585,1527,1233
+Total,Other Health Residential and Personal Care,Total,Total,76010,88775,100850,111941,127402,138099,151316,174231,189934,210672
+Total,Other Health Residential and Personal Care,0-18,Total,12501,13641,16389,18619,20058,20408,19616,20628,23562,26422
+Total,Other Health Residential and Personal Care,19-64,Total,48323,56830,63182,70418,79773,86172,102227,119304,129905,139603
+Total,Other Health Residential and Personal Care,65+,Total,15186,18304,21279,22904,27572,31518,29473,34299,36466,44647
+Total,Other Health Residential and Personal Care,Total,Males,38235,45503,51491,57883,65678,71434,77612,92262,100855,110166
+Total,Other Health Residential and Personal Care,0-18,Males,6894,7744,9377,10752,11431,11923,10918,11795,13573,14588
+Total,Other Health Residential and Personal Care,19-64,Males,25717,30473,33977,38563,43268,47016,55199,66822,72083,77823
+Total,Other Health Residential and Personal Care,65+,Males,5624,7285,8137,8568,10978,12495,11496,13645,15199,17754
+Total,Other Health Residential and Personal Care,Total,Females,37775,43272,49360,54058,61724,66665,73703,81969,89079,100506
+Total,Other Health Residential and Personal Care,0-18,Females,5607,5897,7012,7867,8626,8485,8698,8833,9990,11833
+Total,Other Health Residential and Personal Care,19-64,Females,22606,26356,29205,31855,36505,39157,47028,52483,57822,61780
+Total,Other Health Residential and Personal Care,65+,Females,9562,11019,13143,14337,16593,19023,17977,20654,21267,26893
+Medicare,Other Nondurable Medical Products,Total,Total,1678,2025,2295,2717,3008,3271,2278,2102,2089,2334
+Medicare,Other Nondurable Medical Products,0-18,Total,1,2,3,3,3,1,0,1,1,1
+Medicare,Other Nondurable Medical Products,19-64,Total,374,496,588,716,823,899,672,565,532,526
+Medicare,Other Nondurable Medical Products,65+,Total,1303,1527,1705,1998,2182,2370,1605,1535,1556,1807
+Medicare,Other Nondurable Medical Products,Total,Males,687,858,1001,1200,1363,1533,1081,1088,1115,1271
+Medicare,Other Nondurable Medical Products,0-18,Males,1,1,2,2,2,1,0,1,1,1
+Medicare,Other Nondurable Medical Products,19-64,Males,192,251,293,346,399,443,356,293,279,276
+Medicare,Other Nondurable Medical Products,65+,Males,495,606,706,853,962,1089,725,794,836,994
+Medicare,Other Nondurable Medical Products,Total,Females,991,1167,1295,1516,1645,1738,1197,1014,974,1063
+Medicare,Other Nondurable Medical Products,0-18,Females,1,1,1,1,1,1,0,0,0,0
+Medicare,Other Nondurable Medical Products,19-64,Females,182,245,295,370,424,455,316,272,253,250
+Medicare,Other Nondurable Medical Products,65+,Females,809,921,999,1145,1220,1282,881,741,721,813
+Other Payers and Programs,Other Nondurable Medical Products,Total,Total,0,0,0,0,0,2,0,0,0,0
+Other Payers and Programs,Other Nondurable Medical Products,0-18,Total,0,0,0,0,0,0,0,0,0,0
+Other Payers and Programs,Other Nondurable Medical Products,19-64,Total,0,0,0,0,0,1,0,0,0,0
+Other Payers and Programs,Other Nondurable Medical Products,65+,Total,0,0,0,0,0,1,0,0,0,0
+Other Payers and Programs,Other Nondurable Medical Products,Total,Males,0,0,0,0,0,1,0,0,0,0
+Other Payers and Programs,Other Nondurable Medical Products,0-18,Males,0,0,0,0,0,0,0,0,0,0
+Other Payers and Programs,Other Nondurable Medical Products,19-64,Males,0,0,0,0,0,1,0,0,0,0
+Other Payers and Programs,Other Nondurable Medical Products,65+,Males,0,0,0,0,0,0,0,0,0,0
+Other Payers and Programs,Other Nondurable Medical Products,Total,Females,0,0,0,0,0,1,0,0,0,0
+Other Payers and Programs,Other Nondurable Medical Products,0-18,Females,0,0,0,0,0,0,0,0,0,0
+Other Payers and Programs,Other Nondurable Medical Products,19-64,Females,0,0,0,0,0,1,0,0,0,0
+Other Payers and Programs,Other Nondurable Medical Products,65+,Females,0,0,0,0,0,0,0,0,0,0
+Out-of-Pocket,Other Nondurable Medical Products,Total,Total,26227,30699,36370,42592,48812,57940,63238,69774,75512,83033
+Out-of-Pocket,Other Nondurable Medical Products,0-18,Total,1177,1345,1552,1765,1952,2221,2373,2440,2519,2643
+Out-of-Pocket,Other Nondurable Medical Products,19-64,Total,13226,15643,18649,21733,24745,28729,31272,33265,34542,36052
+Out-of-Pocket,Other Nondurable Medical Products,65+,Total,11823,13711,16170,19094,22115,26990,29592,34069,38451,44338
+Out-of-Pocket,Other Nondurable Medical Products,Total,Males,10776,12684,15100,17757,20299,24159,26913,29684,32131,35500
+Out-of-Pocket,Other Nondurable Medical Products,0-18,Males,674,769,887,1009,1116,1269,1324,1334,1377,1445
+Out-of-Pocket,Other Nondurable Medical Products,19-64,Males,5803,6874,8209,9576,10846,12596,14126,15024,15590,16455
+Out-of-Pocket,Other Nondurable Medical Products,65+,Males,4300,5041,6004,7172,8338,10294,11463,13327,15164,17600
+Out-of-Pocket,Other Nondurable Medical Products,Total,Females,15450,18015,21270,24835,28512,33781,36325,40090,43380,47533
+Out-of-Pocket,Other Nondurable Medical Products,0-18,Females,504,576,664,756,836,952,1049,1106,1142,1198
+Out-of-Pocket,Other Nondurable Medical Products,19-64,Females,7423,8769,10440,12157,13900,16133,17146,18242,18952,19597
+Out-of-Pocket,Other Nondurable Medical Products,65+,Females,7524,8670,10166,11922,13777,16696,18130,20742,23287,26738
+Total,Other Nondurable Medical Products,Total,Total,27905,32724,38666,45309,51820,61213,65516,71876,77601,85367
+Total,Other Nondurable Medical Products,0-18,Total,1179,1347,1555,1768,1955,2223,2374,2441,2520,2644
+Total,Other Nondurable Medical Products,19-64,Total,13600,16138,19236,22449,25569,29629,31945,33831,35074,36578
+Total,Other Nondurable Medical Products,65+,Total,13127,15238,17875,21092,24297,29361,31198,35604,40007,46145
+Total,Other Nondurable Medical Products,Total,Males,11464,13542,16101,18957,21663,25693,27994,30772,33247,36771
+Total,Other Nondurable Medical Products,0-18,Males,674,770,889,1011,1118,1270,1324,1335,1378,1446
+Total,Other Nondurable Medical Products,19-64,Males,5995,7125,8502,9922,11245,13039,14482,15317,15869,16730
+Total,Other Nondurable Medical Products,65+,Males,4794,5647,6710,8025,9299,11384,12187,14121,16000,18595
+Total,Other Nondurable Medical Products,Total,Females,16441,19182,22565,26352,30157,35520,37522,41104,44354,48596
+Total,Other Nondurable Medical Products,0-18,Females,504,577,666,758,837,953,1049,1106,1142,1198
+Total,Other Nondurable Medical Products,19-64,Females,7605,9014,10734,12527,14323,16589,17462,18514,19205,19848
+Total,Other Nondurable Medical Products,65+,Females,8332,9591,11165,13067,14997,17978,19010,21483,24008,27550
+Medicaid,Other Professional Services,Total,Total,2216,2924,3225,3834,4960,4783,5967,7269,7653,8298
+Medicaid,Other Professional Services,0-18,Total,1128,1436,1612,1862,2330,2247,2648,3369,3542,3829
+Medicaid,Other Professional Services,19-64,Total,894,1285,1410,1676,2248,2140,2948,3464,3619,3905
+Medicaid,Other Professional Services,65+,Total,195,203,204,296,383,396,371,436,492,564
+Medicaid,Other Professional Services,Total,Males,955,1259,1316,1604,2134,2098,2643,3243,3467,3762
+Medicaid,Other Professional Services,0-18,Males,614,779,850,989,1240,1205,1414,1799,1909,2056
+Medicaid,Other Professional Services,19-64,Males,287,421,407,528,781,775,1108,1302,1394,1512
+Medicaid,Other Professional Services,65+,Males,55,58,59,87,112,117,120,142,164,193
+Medicaid,Other Professional Services,Total,Females,1261,1665,1910,2230,2826,2685,3325,4026,4186,4537
+Medicaid,Other Professional Services,0-18,Females,514,657,762,874,1089,1041,1234,1570,1633,1773
+Medicaid,Other Professional Services,19-64,Females,607,863,1003,1148,1467,1365,1840,2162,2226,2392
+Medicaid,Other Professional Services,65+,Females,140,144,145,209,270,279,250,294,328,371
+Medicare,Other Professional Services,Total,Total,6608,8079,9951,12047,14068,16250,18705,21241,25613,28789
+Medicare,Other Professional Services,0-18,Total,0,0,0,0,0,0,0,0,1,0
+Medicare,Other Professional Services,19-64,Total,766,1066,1485,1873,2312,2743,3259,3589,4077,4424
+Medicare,Other Professional Services,65+,Total,5842,7012,8466,10174,11755,13507,15446,17652,21536,24365
+Medicare,Other Professional Services,Total,Males,2571,3119,3900,4877,5736,6677,7710,8819,10739,12302
+Medicare,Other Professional Services,0-18,Males,0,0,0,0,0,0,0,0,0,0
+Medicare,Other Professional Services,19-64,Males,337,464,654,815,1006,1200,1431,1580,1806,1984
+Medicare,Other Professional Services,65+,Males,2235,2655,3247,4062,4730,5476,6278,7239,8933,10317
+Medicare,Other Professional Services,Total,Females,4037,4959,6051,7170,8332,9573,10995,12422,14874,16487
+Medicare,Other Professional Services,0-18,Females,0,0,0,0,0,0,0,0,0,0
+Medicare,Other Professional Services,19-64,Females,430,602,831,1058,1307,1543,1828,2009,2271,2439
+Medicare,Other Professional Services,65+,Females,3607,4357,5219,6112,7025,8030,9167,10413,12603,14047
+Other Payers and Programs,Other Professional Services,Total,Total,7614,8004,8409,9235,9646,10431,10766,11518,12614,20967
+Other Payers and Programs,Other Professional Services,0-18,Total,757,540,793,909,1110,1273,1496,1469,1851,2516
+Other Payers and Programs,Other Professional Services,19-64,Total,6002,6699,6454,7353,7320,7825,8086,8495,8289,13504
+Other Payers and Programs,Other Professional Services,65+,Total,856,765,1161,974,1216,1333,1184,1554,2475,4947
+Other Payers and Programs,Other Professional Services,Total,Males,2880,3305,3989,3575,4352,3877,4419,5006,5000,9608
+Other Payers and Programs,Other Professional Services,0-18,Males,396,250,418,489,536,649,828,916,773,1380
+Other Payers and Programs,Other Professional Services,19-64,Males,2130,2829,3147,2816,3321,2792,3204,3470,3244,6173
+Other Payers and Programs,Other Professional Services,65+,Males,354,226,424,270,496,436,388,621,983,2055
+Other Payers and Programs,Other Professional Services,Total,Females,4734,4699,4420,5660,5294,6554,6347,6512,7614,11359
+Other Payers and Programs,Other Professional Services,0-18,Females,361,290,375,420,575,624,669,553,1078,1137
+Other Payers and Programs,Other Professional Services,19-64,Females,3872,3870,3307,4536,3999,5034,4882,5026,5045,7331
+Other Payers and Programs,Other Professional Services,65+,Females,501,539,738,704,720,896,796,933,1491,2891
+Out-of-Pocket,Other Professional Services,Total,Total,11928,13405,14419,16858,17682,19128,20436,22576,25855,26232
+Out-of-Pocket,Other Professional Services,0-18,Total,1152,1167,1346,1547,1716,1922,1999,1852,2759,3007
+Out-of-Pocket,Other Professional Services,19-64,Total,7897,8655,9264,10729,11043,11927,12548,16422,17682,18134
+Out-of-Pocket,Other Professional Services,65+,Total,2880,3583,3809,4581,4923,5278,5889,4302,5415,5091
+Out-of-Pocket,Other Professional Services,Total,Males,4579,5226,5755,6880,7170,7693,8237,9459,10014,11167
+Out-of-Pocket,Other Professional Services,0-18,Males,573,592,696,802,882,978,1016,1125,1020,1438
+Out-of-Pocket,Other Professional Services,19-64,Males,2943,3253,3526,4163,4230,4676,4924,6585,6894,7705
+Out-of-Pocket,Other Professional Services,65+,Males,1062,1381,1534,1915,2059,2040,2297,1748,2101,2023
+Out-of-Pocket,Other Professional Services,Total,Females,7349,8179,8663,9978,10512,11434,12198,13117,15841,15066
+Out-of-Pocket,Other Professional Services,0-18,Females,579,575,650,746,834,945,983,726,1739,1570
+Out-of-Pocket,Other Professional Services,19-64,Females,4953,5402,5738,6566,6814,7252,7624,9837,10788,10428
+Out-of-Pocket,Other Professional Services,65+,Females,1817,2203,2275,2666,2864,3238,3591,2554,3314,3068
+Private health Insurance,Other Professional Services,Total,Total,14972,17800,19259,22511,23533,25838,26477,29469,32758,33416
+Private health Insurance,Other Professional Services,0-18,Total,1518,1361,1932,1793,2378,3030,2946,3517,4366,4227
+Private health Insurance,Other Professional Services,19-64,Total,11247,14093,14777,17190,18272,19148,19621,21585,22717,23705
+Private health Insurance,Other Professional Services,65+,Total,2207,2346,2550,3528,2883,3660,3911,4367,5676,5483
+Private health Insurance,Other Professional Services,Total,Males,5796,7425,7567,9704,9966,9763,10258,12135,13681,14634
+Private health Insurance,Other Professional Services,0-18,Males,817,742,1089,900,1327,1496,1700,2229,2080,2616
+Private health Insurance,Other Professional Services,19-64,Males,4072,5556,5442,7190,7633,6895,7073,8348,9041,9987
+Private health Insurance,Other Professional Services,65+,Males,907,1127,1036,1614,1005,1373,1486,1558,2560,2030
+Private health Insurance,Other Professional Services,Total,Females,9176,10375,11692,12807,13568,16075,16219,17335,19077,18782
+Private health Insurance,Other Professional Services,0-18,Females,701,619,843,894,1050,1534,1246,1288,2286,1611
+Private health Insurance,Other Professional Services,19-64,Females,7175,8537,9335,10000,10639,12254,12548,13238,13676,13718
+Private health Insurance,Other Professional Services,65+,Females,1300,1219,1514,1914,1879,2287,2425,2809,3116,3453
+Total,Other Professional Services,Total,Total,43338,50211,55264,64486,69889,76429,82351,92073,104494,117702
+Total,Other Professional Services,0-18,Total,4554,4505,5683,6112,7534,8472,9090,10207,12518,13581
+Total,Other Professional Services,19-64,Total,26805,31798,33390,38821,41196,43784,46462,53555,56384,63672
+Total,Other Professional Services,65+,Total,11979,13908,16190,19553,21160,24173,26800,28311,35593,40450
+Total,Other Professional Services,Total,Males,16780,20333,22528,26641,29358,30108,33267,38662,42902,51472
+Total,Other Professional Services,0-18,Males,2399,2363,3053,3179,3985,4328,4958,6070,5783,7490
+Total,Other Professional Services,19-64,Males,9768,12524,13176,15513,16970,16337,17740,21285,22378,27362
+Total,Other Professional Services,65+,Males,4613,5446,6299,7949,8402,9443,10570,11308,14741,16619
+Total,Other Professional Services,Total,Females,26558,29878,32736,37845,40532,46321,49084,53411,61593,66231
+Total,Other Professional Services,0-18,Females,2155,2142,2630,2933,3548,4144,4132,4137,6735,6090
+Total,Other Professional Services,19-64,Females,17037,19274,20214,23308,24225,27447,28722,32270,34006,36310
+Total,Other Professional Services,65+,Females,7366,8462,9892,11603,12758,14730,16230,17004,20852,23831
+Medicaid,Physician and Clinical Services,Total,Total,24039,27993,31810,35991,43404,47317,64472,73064,78371,87301
+Medicaid,Physician and Clinical Services,0-18,Total,9326,11003,12948,13952,16680,17823,20075,19631,20061,21100
+Medicaid,Physician and Clinical Services,19-64,Total,12874,15231,17040,19624,23731,26199,38847,46970,51699,59144
+Medicaid,Physician and Clinical Services,65+,Total,1839,1759,1823,2415,2992,3295,5550,6463,6611,7056
+Medicaid,Physician and Clinical Services,Total,Males,9825,11598,13251,14929,18386,20221,28787,33482,36106,40334
+Medicaid,Physician and Clinical Services,0-18,Males,5139,6139,7197,7662,9187,9839,11119,10860,11098,11656
+Medicaid,Physician and Clinical Services,19-64,Males,4113,4898,5470,6488,8238,9314,15534,19957,22292,25874
+Medicaid,Physician and Clinical Services,65+,Males,573,561,584,779,962,1069,2134,2665,2716,2804
+Medicaid,Physician and Clinical Services,Total,Females,14214,16395,18559,21062,25018,27096,35685,39583,42265,46966
+Medicaid,Physician and Clinical Services,0-18,Females,4188,4864,5750,6289,7493,7984,8956,8771,8964,9444
+Medicaid,Physician and Clinical Services,19-64,Females,8761,10333,11570,13136,15494,16885,23313,27014,29407,33271
+Medicaid,Physician and Clinical Services,65+,Females,1266,1198,1239,1637,2031,2227,3416,3798,3895,4252
+Medicare,Physician and Clinical Services,Total,Total,68637,81263,92413,105557,118151,131250,142237,154509,178132,194046
+Medicare,Physician and Clinical Services,0-18,Total,11,14,17,16,17,16,15,12,13,12
+Medicare,Physician and Clinical Services,19-64,Total,9076,11862,14621,16398,19326,22061,24302,25536,28077,29199
+Medicare,Physician and Clinical Services,65+,Total,59550,69387,77775,89143,98808,109173,117919,128961,150042,164834
+Medicare,Physician and Clinical Services,Total,Males,30649,36391,41261,47318,52931,58973,63612,69265,79991,87615
+Medicare,Physician and Clinical Services,0-18,Males,6,7,9,8,9,9,9,7,8,8
+Medicare,Physician and Clinical Services,19-64,Males,4500,5859,7127,7848,9158,10461,11527,12103,13302,13816
+Medicare,Physician and Clinical Services,65+,Males,26144,30526,34124,39462,43764,48503,52077,57155,66681,73791
+Medicare,Physician and Clinical Services,Total,Females,37988,44871,51152,58238,65219,72277,78625,85244,98141,106431
+Medicare,Physician and Clinical Services,0-18,Females,6,7,8,8,8,7,7,5,5,4
+Medicare,Physician and Clinical Services,19-64,Females,4576,6003,7494,8550,10167,11600,12776,13433,14775,15384
+Medicare,Physician and Clinical Services,65+,Females,33407,38861,43650,49681,55044,60670,65842,71806,83361,91044
+Other Payers and Programs,Physician and Clinical Services,Total,Total,52890,60864,67018,76399,79517,86637,90802,107431,118025,171028
+Other Payers and Programs,Physician and Clinical Services,0-18,Total,9350,9192,9802,12770,12400,13088,13589,15875,17193,23035
+Other Payers and Programs,Physician and Clinical Services,19-64,Total,36799,44027,49040,54362,57075,62071,66252,77911,85036,114895
+Other Payers and Programs,Physician and Clinical Services,65+,Total,6741,7645,8176,9266,10043,11479,10962,13645,15795,33098
+Other Payers and Programs,Physician and Clinical Services,Total,Males,22522,26114,29366,33707,34514,39306,40256,47751,52518,75235
+Other Payers and Programs,Physician and Clinical Services,0-18,Males,4929,4878,5266,6742,6100,6627,6481,7570,8196,11178
+Other Payers and Programs,Physician and Clinical Services,19-64,Males,14460,17582,20189,22616,23249,26332,28211,33219,36233,47887
+Other Payers and Programs,Physician and Clinical Services,65+,Males,3133,3654,3910,4349,5165,6347,5565,6962,8089,16171
+Other Payers and Programs,Physician and Clinical Services,Total,Females,30368,34749,37652,42691,45003,47332,50546,59680,65506,95793
+Other Payers and Programs,Physician and Clinical Services,0-18,Females,4421,4314,4536,6028,6300,6461,7108,8305,8998,11857
+Other Payers and Programs,Physician and Clinical Services,19-64,Females,22339,26445,28851,31746,33825,35739,38041,44692,48803,67008
+Other Payers and Programs,Physician and Clinical Services,65+,Females,3607,3990,4266,4917,4878,5132,5397,6684,7706,16928
+Out-of-Pocket,Physician and Clinical Services,Total,Total,34554,37602,42609,46000,47594,50856,52877,58136,60818,60326
+Out-of-Pocket,Physician and Clinical Services,0-18,Total,4594,5220,6238,6562,6432,6713,6542,6852,8335,5808
+Out-of-Pocket,Physician and Clinical Services,19-64,Total,22029,24166,27283,29249,29735,31323,32681,35931,35953,37859
+Out-of-Pocket,Physician and Clinical Services,65+,Total,7931,8216,9088,10189,11427,12820,13653,15354,16530,16659
+Out-of-Pocket,Physician and Clinical Services,Total,Males,14179,15625,18033,19631,20386,21925,22232,23425,24499,24776
+Out-of-Pocket,Physician and Clinical Services,0-18,Males,2363,2691,3228,3379,3320,3457,3334,3559,4162,2771
+Out-of-Pocket,Physician and Clinical Services,19-64,Males,8269,9160,10659,11494,11537,12363,12359,13279,12736,13548
+Out-of-Pocket,Physician and Clinical Services,65+,Males,3548,3773,4146,4759,5528,6105,6539,6587,7600,8457
+Out-of-Pocket,Physician and Clinical Services,Total,Females,20375,21977,24576,26368,27208,28931,30645,34711,36319,35550
+Out-of-Pocket,Physician and Clinical Services,0-18,Females,2231,2529,3010,3183,3112,3255,3208,3292,4173,3037
+Out-of-Pocket,Physician and Clinical Services,19-64,Females,13761,15006,16624,17755,18197,18960,20323,22652,23217,24311
+Out-of-Pocket,Physician and Clinical Services,65+,Females,4383,4442,4942,5431,5899,6716,7114,8767,8929,8203
+Private health Insurance,Physician and Clinical Services,Total,Total,157571,176873,199160,217529,223688,241061,247874,283621,300842,305746
+Private health Insurance,Physician and Clinical Services,0-18,Total,29912,30222,33160,36031,34871,40471,37798,42426,46935,41424
+Private health Insurance,Physician and Clinical Services,19-64,Total,109442,125954,146104,155319,163713,169952,180668,203812,215161,216470
+Private health Insurance,Physician and Clinical Services,65+,Total,18217,20696,19896,26180,25104,30638,29408,37383,38746,47852
+Private health Insurance,Physician and Clinical Services,Total,Males,64807,72350,81760,85162,92191,104436,105965,112056,117563,120149
+Private health Insurance,Physician and Clinical Services,0-18,Males,15242,16050,17816,19361,18629,20342,19502,21585,24017,21379
+Private health Insurance,Physician and Clinical Services,19-64,Males,41300,45807,54351,53960,61534,67623,70882,72331,74618,75799
+Private health Insurance,Physician and Clinical Services,65+,Males,8266,10494,9593,11842,12028,16471,15581,18139,18929,22972
+Private health Insurance,Physician and Clinical Services,Total,Females,92764,104523,117400,132367,131496,136625,141909,171565,183279,185596
+Private health Insurance,Physician and Clinical Services,0-18,Females,14670,14172,15343,16670,16241,20129,18296,20841,22918,20045
+Private health Insurance,Physician and Clinical Services,19-64,Females,68142,80148,91753,101359,102179,102329,109786,131480,140544,140671
+Private health Insurance,Physician and Clinical Services,65+,Females,9951,10203,10303,14338,13076,14167,13827,19244,19817,24880
+Total,Physician and Clinical Services,Total,Total,337691,384594,433010,481475,512353,557122,598262,676762,736188,818446
+Total,Physician and Clinical Services,0-18,Total,53193,55651,62164,69330,70399,78112,78019,84796,92537,91379
+Total,Physician and Clinical Services,19-64,Total,190219,221240,254088,274951,293579,311606,342750,390160,415927,457567
+Total,Physician and Clinical Services,65+,Total,94278,107703,116757,137194,148375,167404,177493,201806,227724,269500
+Total,Physician and Clinical Services,Total,Males,141983,162078,183671,200748,218409,244862,260853,285978,310678,348110
+Total,Physician and Clinical Services,0-18,Males,27678,29765,33517,37152,37244,40275,40444,43582,47480,46992
+Total,Physician and Clinical Services,19-64,Males,72641,83305,97797,102406,113717,126093,138513,150889,159182,176923
+Total,Physician and Clinical Services,65+,Males,41664,49008,52357,61190,67447,78494,81896,91507,104016,124194
+Total,Physician and Clinical Services,Total,Females,195708,222516,249339,280726,293944,312260,337409,390784,425511,470337
+Total,Physician and Clinical Services,0-18,Females,25516,25886,28648,32178,33154,37837,37575,41214,45057,44387
+Total,Physician and Clinical Services,19-64,Females,117578,137935,156291,172545,179862,185513,204238,239271,256745,280644
+Total,Physician and Clinical Services,65+,Females,52614,58695,64400,76004,80928,88910,95597,110299,123708,145306
+Medicaid,Prescription Drugs,Total,Total,27523,35852,19122,19242,20423,21049,25266,29328,30430,34419
+Medicaid,Prescription Drugs,0-18,Total,4558,6155,5916,6062,6280,7118,7543,7741,7437,8419
+Medicaid,Prescription Drugs,19-64,Total,15168,19908,12095,12152,13104,12773,16444,19425,20137,22035
+Medicaid,Prescription Drugs,65+,Total,7798,9790,1112,1028,1039,1158,1279,2162,2856,3964
+Medicaid,Prescription Drugs,Total,Males,10751,14159,8259,8536,9104,9495,11597,13493,13813,15290
+Medicaid,Prescription Drugs,0-18,Males,2585,3518,3459,3595,3721,4190,4434,4477,4243,4706
+Medicaid,Prescription Drugs,19-64,Males,6132,8015,4469,4627,5060,4944,6748,8345,8667,9293
+Medicaid,Prescription Drugs,65+,Males,2034,2626,332,314,324,360,415,671,903,1292
+Medicaid,Prescription Drugs,Total,Females,16773,21694,10863,10706,11319,11555,13669,15835,16617,19129
+Medicaid,Prescription Drugs,0-18,Females,1972,2636,2457,2467,2559,2928,3109,3264,3193,3714
+Medicaid,Prescription Drugs,19-64,Females,9036,11893,7626,7525,8044,7828,9696,11080,11470,12742
+Medicaid,Prescription Drugs,65+,Females,5764,7164,780,714,716,798,864,1491,1953,2673
+Medicare,Prescription Drugs,Total,Total,1863,2707,38570,48795,56295,63942,79471,89879,97228,111635
+Medicare,Prescription Drugs,0-18,Total,0,0,16,17,16,17,22,19,15,15
+Medicare,Prescription Drugs,19-64,Total,337,586,12286,16044,18649,21922,28634,31142,30782,32025
+Medicare,Prescription Drugs,65+,Total,1526,2121,26268,32733,37629,42004,50814,58718,66431,79595
+Medicare,Prescription Drugs,Total,Males,884,1257,15353,19958,23433,27196,34803,40096,43335,50053
+Medicare,Prescription Drugs,0-18,Males,0,0,9,10,10,10,13,11,9,11
+Medicare,Prescription Drugs,19-64,Males,208,336,6111,7884,9091,10560,13835,14944,14223,14511
+Medicare,Prescription Drugs,65+,Males,676,920,9233,12064,14332,16625,20954,25141,29104,35532
+Medicare,Prescription Drugs,Total,Females,979,1451,23216,28837,32862,36746,44668,49783,53893,61582
+Medicare,Prescription Drugs,0-18,Females,0,0,7,7,7,7,8,8,7,5
+Medicare,Prescription Drugs,19-64,Females,129,250,6175,8161,9558,11361,14799,16198,16559,17514
+Medicare,Prescription Drugs,65+,Females,850,1201,17035,20669,23298,25379,29860,33577,37327,44063
+Other Payers and Programs,Prescription Drugs,Total,Total,9445,12613,14356,14340,14568,14056,14530,14671,15214,16486
+Other Payers and Programs,Prescription Drugs,0-18,Total,932,1259,1639,1786,1950,1910,1930,2196,2037,1886
+Other Payers and Programs,Prescription Drugs,19-64,Total,6123,8040,9622,9421,9462,9522,9616,9554,10109,11199
+Other Payers and Programs,Prescription Drugs,65+,Total,2390,3313,3095,3133,3156,2624,2983,2921,3068,3401
+Other Payers and Programs,Prescription Drugs,Total,Males,3970,5376,5981,6590,6677,6734,6870,7158,7774,8302
+Other Payers and Programs,Prescription Drugs,0-18,Males,537,697,898,1081,1119,1061,1060,1293,1212,1113
+Other Payers and Programs,Prescription Drugs,19-64,Males,2479,3256,3802,4179,4105,4406,4421,4388,4893,5226
+Other Payers and Programs,Prescription Drugs,65+,Males,955,1422,1281,1330,1453,1267,1389,1476,1670,1963
+Other Payers and Programs,Prescription Drugs,Total,Females,5475,7237,8375,7750,7892,7322,7660,7513,7440,8184
+Other Payers and Programs,Prescription Drugs,0-18,Females,396,562,741,704,831,849,870,903,825,772
+Other Payers and Programs,Prescription Drugs,19-64,Females,3644,4784,5820,5242,5356,5116,5195,5165,5216,5973
+Other Payers and Programs,Prescription Drugs,65+,Females,1435,1891,1814,1803,1704,1357,1594,1445,1399,1439
+Out-of-Pocket,Prescription Drugs,Total,Total,45461,52609,56485,54284,47742,45117,48553,50301,47416,48324
+Out-of-Pocket,Prescription Drugs,0-18,Total,2428,2562,2817,2882,2397,2349,2361,2345,2260,2011
+Out-of-Pocket,Prescription Drugs,19-64,Total,28221,32560,38298,35435,29049,26627,27479,32337,30478,30373
+Out-of-Pocket,Prescription Drugs,65+,Total,14812,17486,15371,15966,16296,16140,18712,15619,14678,15940
+Out-of-Pocket,Prescription Drugs,Total,Males,17704,21115,23194,23762,19991,20204,21976,22803,22630,22226
+Out-of-Pocket,Prescription Drugs,0-18,Males,1385,1414,1619,1700,1433,1465,1476,1394,1198,1097
+Out-of-Pocket,Prescription Drugs,19-64,Males,10881,12925,15321,15197,11578,11746,12325,14464,14636,13940
+Out-of-Pocket,Prescription Drugs,65+,Males,5439,6777,6253,6866,6981,6993,8175,6946,6795,7189
+Out-of-Pocket,Prescription Drugs,Total,Females,27756,31494,33292,30521,27751,24912,26577,27497,24786,26098
+Out-of-Pocket,Prescription Drugs,0-18,Females,1044,1149,1198,1183,965,884,885,951,1062,914
+Out-of-Pocket,Prescription Drugs,19-64,Females,17340,19636,22976,20238,17471,14881,15154,17873,15841,16433
+Out-of-Pocket,Prescription Drugs,65+,Females,9373,10709,9118,9101,9315,9147,10538,8673,7883,8751
+Private health Insurance,Prescription Drugs,Total,Total,75520,91856,99566,107665,114343,112832,122823,129145,133881,139765
+Private health Insurance,Prescription Drugs,0-18,Total,4884,5374,7426,7036,7341,7452,8234,7492,7280,7255
+Private health Insurance,Prescription Drugs,19-64,Total,56398,69801,79111,82124,88977,87990,97125,104307,106950,112785
+Private health Insurance,Prescription Drugs,65+,Total,14239,16682,13029,18505,18024,17390,17464,17346,19652,19725
+Private health Insurance,Prescription Drugs,Total,Males,31273,38238,42064,48824,51237,53269,59193,59728,63435,64665
+Private health Insurance,Prescription Drugs,0-18,Males,2765,2926,3965,4103,4213,4323,4597,4216,4046,3992
+Private health Insurance,Prescription Drugs,19-64,Males,22743,28227,32554,36107,39017,40666,46029,47339,49028,50568
+Private health Insurance,Prescription Drugs,65+,Males,5765,7085,5545,8614,8007,8280,8566,8173,10361,10105
+Private health Insurance,Prescription Drugs,Total,Females,44248,53618,57502,58840,63106,59563,63630,69417,70447,75101
+Private health Insurance,Prescription Drugs,0-18,Females,2119,2448,3460,2933,3128,3129,3636,3275,3234,3263
+Private health Insurance,Prescription Drugs,19-64,Females,33655,41573,46557,46016,49961,47325,51096,56968,57922,62218
+Private health Insurance,Prescription Drugs,65+,Females,8475,9597,7484,9891,10017,9110,8898,9173,9291,9620
+Total,Prescription Drugs,Total,Total,159812,195638,228099,244324,253371,256996,290642,313323,324170,350629
+Total,Prescription Drugs,0-18,Total,12801,15350,17813,17783,17985,18847,20090,19792,19028,19587
+Total,Prescription Drugs,19-64,Total,106246,130895,151411,155176,159242,158833,179298,196765,198455,208417
+Total,Prescription Drugs,65+,Total,40765,49392,58874,71366,76145,79316,91254,96766,106687,122625
+Total,Prescription Drugs,Total,Males,64582,80145,94851,107670,110442,116898,134439,143278,150987,160536
+Total,Prescription Drugs,0-18,Males,7272,8555,9951,10489,10495,11050,11581,11390,10708,10919
+Total,Prescription Drugs,19-64,Males,42442,52759,62257,67994,68851,72322,83358,89480,91447,93537
+Total,Prescription Drugs,65+,Males,14867,18830,22643,29187,31095,33525,39500,42408,48833,56080
+Total,Prescription Drugs,Total,Females,95231,115493,133248,136654,142930,140098,156203,170044,173183,190094
+Total,Prescription Drugs,0-18,Females,5530,6795,7863,7294,7490,7796,8509,8402,8321,8668
+Total,Prescription Drugs,19-64,Females,63804,78136,89154,87181,90390,86511,95940,107284,107009,114880
+Total,Prescription Drugs,65+,Females,25897,30562,36231,42178,45049,45790,51754,54358,57854,66545
+Medicaid,Total Personal Health Care,Total,Total,230096,270746,283315,317890,365706,388255,446921,503380,531540,587747
+Medicaid,Total Personal Health Care,0-18,Total,53534,62722,73529,82692,94621,98697,101480,102656,107635,114486
+Medicaid,Total Personal Health Care,19-64,Total,110954,134092,139603,157216,186121,198549,253640,301254,317678,350549
+Medicaid,Total Personal Health Care,65+,Total,65608,73932,70183,77982,84964,91010,91801,99469,106228,122712
+Medicaid,Total Personal Health Care,Total,Males,93429,111104,117778,133689,157254,167496,198654,229509,244217,272103
+Medicaid,Total Personal Health Care,0-18,Males,29135,34223,39910,45072,51595,53955,55637,56317,58929,62728
+Medicaid,Total Personal Health Care,19-64,Males,46656,56660,58221,66155,80193,86060,114508,140473,149828,167093
+Medicaid,Total Personal Health Care,65+,Males,17638,20222,19647,22463,25466,27481,28508,32719,35461,42281
+Medicaid,Total Personal Health Care,Total,Females,136667,159641,165536,184201,208453,220759,248267,273871,287323,315644
+Medicaid,Total Personal Health Care,0-18,Females,24399,28499,33618,37620,43026,44742,45843,46339,48706,51758
+Medicaid,Total Personal Health Care,19-64,Females,64298,77432,81382,91061,105928,112489,139132,160782,167850,183456
+Medicaid,Total Personal Health Care,65+,Females,47970,53710,50536,55519,59498,63529,63293,66751,70766,80431
+Medicare,Total Personal Health Care,Total,Total,256551,300096,382298,442012,488820,533612,579273,629020,696689,759590
+Medicare,Total Personal Health Care,0-18,Total,66,77,114,124,120,125,122,112,108,105
+Medicare,Total Personal Health Care,19-64,Total,35901,45396,68000,81642,94493,107055,120643,127512,132377,135586
+Medicare,Total Personal Health Care,65+,Total,220583,254624,314184,360246,394207,426431,458508,501397,564204,623899
+Medicare,Total Personal Health Care,Total,Males,112673,131528,166037,192968,214173,236030,258197,283224,315488,347276
+Medicare,Total Personal Health Care,0-18,Males,33,38,61,66,66,71,69,64,66,69
+Medicare,Total Personal Health Care,19-64,Males,18724,23330,34466,40668,46611,52677,59338,62490,64384,65767
+Medicare,Total Personal Health Care,65+,Males,93915,108160,131510,152234,167496,183282,198789,220671,251038,281439
+Medicare,Total Personal Health Care,Total,Females,143878,168568,216261,249045,274647,297582,321076,345796,381201,412314
+Medicare,Total Personal Health Care,0-18,Females,33,38,54,59,55,55,53,48,42,36
+Medicare,Total Personal Health Care,19-64,Females,17177,22066,33534,40974,47882,54378,61305,65022,67993,69819
+Medicare,Total Personal Health Care,65+,Females,126668,146464,182674,208012,226711,243149,259719,280726,313166,342460
+Other Payers and Programs,Total Personal Health Care,Total,Total,186971,217537,244406,267603,299103,322468,344606,378583,414374,631713
+Other Payers and Programs,Total Personal Health Care,0-18,Total,30062,34435,38326,43259,46281,50870,53060,53024,51417,70896
+Other Payers and Programs,Total Personal Health Care,19-64,Total,120386,139359,158886,175974,196271,209527,225422,247437,268294,391249
+Other Payers and Programs,Total Personal Health Care,65+,Total,36523,43743,47194,48370,56551,62072,66124,78122,94663,169568
+Other Payers and Programs,Total Personal Health Care,Total,Males,88156,102701,116749,128836,146387,160926,168998,189544,205715,320166
+Other Payers and Programs,Total Personal Health Care,0-18,Males,15727,18134,20406,22964,24862,26614,26944,27640,26723,37577
+Other Payers and Programs,Total Personal Health Care,19-64,Males,55789,64566,74606,83947,94237,103764,110234,121478,129083,191116
+Other Payers and Programs,Total Personal Health Care,65+,Males,16639,20001,21737,21925,27288,30548,31820,40426,49909,91473
+Other Payers and Programs,Total Personal Health Care,Total,Females,98815,114836,127657,138767,152716,161542,175609,189038,208660,311546
+Other Payers and Programs,Total Personal Health Care,0-18,Females,14335,16302,17920,20295,21419,24256,26117,25383,24694,33318
+Other Payers and Programs,Total Personal Health Care,19-64,Females,64596,74793,84279,92027,102034,105763,115189,125959,139211,200134
+Other Payers and Programs,Total Personal Health Care,65+,Females,19884,23742,25458,26445,29263,31524,34303,37696,44754,78094
+Out-of-Pocket,Total Personal Health Care,Total,Total,219144,248415,277950,300063,301469,323198,340811,365936,386811,392291
+Out-of-Pocket,Total Personal Health Care,0-18,Total,21335,24018,28228,30051,29227,30406,30526,31041,33592,30456
+Out-of-Pocket,Total Personal Health Care,19-64,Total,117051,133281,152681,161113,157368,164872,171719,189816,196393,197258
+Out-of-Pocket,Total Personal Health Care,65+,Total,80757,91116,97041,108899,114874,127920,138567,145079,156826,164577
+Out-of-Pocket,Total Personal Health Care,Total,Males,86943,99573,113560,124987,124039,135213,143166,154444,163328,167770
+Out-of-Pocket,Total Personal Health Care,0-18,Males,10603,11836,13750,14916,14444,15018,14939,16168,17415,16004
+Out-of-Pocket,Total Personal Health Care,19-64,Males,47107,53948,63227,67998,64422,69543,72512,80928,83505,84269
+Out-of-Pocket,Total Personal Health Care,65+,Males,29234,33788,36583,42073,45174,50652,55715,57348,62408,67497
+Out-of-Pocket,Total Personal Health Care,Total,Females,132201,148842,164390,175076,177430,187985,197645,211491,223483,224521
+Out-of-Pocket,Total Personal Health Care,0-18,Females,10733,12182,14478,15135,14783,15388,15587,14873,16177,14452
+Out-of-Pocket,Total Personal Health Care,19-64,Females,69945,79332,89454,93115,92946,95329,99207,108888,112888,112989
+Out-of-Pocket,Total Personal Health Care,65+,Females,51523,57328,60458,66826,69700,77268,82852,87730,94419,97080
+Private health Insurance,Total Personal Health Care,Total,Total,472719,545587,618482,679584,725362,778670,815474,918639,990353,995635
+Private health Insurance,Total Personal Health Care,0-18,Total,73450,80950,92792,94798,100579,107725,103321,111153,115682,108299
+Private health Insurance,Total Personal Health Care,19-64,Total,330362,384827,448020,489090,523899,557043,597733,675324,726364,725156
+Private health Insurance,Total Personal Health Care,65+,Total,68907,79811,77669,95695,100884,113902,114420,132162,148307,162179
+Private health Insurance,Total Personal Health Care,Total,Males,206065,235120,269785,292132,323455,350703,367087,389523,426029,441080
+Private health Insurance,Total Personal Health Care,0-18,Males,37407,41298,50167,51967,53316,54933,53275,58268,60324,57018
+Private health Insurance,Total Personal Health Care,19-64,Males,139593,156878,182509,196544,221999,240770,259947,269614,295191,306484
+Private health Insurance,Total Personal Health Care,65+,Males,29065,36943,37108,43621,48140,55000,53865,61642,70513,77578
+Private health Insurance,Total Personal Health Care,Total,Females,266654,310467,348697,387452,401907,427967,448387,529116,564325,554555
+Private health Insurance,Total Personal Health Care,0-18,Females,36043,39652,42625,42831,47262,52792,50046,52886,55358,51281
+Private health Insurance,Total Personal Health Care,19-64,Females,190769,227948,265511,292547,301900,316273,337786,405709,431173,418672
+Private health Insurance,Total Personal Health Care,65+,Females,39843,42867,40561,52074,52745,58901,60555,70521,77794,84601
+Total,Total Personal Health Care,Total,Total,1365481,1582380,1806451,2007153,2180461,2346202,2527086,2795558,3019769,3366975
+Total,Total Personal Health Care,0-18,Total,178448,202201,232989,250925,270828,287823,288509,297986,308435,324242
+Total,Total Personal Health Care,19-64,Total,714654,836954,967190,1065035,1158152,1237045,1369157,1541342,1641106,1799798
+Total,Total Personal Health Care,65+,Total,472379,543225,606272,691192,751481,821334,869420,956229,1070228,1242935
+Total,Total Personal Health Care,Total,Males,587266,680026,783910,872613,965308,1050368,1136102,1246245,1354777,1548394
+Total,Total Personal Health Care,0-18,Males,92905,105530,124294,134985,144282,150591,150865,158457,163458,173397
+Total,Total Personal Health Care,19-64,Males,307870,355382,413030,455312,507461,552814,616539,674982,721991,814729
+Total,Total Personal Health Care,65+,Males,186491,219114,246585,282316,313564,346964,368698,412806,469329,560268
+Total,Total Personal Health Care,Total,Females,778215,902354,1022542,1134540,1215153,1295834,1390984,1549313,1664992,1818581
+Total,Total Personal Health Care,0-18,Females,85543,96672,108695,115940,126545,137233,137644,139529,144977,150846
+Total,Total Personal Health Care,19-64,Females,406784,481572,554160,609723,650691,684231,752617,866360,919115,985069
+Total,Total Personal Health Care,65+,Females,285889,324111,359686,408876,437917,474370,500722,543424,600899,682666

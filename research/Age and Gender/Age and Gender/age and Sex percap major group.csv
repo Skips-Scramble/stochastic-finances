@@ -1,0 +1,133 @@
+"Service","Age Group","Sex","2002","2004","2006","2008","2010","2012","2014","2016","2018","2020"
+"Dental Services","Total","Total",256,281,308,338,343,350,361,391,421,423
+"Dental Services","0-18","Total",248,295,330,356,365,397,392,426,438,438
+"Dental Services","19-64","Total",255,264,281,310,306,294,306,330,357,353
+"Dental Services","65+","Total",283,338,396,438,470,515,538,577,637,651
+"Dental Services","Total","Males",230,251,272,302,307,310,324,358,389,383
+"Dental Services","0-18","Males",223,272,293,327,324,345,343,403,440,439
+"Dental Services","19-64","Males",219,222,238,264,263,253,264,284,299,282
+"Dental Services","65+","Males",311,373,418,455,501,526,574,606,679,692
+"Dental Services","Total","Females",282,310,343,374,378,388,396,423,452,463
+"Dental Services","0-18","Females",274,319,370,387,408,450,444,450,435,436
+"Dental Services","19-64","Females",290,306,324,356,349,335,347,376,414,424
+"Dental Services","65+","Females",263,311,380,426,446,506,509,554,604,619
+"Durable Medical Equipment","Total","Total",103,114,133,140,129,138,146,155,166,167
+"Durable Medical Equipment","0-18","Total",37,38,51,54,50,56,63,67,70,64
+"Durable Medical Equipment","19-64","Total",86,98,120,121,111,116,125,136,143,139
+"Durable Medical Equipment","65+","Total",333,355,373,407,367,385,378,369,395,411
+"Durable Medical Equipment","Total","Males",90,95,114,120,112,123,130,141,147,148
+"Durable Medical Equipment","0-18","Males",36,36,48,50,48,54,61,70,73,68
+"Durable Medical Equipment","19-64","Males",74,78,100,102,94,100,106,119,126,119
+"Durable Medical Equipment","65+","Males",333,352,366,391,358,384,380,366,359,390
+"Durable Medical Equipment","Total","Females",116,131,151,160,146,153,162,169,184,186
+"Durable Medical Equipment","0-18","Females",38,40,54,58,53,59,64,63,67,61
+"Durable Medical Equipment","19-64","Females",99,117,139,141,128,131,143,154,159,159
+"Durable Medical Equipment","65+","Females",333,358,379,419,374,386,377,372,424,428
+"Home Health Care","Total","Total",127,153,175,205,228,249,266,290,323,380
+"Home Health Care","0-18","Total",47,51,60,74,84,98,109,127,130,168
+"Home Health Care","19-64","Total",64,75,79,94,106,120,130,141,155,184
+"Home Health Care","65+","Total",614,757,889,1006,1080,1101,1106,1143,1243,1366
+"Home Health Care","Total","Males",100,116,131,154,175,196,211,235,265,322
+"Home Health Care","0-18","Males",51,55,64,79,90,105,117,139,145,185
+"Home Health Care","19-64","Males",58,66,69,80,92,105,114,128,144,174
+"Home Health Care","65+","Males",486,569,664,750,816,847,858,890,980,1122
+"Home Health Care","Total","Females",153,189,217,254,280,301,319,344,380,436
+"Home Health Care","0-18","Females",42,47,55,69,78,90,101,114,114,149
+"Home Health Care","19-64","Females",71,85,90,107,121,134,145,154,166,194
+"Home Health Care","65+","Females",705,894,1056,1200,1281,1297,1301,1344,1453,1563
+"Hospital Care","Total","Total",1694,1934,2187,2376,2618,2800,2957,3208,3438,3852
+"Hospital Care","0-18","Total",885,1050,1209,1253,1437,1486,1473,1426,1390,1535
+"Hospital Care","19-64","Total",1406,1604,1864,2067,2298,2501,2740,3069,3298,3696
+"Hospital Care","65+","Total",4895,5481,5848,6152,6411,6515,6375,6581,7006,7611
+"Hospital Care","Total","Males",1597,1795,2054,2208,2509,2678,2831,3017,3270,3880
+"Hospital Care","0-18","Males",899,1049,1278,1335,1519,1533,1521,1495,1461,1636
+"Hospital Care","19-64","Males",1303,1440,1654,1816,2111,2319,2555,2719,2967,3550
+"Hospital Care","65+","Males",5220,5837,6341,6512,6941,6932,6705,7131,7627,8743
+"Hospital Care","Total","Females",1788,2070,2316,2540,2722,2918,3080,3394,3602,3825
+"Hospital Care","0-18","Females",870,1051,1137,1168,1352,1436,1421,1355,1315,1428
+"Hospital Care","19-64","Females",1509,1768,2072,2316,2482,2681,2922,3417,3626,3841
+"Hospital Care","65+","Females",4662,5222,5482,5881,6009,6191,6117,6144,6510,6700
+"Nursing Care Facilities and Continuing Care Retirement Communities","Total","Total",329,360,389,429,455,470,480,502,514,598
+"Nursing Care Facilities and Continuing Care Retirement Communities","0-18","Total",7,8,8,9,10,12,13,11,12,15
+"Nursing Care Facilities and Continuing Care Retirement Communities","19-64","Total",73,85,96,109,118,123,132,143,145,175
+"Nursing Care Facilities and Continuing Care Retirement Communities","65+","Total",2306,2483,2641,2830,2898,2847,2731,2710,2645,2903
+"Nursing Care Facilities and Continuing Care Retirement Communities","Total","Males",203,231,256,291,318,334,349,373,384,458
+"Nursing Care Facilities and Continuing Care Retirement Communities","0-18","Males",8,9,8,10,11,14,13,12,13,14
+"Nursing Care Facilities and Continuing Care Retirement Communities","19-64","Males",78,90,103,116,127,132,143,150,152,184
+"Nursing Care Facilities and Continuing Care Retirement Communities","65+","Males",1469,1636,1772,1953,2061,2037,1983,2028,1992,2244
+"Nursing Care Facilities and Continuing Care Retirement Communities","Total","Females",452,485,519,564,586,602,607,627,640,734
+"Nursing Care Facilities and Continuing Care Retirement Communities","0-18","Females",6,7,8,8,9,10,13,9,11,16
+"Nursing Care Facilities and Continuing Care Retirement Communities","19-64","Females",68,79,90,102,110,115,121,135,137,165
+"Nursing Care Facilities and Continuing Care Retirement Communities","65+","Females",2904,3099,3285,3492,3535,3473,3319,3251,3168,3434
+"Other Health Residential and Personal Care","Total","Total",265,304,339,369,412,440,476,540,582,640
+"Other Health Residential and Personal Care","0-18","Total",162,176,210,237,255,262,252,265,304,344
+"Other Health Residential and Personal Care","19-64","Total",276,318,346,378,420,448,526,609,661,710
+"Other Health Residential and Personal Care","65+","Total",431,509,575,592,682,731,639,698,697,803
+"Other Health Residential and Personal Care","Total","Males",270,316,351,386,432,463,496,581,627,680
+"Other Health Residential and Personal Care","0-18","Males",175,195,235,267,285,299,275,297,342,371
+"Other Health Residential and Personal Care","19-64","Males",294,341,373,415,459,492,572,686,736,794
+"Other Health Residential and Personal Care","65+","Males",383,481,517,515,629,665,567,627,654,716
+"Other Health Residential and Personal Care","Total","Females",259,292,327,351,393,418,456,500,538,602
+"Other Health Residential and Personal Care","0-18","Females",149,156,184,205,225,223,229,232,263,315
+"Other Health Residential and Personal Care","19-64","Females",258,294,319,341,381,404,481,534,586,626
+"Other Health Residential and Personal Care","65+","Females",466,529,618,650,722,783,696,754,732,873
+"Other Nondurable Medical Products","Total","Total",97,112,130,149,168,195,206,223,238,259
+"Other Nondurable Medical Products","0-18","Total",15,17,20,22,25,29,31,31,32,34
+"Other Nondurable Medical Products","19-64","Total",78,90,105,120,135,154,164,173,178,186
+"Other Nondurable Medical Products","65+","Total",373,424,483,545,601,681,677,724,765,830
+"Other Nondurable Medical Products","Total","Males",81,94,110,127,143,167,179,194,207,227
+"Other Nondurable Medical Products","0-18","Males",17,19,22,25,28,32,33,34,35,37
+"Other Nondurable Medical Products","19-64","Males",69,80,93,107,119,136,150,157,162,171
+"Other Nondurable Medical Products","65+","Males",326,373,426,482,533,606,601,649,688,750
+"Other Nondurable Medical Products","Total","Females",113,129,150,171,192,223,232,251,268,291
+"Other Nondurable Medical Products","0-18","Females",13,15,17,20,22,25,28,29,30,32
+"Other Nondurable Medical Products","19-64","Females",87,101,117,134,150,171,179,188,195,201
+"Other Nondurable Medical Products","65+","Females",406,461,525,593,653,740,736,784,826,894
+"Other Professional Services","Total","Total",151,172,186,212,226,244,259,285,320,358
+"Other Professional Services","0-18","Total",59,58,73,78,96,109,117,131,161,177
+"Other Professional Services","19-64","Total",153,178,183,208,217,227,239,274,287,324
+"Other Professional Services","65+","Total",340,387,438,505,523,561,581,576,681,728
+"Other Professional Services","Total","Males",119,141,153,178,193,195,213,243,267,318
+"Other Professional Services","0-18","Males",61,60,76,79,99,109,125,153,146,191
+"Other Professional Services","19-64","Males",112,140,144,167,180,171,184,219,229,279
+"Other Professional Services","65+","Males",314,359,400,478,481,502,521,520,634,670
+"Other Professional Services","Total","Females",182,202,217,246,258,291,304,326,372,396
+"Other Professional Services","0-18","Females",57,57,69,76,93,109,109,109,177,162
+"Other Professional Services","19-64","Females",195,215,221,249,253,283,294,328,345,368
+"Other Professional Services","65+","Females",359,406,465,526,555,606,628,621,718,774
+"Physician and Clinical Services","Total","Total",1176,1316,1454,1586,1658,1777,1881,2097,2255,2487
+"Physician and Clinical Services","0-18","Total",690,718,797,882,897,1002,1004,1089,1192,1188
+"Physician and Clinical Services","19-64","Total",1088,1238,1390,1476,1545,1619,1765,1993,2116,2327
+"Physician and Clinical Services","65+","Total",2676,2994,3157,3547,3670,3885,3849,4105,4354,4847
+"Physician and Clinical Services","Total","Males",1003,1125,1251,1340,1438,1588,1666,1799,1932,2148
+"Physician and Clinical Services","0-18","Males",702,750,839,924,927,1010,1018,1096,1198,1197
+"Physician and Clinical Services","19-64","Males",831,933,1072,1102,1206,1319,1435,1549,1626,1805
+"Physician and Clinical Services","65+","Males",2835,3233,3327,3678,3865,4176,4036,4205,4474,5009
+"Physician and Clinical Services","Total","Females",1344,1502,1652,1824,1871,1960,2089,2385,2568,2816
+"Physician and Clinical Services","0-18","Females",679,684,752,838,864,992,988,1082,1187,1180
+"Physician and Clinical Services","19-64","Females",1344,1541,1707,1847,1879,1915,2091,2433,2602,2846
+"Physician and Clinical Services","65+","Females",2562,2819,3031,3448,3521,3660,3702,4025,4259,4717
+"Prescription Drugs","Total","Total",557,669,766,805,820,820,914,971,993,1065
+"Prescription Drugs","0-18","Total",166,198,228,226,229,242,258,254,245,255
+"Prescription Drugs","19-64","Total",608,732,828,833,838,825,923,1005,1010,1060
+"Prescription Drugs","65+","Total",1157,1373,1592,1845,1883,1841,1979,1968,2040,2206
+"Prescription Drugs","Total","Males",456,556,646,719,727,758,859,902,939,990
+"Prescription Drugs","0-18","Males",184,216,249,261,261,277,292,286,270,278
+"Prescription Drugs","19-64","Males",486,591,683,732,730,757,863,919,934,954
+"Prescription Drugs","65+","Males",1012,1242,1439,1754,1782,1784,1947,1949,2100,2262
+"Prescription Drugs","Total","Females",654,779,883,888,910,879,967,1038,1045,1138
+"Prescription Drugs","0-18","Females",147,180,206,190,195,204,224,221,219,230
+"Prescription Drugs","19-64","Females",729,873,974,933,944,893,982,1091,1084,1165
+"Prescription Drugs","65+","Females",1261,1468,1705,1913,1960,1885,2004,1984,1992,2160
+"Total Personal Health Care","Total","Total",4755,5415,6066,6610,7057,7483,7945,8662,9249,10230
+"Total Personal Health Care","0-18","Total",2316,2609,2986,3191,3449,3690,3711,3828,3974,4217
+"Total Personal Health Care","19-64","Total",4087,4682,5291,5716,6095,6427,7050,7874,8348,9154
+"Total Personal Health Care","65+","Total",13406,15099,16393,17869,18586,19062,18853,19451,20463,22356
+"Total Personal Health Care","Total","Males",4150,4720,5337,5826,6355,6810,7258,7841,8426,9554
+"Total Personal Health Care","0-18","Males",2355,2660,3113,3356,3592,3778,3799,3985,4123,4415
+"Total Personal Health Care","19-64","Males",3523,3982,4528,4900,5382,5784,6387,6930,7375,8313
+"Total Personal Health Care","65+","Males",12689,14455,15671,16970,17967,18459,18172,18971,20186,22597
+"Total Personal Health Care","Total","Females",5344,6090,6775,7373,7736,8134,8611,9457,10048,10887
+"Total Personal Health Care","0-18","Females",2275,2555,2853,3018,3299,3599,3620,3664,3818,4009
+"Total Personal Health Care","19-64","Females",4649,5380,6051,6527,6797,7061,7705,8809,9314,9989
+"Total Personal Health Care","65+","Females",13920,15569,16927,18547,19055,19529,19389,19833,20685,22162
