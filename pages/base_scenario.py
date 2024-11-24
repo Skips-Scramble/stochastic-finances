@@ -272,6 +272,13 @@ class BaseScenario:
         return non_base_bills_lists
 
     @cached_property
+    def healthcare_costs(self) -> list:
+        """Add in health care costs (if chosen)"""
+        if self.assumptions["add_healthcare"]:
+            healthcare_df = pd.read_csv(r"./research/healthcare/healthcare_inputs.csv")
+        return healthcare_df
+
+    @cached_property
     def yearly_mkt_interest(self) -> list:
         """Calculate yearly market interest as a percent"""
         return round(self.assumptions["base_mkt_interest_per_yr"] / 100, 6)

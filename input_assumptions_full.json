@@ -22,6 +22,7 @@
 			"recurring_length": 5
 		}
 	],
+	"add_healthcare": true,
 	"base_retirement": 20000,
 	"base_retirement_per_mo": 500,
 	"base_retirement_per_yr_increase": 1200,
