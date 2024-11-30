@@ -3,6 +3,7 @@ var_descriptions = {
     "birthdate": "Your birthdate (after 1900) in MM/DD/YYYY format",
     "retirement_age_yrs": "The age in years when you will retire. For example, if you are going to retire when you are 65 years and 3 months, put 65",
     "retirement_age_mos": "The age in months when you will retire. For example, if you are going to retire when you are 65 years and 3 months, this would be 3",
+    "add_healthcare": "Select this if you would like to have health care costs automatically included",
     "base_savings": "This is the amount of money you have in your savings account(s) right now",
     "base_saved_per_mo": 'This is the amount of money you save each month and contribute to your savings account(s). A negative amount would represent you are spending that amount each month. If this is the case, it would probably be better to put a 0 in this field and move those payments to the "Payemnts" section',
     "base_savings_per_yr_increase": "The year-over-year savings increase (as a percent). For example, if you expect a 3.0% salary increase every year, you might put 3.0% here.",

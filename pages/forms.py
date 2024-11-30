@@ -25,12 +25,14 @@ class GeneralInputsForm(forms.ModelForm):
             "birthdate",
             "retirement_age_yrs",
             "retirement_age_mos",
+            "add_healthcare",
         ]
         labels = {
             "is_active": "Use this for calculations",
             "birthdate": "Birthdate (MM/DD/YYYY)",
             "retirement_age_yrs": "Retirement age (years)",
             "retirement_age_mos": "Retirement age (months)",
+            "add_healthcare": "Please automatically include healthcare costs for me",
         }
         widgets = {
             "is_active": forms.CheckboxInput(),
@@ -39,6 +41,7 @@ class GeneralInputsForm(forms.ModelForm):
             ),
             "retirement_age_yrs": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
             "retirement_age_mos": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
+            "add_healthcare": forms.CheckboxInput(),
         }
 
 

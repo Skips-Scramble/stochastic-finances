@@ -24,6 +24,7 @@
             <p class="card-text">Birthdate: {{ item.birthdate|date:"n/j/Y" }}</p>
             <p class="card-text">Retirement Age in Years: {{ item.retirement_age_yrs }}</p>
             <p class="card-text">Retirement Age in Months: {{ item.retirement_age_mos }}</p>
+            <p class="card-text">Add Healthcare: {{ item.add_healthcare }}</p>
             <a href="{% url 'general_inputs_edit' item.id %}" class="btn btn-primary">Edit</a>
             <a href="{% url 'general_inputs_delete' item.id %}" class="btn btn-secondary">Delete</a>
           </div>

@@ -1,8 +1,12 @@
 import typing
 
-
 inputs_by_model_dict = {
-    "general": ["birthdate", "retirement_age_yrs", "retirement_age_mos"],
+    "general": [
+        "birthdate",
+        "retirement_age_yrs",
+        "retirement_age_mos",
+        "add_healthcare",
+    ],
     "savings": [
         "base_savings",
         "base_saved_per_mo",

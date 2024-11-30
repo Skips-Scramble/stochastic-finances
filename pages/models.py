@@ -41,6 +41,10 @@ class GeneralInputsModel(models.Model):
         validators=[validate_range_age_mos],
     )
 
+    add_healthcare = models.BooleanField(
+        default=False,
+    )
+
     created_by = models.ForeignKey(
         CustomUser,
         related_name="general_inputs",
