@@ -7,6 +7,8 @@ from dateutil.relativedelta import relativedelta
 
 DEATH_YEARS = 111
 FREQ_DICT = {"quarterly": 3, "yearly": 12}
+HEALTHCARE_BINS = [0, 19, 45, 65, 85, float("inf")]
+HEALTHCARE_LABELS = ["0-18", "19-44", "45-64", "65-84", "85+"]
 
 
 def calc_date_on_age(birthdate: date, age_yrs: int, age_mos: int) -> datetime.date:
@@ -272,10 +274,15 @@ class BaseScenario:
         return non_base_bills_lists
 
     @cached_property
-    def healthcare_costs(self) -> list:
+    def healthcare_costs(self) -> pd.DataFrame:
         """Add in health care costs (if chosen)"""
         if self.assumptions["add_healthcare"]:
-            healthcare_df = pd.read_csv(r"./research/healthcare/healthcare_inputs.csv")
+            healthcare_df = pd.read_csv(
+                r"./research/healthcare/healthcare_inputs.csv"
+            ).assign(
+                month=lambda df: pd.to_datetime(df["month"]).dt.date,
+                age_band=lambda df: df["age_band"].astype("string"),
+            )
         return healthcare_df
 
     @cached_property
@@ -420,9 +427,27 @@ class BaseScenario:
 
         data = {**data_1, **non_base_items_lists, **data_3}
 
-        return pd.DataFrame(data).rename(
+        base_df = pd.DataFrame(data).rename(
             columns={
                 f"pmt_{i}": v["pmt_name"]
                 for i, v in enumerate(self.assumptions["payment_items"])
             }
         )
+
+        if self.assumptions["add_healthcare"]:
+            base_df_w_age_band = base_df.assign(
+                age_band=lambda df: pd.cut(
+                    df["age_yrs"],
+                    bins=HEALTHCARE_BINS,
+                    labels=HEALTHCARE_LABELS,
+                    right=False,
+                ).astype(object)
+            )
+
+            base_df_w_healthcare = base_df_w_age_band.merge(
+                self.healthcare_costs,
+                on=["age_band", "month"],
+                how="left",
+            )
+
+        return base_df_w_healthcare
