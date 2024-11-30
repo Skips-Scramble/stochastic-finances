@@ -274,16 +274,34 @@ class BaseScenario:
         return non_base_bills_lists
 
     @cached_property
-    def healthcare_costs(self) -> pd.DataFrame:
+    def healthcare_costs(self) -> list:
         """Add in health care costs (if chosen)"""
         if self.assumptions["add_healthcare"]:
-            healthcare_df = pd.read_csv(
+            starting_df = pd.DataFrame(
+                {"age_yrs": self.age_by_year_list, "month": self.month_list}
+            ).assign(
+                age_band=lambda df: pd.cut(
+                    df["age_yrs"],
+                    bins=HEALTHCARE_BINS,
+                    labels=HEALTHCARE_LABELS,
+                    right=False,
+                ).astype("string")
+            )
+
+            healthcare_inputs_df = pd.read_csv(
                 r"./research/healthcare/healthcare_inputs.csv"
             ).assign(
                 month=lambda df: pd.to_datetime(df["month"]).dt.date,
                 age_band=lambda df: df["age_band"].astype("string"),
             )
-        return healthcare_df
+
+            healthcare_df = starting_df.merge(
+                healthcare_inputs_df, on=["age_band", "month"], how="left"
+            )
+
+            return healthcare_df["healthcare_cost"].to_list()
+
+        return [0] * self.total_months
 
     @cached_property
     def yearly_mkt_interest(self) -> list:
@@ -335,6 +353,7 @@ class BaseScenario:
                             savings
                             + self.savings_increase_list[i]
                             - total_non_base_bills_list[i]
+                            - self.healthcare_costs[i]
                         )
                         * (1 + self.monthly_rf_interest),
                         6,
@@ -348,6 +367,7 @@ class BaseScenario:
                     )
                 )
             else:  # If you are retired
+                # If you are below your savings threshold, use all retirement
                 if savings_list[i - 1] <= self.monthly_savings_threshold_list[i - 1]:
                     savings = float(
                         round(savings_list[i - 1] * (1 + self.monthly_rf_interest), 6)
@@ -359,11 +379,13 @@ class BaseScenario:
                                 - self.base_bills_list[i]
                                 - self.post_retire_extra_bills_list[i]
                                 - total_non_base_bills_list[i]
+                                - self.healthcare_costs[i]
                             )
                             * (1 + self.monthly_mkt_interest),
                             6,
                         )
                     )
+                # If you are within your savings threshold, use savings and retirement equally
                 else:
                     savings = float(
                         round(
@@ -373,6 +395,7 @@ class BaseScenario:
                                 - (self.base_bills_list[i] / 2)
                                 - (self.post_retire_extra_bills_list[i] / 2)
                                 - (total_non_base_bills_list[i] / 2)
+                                - (self.healthcare_costs[i] / 2)
                             )
                             * (1 + self.monthly_rf_interest),
                             6,
@@ -385,6 +408,7 @@ class BaseScenario:
                                 - (self.base_bills_list[i] / 2)
                                 - (self.post_retire_extra_bills_list[i] / 2)
                                 - (total_non_base_bills_list[i] / 2)
+                                - (self.healthcare_costs[i] / 2)
                             )
                             * (1 + self.monthly_mkt_interest),
                             6,
@@ -418,6 +442,7 @@ class BaseScenario:
             k: v for (k, v) in zip(non_base_items_names, self.non_base_bills_lists)
         }
         data_3 = {
+            "healthcare_cost": self.healthcare_costs,
             "savings_account": self.savings_retirement_account_list[0],
             "yearly_mkt_interest": self.yearly_mkt_interest,
             "monthly_mkt_interest": self.monthly_mkt_interest,
@@ -427,27 +452,9 @@ class BaseScenario:
 
         data = {**data_1, **non_base_items_lists, **data_3}
 
-        base_df = pd.DataFrame(data).rename(
+        return pd.DataFrame(data).rename(
             columns={
                 f"pmt_{i}": v["pmt_name"]
                 for i, v in enumerate(self.assumptions["payment_items"])
             }
         )
-
-        if self.assumptions["add_healthcare"]:
-            base_df_w_age_band = base_df.assign(
-                age_band=lambda df: pd.cut(
-                    df["age_yrs"],
-                    bins=HEALTHCARE_BINS,
-                    labels=HEALTHCARE_LABELS,
-                    right=False,
-                ).astype(object)
-            )
-
-            base_df_w_healthcare = base_df_w_age_band.merge(
-                self.healthcare_costs,
-                on=["age_band", "month"],
-                how="left",
-            )
-
-        return base_df_w_healthcare
