@@ -1,3 +1,5 @@
+import json
+
 import pandas as pd
 import plotly.express as px
 
@@ -8,8 +10,8 @@ from pages.random_scenario import RandomScenario
 
 
 def main(assumptions) -> None:
-    # with open("input_assumptions_full.json") as json_data:
-    #     assumptions = json.load(json_data)
+    with open("input_assumptions_full.json") as json_data:
+        assumptions = json.load(json_data)
 
     # apply_validations(assumptions)
 

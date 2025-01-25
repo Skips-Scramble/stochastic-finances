@@ -467,6 +467,7 @@ def calculations(request):
         else:
             bad_active_list.append("Savings")
 
+        # Non-base bills
         payments_inputs_model = PaymentsInputsModel.objects.filter(
             created_by=request.user, is_active=True
         )
