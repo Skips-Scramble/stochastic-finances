@@ -110,8 +110,8 @@ class PaymentsInputsForm(forms.ModelForm):
             "pmt_freq_mos": "Extra payment frequency in months",
             "inflation_adj": "Will the monthly payments go up with inflation",
             "recurring_purchase": "Will this be purchased again?",
-            "recurring_timeframe": "Frequency in months",
-            "recurring_length": "How many times will this repeat?",
+            "recurring_timeframe": "How often will this be purchased (in months)",
+            "recurring_length": "How many times will this purchase repeat?",
         }
         widgets = {
             "is_active": forms.CheckboxInput(),
