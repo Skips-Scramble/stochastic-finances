@@ -112,14 +112,7 @@ class PaymentsInputsModel(models.Model):
     pmt_freq_mos = models.IntegerField(null=True, blank=True)
     inflation_adj = models.BooleanField(default=False)
     recurring_purchase = models.BooleanField(default=False)
-    recurring_timeframe = models.CharField(
-        max_length=12,
-        choices=[
-            ("quarterly", "Quarterly"),
-            ("yearly", "Yearly"),
-        ],
-        default="quarterly",
-    )
+    recurring_timeframe = models.IntegerField(null=True, blank=True)
     recurring_length = models.IntegerField(null=True, blank=True)
 
     created_by = models.ForeignKey(

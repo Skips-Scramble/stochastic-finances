@@ -45,10 +45,10 @@ def calc_pmt_list(
     item_pmt_list = []
     for index, month in enumerate(months_list):
         if pmt_start_date <= month <= pmt_end_date:
-            months_until_start = index
-            initial_down_pmt = item_down_pmt * (1 + inflation_rate) ** (index)
-            initial_reg_pmt_amt = reg_pmt_amt * (1 + inflation_rate) ** (index)
             if month == pmt_start_date:
+                months_until_start = index
+                initial_down_pmt = item_down_pmt * (1 + inflation_rate) ** (index)
+                initial_reg_pmt_amt = reg_pmt_amt * (1 + inflation_rate) ** (index)
                 item_pmt_list.append(round(initial_down_pmt + initial_reg_pmt_amt, 2))
             elif (index - months_until_start) % pmt_freq_mos == 0:
                 item_pmt_list.append(
