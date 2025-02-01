@@ -5,8 +5,7 @@ from functools import cached_property
 import pandas as pd
 from dateutil.relativedelta import relativedelta
 
-DEATH_YEARS = 111
-FREQ_DICT = {"quarterly": 3, "yearly": 12}
+DEATH_YEARS = 115
 HEALTHCARE_BINS = [0, 19, 45, 65, 85, float("inf")]
 HEALTHCARE_LABELS = ["0-18", "19-44", "45-64", "65-84", "85+"]
 
@@ -247,33 +246,34 @@ class BaseScenario:
                     item["inflation_adj"],
                 )
             )
-            # if item["recurring_purchase"]:
-            #     base_date = calc_date_on_age(
-            #         self.birthdate, item["pmt_start_age_yrs"], item["pmt_start_age_mos"]
-            #     )
-            #     for purchase_num in range(item["recurring_length"]):
-            #         months_from_base = FREQ_DICT[item["recurring_timeframe"]] * (
-            #             purchase_num + 1
-            #         )
-            #         start_date = base_date + relativedelta(months=months_from_base)
-            #         start_age_yrs = relativedelta(start_date, self.birthdate).years
-            #         start_age_mos = relativedelta(start_date, self.birthdate).months
+            if item["recurring_purchase"]:
+                base_date = calc_date_on_age(
+                    self.birthdate,
+                    item["pmt_start_age_yrs"],
+                    item["pmt_start_age_mos"],
+                )
+                for purchase_num in range(item["recurring_length"] - 1):
+                    months_from_base = item["recurring_timeframe"] * (purchase_num + 1)
+                    start_date = base_date + relativedelta(months=months_from_base)
+                    start_age_yrs = relativedelta(start_date, self.birthdate).years
+                    start_age_mos = relativedelta(start_date, self.birthdate).months
 
-            #         non_base_bills_lists.append(
-            #             calc_pmt_list(
-            #                 self.birthdate,
-            #                 self.month_list,
-            #                 start_age_yrs,
-            #                 start_age_mos,
-            #                 item["pmt_length_yrs"],
-            #                 item["pmt_length_mos"],
-            #                 item["down_pmt"],
-            #                 item["monthly_pmt"],
-            #                 self.monthly_inflation,
-            #                 item["inflation_adj"],
-            #             )
-            #         )
-        if non_base_bills_lists == []:
+                    non_base_bills_lists.append(
+                        calc_pmt_list(
+                            self.birthdate,
+                            self.month_list,
+                            start_age_yrs,
+                            start_age_mos,
+                            item["pmt_length_yrs"],
+                            item["pmt_length_mos"],
+                            item["down_pmt"],
+                            item["reg_pmt_amt"],
+                            item["pmt_freq_mos"],
+                            self.monthly_inflation,
+                            item["inflation_adj"],
+                        )
+                    )
+        if not non_base_bills_lists:
             non_base_bills_lists = [[0 for _ in range(self.total_months)]]
         return non_base_bills_lists
 

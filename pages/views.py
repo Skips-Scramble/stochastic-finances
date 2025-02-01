@@ -1,4 +1,3 @@
-import copy
 import logging
 
 import pandas as pd
@@ -475,29 +474,7 @@ def calculations(request):
         payments_list = []
         for payment in payments_inputs_model:
             print(f'Payment: {model_to_dict(payment, "payments")}')
-            payment_dict = model_to_dict(payment, "payments")
-            if payment.recurring_purchase:
-                for pmt_event in range(
-                    payment.recurring_purchase * payment.recurring_length
-                ):
-                    payment_dict_new = copy.deepcopy(payment_dict)
-                    payment_dict_new["pmt_name"] = (
-                        f"{payment_dict['pmt_name']}_{pmt_event}"
-                    )
-                    (
-                        payment_dict_new["pmt_start_age_yrs"],
-                        payment_dict_new["pmt_start_age_mos"],
-                    ) = divmod(
-                        payment_dict["pmt_start_age_yrs"] * 12
-                        + payment_dict["pmt_start_age_mos"]
-                        + (pmt_event * payment.recurring_timeframe),
-                        12,
-                    )
-                    print("")
-                    print(f"Payment: {payment_dict_new}")
-                    payments_list.append(payment_dict_new)
-            else:
-                payments_list.append(model_to_dict(payment, "payments"))
+            payments_list.append(model_to_dict(payment, "payments"))
 
         print("")
         print(f"{payments_list = }")
@@ -554,7 +531,7 @@ def calculations(request):
     ####
 
     print("Total_savings_df:")
-    print(total_savings_df.head())
+    print(total_savings_df.tail())
 
     death_age = 110
     death_months = 0

@@ -17,29 +17,25 @@
 			"down_pmt": 30000,
 			"reg_pmt_amt": 1200,
 			"pmt_freq_mos": 1,
-			"inflation_adj": true
+			"inflation_adj": true,
+			"recurring_purchase": false,
+			"recurring_timeframe": null,
+			"recurring_length": null
+
 		},
 		{
 			"pmt_name": "Car",
 			"pmt_start_age_yrs": 40,
 			"pmt_start_age_mos": 0,
 			"pmt_length_yrs": 1,
-			"pmt_length_mos": 3,
+			"pmt_length_mos": 6,
 			"down_pmt": 10000,
 			"reg_pmt_amt": 300,
 			"pmt_freq_mos": 2,
-			"inflation_adj": false
-		},
-		{
-			"pmt_name": "Car_2",
-			"pmt_start_age_yrs": 40,
-			"pmt_start_age_mos": 0,
-			"pmt_length_yrs": 10,
-			"pmt_length_mos": 3,
-			"down_pmt": 10000,
-			"reg_pmt_amt": 300,
-			"pmt_freq_mos": 4,
-			"inflation_adj": true
+			"inflation_adj": false,
+			"recurring_purchase": true,
+			"recurring_timeframe": 3,
+			"recurring_length": 3
 		}
 	],
 	"add_healthcare": false,
