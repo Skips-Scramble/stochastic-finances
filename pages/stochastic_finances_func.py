@@ -1,13 +1,13 @@
 import pandas as pd
-import plotly.express as px
 
-from pages.base_scenario import BaseScenario
+from pages.random_scenario import BaseScenario
 from pages.random_scenario import RandomScenario
 
 # from assumption_validations import apply_validations
 
 
-def main(assumptions) -> None:
+def main(assumptions) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """Main function to calculate the core dfs"""
     # with open("input_assumptions_full.json") as json_data:
     #     assumptions = json.load(json_data)
 
@@ -77,12 +77,5 @@ def main(assumptions) -> None:
         .sort_values(["age_yrs", "age_mos"])
         .loc[lambda df: df.age_mos == 0]
     )
-
-    savings_retirement_fig = px.line(
-        total_outputs_df, x="age_yrs", y="avg", color="account_type"
-    )
-    savings_retirement_fig.update_xaxes(title_text="Age (years)", dtick=5)
-    savings_retirement_fig.update_yaxes(title_text="Amount")
-    # savings_retirement_fig.show()
 
     return total_savings_df, total_retirement_df, total_outputs_df
