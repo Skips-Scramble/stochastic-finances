@@ -3,7 +3,7 @@
 - Traditional
   - Gets taxed upon withdrawl
   - Tax rate is dependent on your income at the time of withdrawl
-  - Gains not taxed
+  - Gains are taxed at your normal income tax rate
   - Required Minimum Distribution (RMD) based on formula of your total account balance divided by your Life Expectancy Factor, which is published by the IRS
 
 - Roth
