@@ -50,7 +50,7 @@
   - 15% of your AIME over $7,078
   - with a max total of $4,873 (as of 2024)
 
-##### Claiming Early/Late
+#### Claiming Early/Late
 - The formula for claiming early for every month you claim early (up to 36 months), you get dinged 5/9 of 1%. If you claim earlier than that, you get dinged 5/12 of 1%
 - The formula for claiming late is for every month you defer, your SS increases by 2/3 of 1% per month you delay
 - These are additive, so you just multiple the number of months before or after FRA by these percentages

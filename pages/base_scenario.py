@@ -66,6 +66,33 @@ def calc_pmt_list(
     return item_pmt_list
 
 
+def ss_fra(birthdate: date) -> tuple:
+    """
+    Calculate the full retirement age (FRA) based on the birthdate.
+
+    Args:
+        birthdate (datetime.date): The birthdate of the individual.
+
+    Returns:
+        tuple: A tuple containing the full retirement age in years and months.
+    """
+    # Define the full retirement age based on birth year
+    if birthdate.year < 1938:
+        ss_fra_yrs = 65
+        ss_fra_mos = 0
+    elif 1938 <= birthdate.year < 1955:
+        ss_fra_yrs = 66
+        ss_fra_mos = 0
+    elif 1955 <= birthdate.year < 1960:
+        ss_fra_yrs = 66
+        ss_fra_mos = (birthdate.year - 1954) * 2
+    else:
+        ss_fra_yrs = 67
+        ss_fra_mos = 0
+
+    return ss_fra_yrs, ss_fra_mos
+
+
 @dataclass
 class BaseScenario:
     assumptions: dict
@@ -421,6 +448,41 @@ class BaseScenario:
             savings_list.append(savings)
             retirement_list.append(retirement)
         return savings_list, retirement_list
+
+    @cached_property
+    def ss_amt_by_date(self) -> float:
+        """
+        Need to write docstring
+        """
+        # Convert full retirement age (FRA) and current age to months
+        fra_total_months = (ss_fra(self.birthdate)[0] * 12) + ss_fra(self.birthdate)[1]
+        withdraw_age_total_months = (
+            self.assumptions["ss_withdraw_age_yrs"] * 12
+        ) + self.assumptions["ss_withdraw_age_mos"]
+
+        # Calculate the difference in months between FRA and current age
+        months_difference = withdraw_age_total_months - fra_total_months
+
+        # Adjust the benefit based on early or delayed claiming
+        if months_difference < -36:  # Claiming early
+            bene_change = (-1) * 5 / 12 / 100
+        elif -36 <= months_difference <= 0:  # Claiming early but not too early
+            bene_change = (-1) * 5 / 9 / 100
+        else:
+            bene_change = 2 / 3 / 100
+
+        adj_ss_amt_per_mo = self.assumptions["ss_fra_amt_per_mo"] * (
+            1 + months_difference * bene_change
+        )
+
+        # Include recent income in the calculation if applicable
+        if recent_income > 0:
+            ss_benefit += (
+                recent_income * 0.1
+            )  # Example: Add 10% of recent income to the benefit
+
+        # Return the calculated benefit as a dictionary
+        return round(ss_benefit, 2)
 
     def create_base_df(self) -> pd.DataFrame:
         """Create the inital dataframe without any randomness applied"""
