@@ -450,39 +450,28 @@ class BaseScenario:
         return savings_list, retirement_list
 
     @cached_property
-    def ss_amt_by_date(self) -> float:
+    def ss_amt_by_date(self) -> list[float]:
         """
-        Need to write docstring
+        Calculate the Social Security amount by date.
         """
-        # Convert full retirement age (FRA) and current age to months
-        fra_total_months = (ss_fra(self.birthdate)[0] * 12) + ss_fra(self.birthdate)[1]
-        withdraw_age_total_months = (
-            self.assumptions["ss_withdraw_age_yrs"] * 12
-        ) + self.assumptions["ss_withdraw_age_mos"]
+        if not self.assumptions["ss_incl"]:
+            return [0.0] * self.total_months
 
-        # Calculate the difference in months between FRA and current age
-        months_difference = withdraw_age_total_months - fra_total_months
-
-        # Adjust the benefit based on early or delayed claiming
-        if months_difference < -36:  # Claiming early
-            bene_change = (-1) * 5 / 12 / 100
-        elif -36 <= months_difference <= 0:  # Claiming early but not too early
-            bene_change = (-1) * 5 / 9 / 100
-        else:
-            bene_change = 2 / 3 / 100
-
-        adj_ss_amt_per_mo = self.assumptions["ss_fra_amt_per_mo"] * (
-            1 + months_difference * bene_change
+        retirement_date = calc_date_on_age(
+            self.birthdate,
+            self.assumptions["retirement_age_yrs"],
+            self.assumptions["retirement_age_mos"],
         )
 
-        # Include recent income in the calculation if applicable
-        if recent_income > 0:
-            ss_benefit += (
-                recent_income * 0.1
-            )  # Example: Add 10% of recent income to the benefit
-
-        # Return the calculated benefit as a dictionary
-        return round(ss_benefit, 2)
+        return [
+            (
+                self.assumptions["ss_amt_per_mo"]
+                * (1 + self.assumptions["base_inflation_per_yr"] / 100) ** (index / 12)
+                if month >= retirement_date
+                else 0.0
+            )
+            for index, month in enumerate(self.month_list)
+        ]
 
     def create_base_df(self) -> pd.DataFrame:
         """Create the inital dataframe without any randomness applied"""

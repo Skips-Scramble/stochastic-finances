@@ -57,5 +57,8 @@
 - Born on January 1st means you get put in the previous year
 - Born on the first of the month means your birth month was the previous month
   - I.e. you need to be 62 for the entire month you review SS
+- There are some different cases here: Are you claiming early but still working or not? Are you claiming late but still working or not?
+  - If you are still working and you claim SS before early retirement, then it gets funky
+  - If you are still working and you claim SS after FRA, just worry about taxes.
 
 
