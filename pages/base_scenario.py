@@ -330,7 +330,16 @@ class BaseScenario:
                 healthcare_inputs_df, on=["age_band", "month"], how="left"
             )
 
-            return healthcare_df["healthcare_cost"].to_list()
+            healthcare_total_list = []
+            for index, month in enumerate(self.month_list):
+                if month < healthcare_df["month"][index]:
+                    healthcare_total_list.append(0)
+                else:
+                    healthcare_total_list.append(
+                        float(round(healthcare_df["healthcare_cost"][index], 2))
+                    )
+
+            return healthcare_total_list
 
         return [0] * self.total_months
 

@@ -84,6 +84,7 @@ To get the VS Code instance going using poetry:
 - Then execute `poetry run code .`
 
 ### Poetry
+Opening up from command line: `poetry shell`
 Add packages
   - `poetry add <package name>`
     - This will automatically choose the right version for you

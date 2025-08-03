@@ -10,8 +10,8 @@ from pages.random_scenario import RandomScenario
 
 def main(assumptions) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """Main function to calculate the core dfs"""
-    with open("input_assumptions_full.json") as json_data:
-        assumptions = json.load(json_data)
+    # with open("input_assumptions_full.json") as json_data:
+    #     assumptions = json.load(json_data)
 
     # apply_validations(assumptions)
 
@@ -26,7 +26,7 @@ def main(assumptions) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         }
     )
 
-    for i in range(100):
+    for i in range(100):  # Number of scenarios to generate
         new_scenario = RandomScenario(base_scenario)
         new_scenario.create_full_df().to_csv(f"./outputs/scen_{i+1}.csv", index=False)
 
