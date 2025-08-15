@@ -49,7 +49,7 @@ def validate_base_per_yr_increase(input: float):
     """Ensure base_savings_per_yr_increase is reasonable"""
     if input < -1000 or input > 1000:
         raise ValidationError(
-            "That's quite a high year-over-year savings increase. Try to keep in within 1,000%, plus or minus"
+            "That's quite a high year-over-year savings increase. Try to keep it within ±1,000% (percent), not dollars."
         )
 
 
