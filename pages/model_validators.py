@@ -129,3 +129,10 @@ def validate_rates_per_yr(input: float):
     limit = 1000
     if not (-1) * limit * 100 < input < limit * 100:
         raise ValidationError(f"Please keep values within {limit}%, plus or minus")
+
+    if input < 0:
+        raise ValidationError("Retirement account value cannot be negative.")
+    if input > 100_000_000:
+        raise ValidationError(
+            "That's quite a lot of retirement. Try to keep it within $100,000,000."
+        )
