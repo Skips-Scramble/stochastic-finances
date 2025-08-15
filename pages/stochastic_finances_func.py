@@ -1,6 +1,5 @@
 import pandas as pd
 
-import json
 
 from pages.random_scenario import BaseScenario
 from pages.random_scenario import RandomScenario
