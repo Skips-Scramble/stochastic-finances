@@ -42,6 +42,19 @@ def calc_pmt_list(
     )
 
     item_pmt_list = []
+    print(f"pmt_start_date = {pmt_start_date}")
+    print(f"Today: {datetime.today().month}")
+    months_until_start = (pmt_start_date.year - datetime.today().year) * 12 + (
+        pmt_start_date.month - datetime.today().month
+    )
+    print(f"{months_until_start=}")
+    if months_until_start <= 0:
+        initial_down_pmt = 0
+        initial_reg_pmt_amt = reg_pmt_amt
+        months_until_start = 0
+    else:
+        initial_down_pmt = item_down_pmt * (1 + inflation_rate) ** months_until_start
+        initial_reg_pmt_amt = reg_pmt_amt * (1 + inflation_rate) ** months_until_start
     for index, month in enumerate(months_list):
         if pmt_start_date <= month <= pmt_end_date:
             if month == pmt_start_date:
