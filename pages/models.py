@@ -20,6 +20,9 @@ from .model_validators import (
     validate_rates_per_yr,
     validate_retirement_extra_expenses,
     validate_savings_lower_limit,
+    validate_reg_pmt_amt,
+    validate_positive_int,
+    validate_non_negative_int,
 )
 
 
@@ -108,12 +111,25 @@ class PaymentsInputsModel(models.Model):
     reg_pmt_amt = models.FloatField(
         null=True,
         blank=True,
+        validators=[validate_reg_pmt_amt, decimal_validator]
     )
-    pmt_freq_mos = models.IntegerField(null=True, blank=True)
+    pmt_freq_mos = models.IntegerField(
+        null=True,
+        blank=True,
+        validators=[validate_positive_int]
+    )
     inflation_adj = models.BooleanField(default=False)
     recurring_purchase = models.BooleanField(default=False)
-    recurring_timeframe = models.IntegerField(null=True, blank=True)
-    recurring_length = models.IntegerField(null=True, blank=True)
+    recurring_timeframe = models.IntegerField(
+        null=True,
+        blank=True,
+        validators=[validate_positive_int]
+    )
+    recurring_length = models.IntegerField(
+        null=True,
+        blank=True,
+        validators=[validate_non_negative_int]
+    )
 
     created_by = models.ForeignKey(
         CustomUser,
