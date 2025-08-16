@@ -175,9 +175,9 @@ class RatesInputsForm(forms.ModelForm):
         ]
         labels = {
             "is_active": "Use this for calculations",
-            "base_rf_interest_per_yr": "Assumed savings account interest rate",
-            "base_mkt_interest_per_yr": "Assumed retirement interest rate",
-            "base_inflation_per_yr": "Assumed inflation per year",
+            "base_rf_interest_per_yr": "Assumed savings account interest rate (%)",
+            "base_mkt_interest_per_yr": "Assumed retirement interest rate (%)",
+            "base_inflation_per_yr": "Assumed inflation per year (%)",
         }
         widgets = {
             "is_active": forms.CheckboxInput(),
