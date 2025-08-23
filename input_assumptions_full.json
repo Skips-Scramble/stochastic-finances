@@ -17,7 +17,6 @@
 			"down_pmt": 30000,
 			"reg_pmt_amt": 1200,
 			"pmt_freq_mos": 1,
-			"inflation_adj": true,
 			"recurring_purchase": false,
 			"recurring_timeframe": null,
 			"recurring_length": null
@@ -32,7 +31,6 @@
 			"down_pmt": 10000,
 			"reg_pmt_amt": 300,
 			"pmt_freq_mos": 2,
-			"inflation_adj": false,
 			"recurring_purchase": true,
 			"recurring_timeframe": 3,
 			"recurring_length": 3

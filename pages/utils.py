@@ -23,7 +23,6 @@ inputs_by_model_dict = {
         "down_pmt",
         "reg_pmt_amt",
         "pmt_freq_mos",
-        "inflation_adj",
         "recurring_purchase",
         "recurring_purchase_inf_adj",
         "recurring_timeframe",

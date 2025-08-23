@@ -28,7 +28,6 @@
                     <p class="card-text">Extra payment length in months: {{ item.pmt_length_mos }}</p>
                     <p class="card-text">Extra payment down payment: ${{ item.down_pmt|floatformat:"0g" }}</p>
                     <p class="card-text">Extra payment monthly payment: ${{ item.reg_pmt_amt|floatformat:"0g" }}</p>
-                    <p class="card-text">Inflation Adjusted: {{ item.inflation_adj|yesno|title }}</p>
                     <p class="card-text">Recurring Purchase: {{ item.recurring_purchase|yesno|title }}</p>
                     <p class="card-text">Recurring Timeframe: {{item.recurring_timeframe }}</p>
                     <p class="card-text">Number of occurances: {{item.recurring_length }}</p>

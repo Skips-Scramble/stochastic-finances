@@ -109,26 +109,17 @@ class PaymentsInputsModel(models.Model):
         null=True, blank=True, validators=[validate_down_pmt, decimal_validator]
     )
     reg_pmt_amt = models.FloatField(
-        null=True,
-        blank=True,
-        validators=[validate_reg_pmt_amt, decimal_validator]
+        null=True, blank=True, validators=[validate_reg_pmt_amt, decimal_validator]
     )
     pmt_freq_mos = models.IntegerField(
-        null=True,
-        blank=True,
-        validators=[validate_positive_int]
+        null=True, blank=True, validators=[validate_positive_int]
     )
-    inflation_adj = models.BooleanField(default=False)
     recurring_purchase = models.BooleanField(default=False)
     recurring_timeframe = models.IntegerField(
-        null=True,
-        blank=True,
-        validators=[validate_positive_int]
+        null=True, blank=True, validators=[validate_positive_int]
     )
     recurring_length = models.IntegerField(
-        null=True,
-        blank=True,
-        validators=[validate_non_negative_int]
+        null=True, blank=True, validators=[validate_non_negative_int]
     )
 
     created_by = models.ForeignKey(

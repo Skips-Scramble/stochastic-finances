@@ -27,7 +27,6 @@ def calc_pmt_list(
     reg_pmt_amt: float,
     pmt_freq_mos: int,
     inflation_rate: float,
-    inflation_adj: bool,
 ) -> list:
     """Calculate list of payment amounts"""
 
@@ -48,10 +47,13 @@ def calc_pmt_list(
         pmt_start_date.month - datetime.today().month
     )
     print(f"{months_until_start=}")
+
+    # If the payment has already started
     if months_until_start <= 0:
         initial_down_pmt = 0
         initial_reg_pmt_amt = reg_pmt_amt
         months_until_start = 0
+    # If the payment will be in the future
     else:
         initial_down_pmt = item_down_pmt * (1 + inflation_rate) ** months_until_start
         initial_reg_pmt_amt = reg_pmt_amt * (1 + inflation_rate) ** months_until_start
@@ -66,8 +68,7 @@ def calc_pmt_list(
                 item_pmt_list.append(
                     round(
                         initial_reg_pmt_amt
-                        * (1 + inflation_rate * inflation_adj)
-                        ** (index - months_until_start),
+                        * (1 + inflation_rate) ** (index - months_until_start),
                         2,
                     )
                 )
@@ -283,7 +284,6 @@ class BaseScenario:
                     item["reg_pmt_amt"],
                     item["pmt_freq_mos"],
                     self.monthly_inflation,
-                    item["inflation_adj"],
                 )
             )
             if item["recurring_purchase"]:
@@ -310,7 +310,6 @@ class BaseScenario:
                             item["reg_pmt_amt"],
                             item["pmt_freq_mos"],
                             self.monthly_inflation,
-                            item["inflation_adj"],
                         )
                     )
         if not non_base_bills_lists:
