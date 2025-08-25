@@ -47,6 +47,7 @@ def calc_pmt_list(
         pmt_start_date.month - datetime.today().month
     )
     print(f"{months_until_start=}")
+    print(f"{inflation_rate=}")
 
     # If the payment has already started
     if months_until_start <= 0:
@@ -55,14 +56,12 @@ def calc_pmt_list(
         months_until_start = 0
     # If the payment will be in the future
     else:
-        initial_down_pmt = item_down_pmt * (1 + inflation_rate) ** months_until_start
-        initial_reg_pmt_amt = reg_pmt_amt * (1 + inflation_rate) ** months_until_start
+        initial_down_pmt = round(item_down_pmt * (1 + inflation_rate) ** months_until_start,2)
+        initial_reg_pmt_amt = round(reg_pmt_amt * (1 + inflation_rate) ** months_until_start,2)
     for index, month in enumerate(months_list):
         if pmt_start_date <= month <= pmt_end_date:
             if month == pmt_start_date:
                 months_until_start = index
-                initial_down_pmt = item_down_pmt * (1 + inflation_rate) ** (index)
-                initial_reg_pmt_amt = reg_pmt_amt * (1 + inflation_rate) ** (index)
                 item_pmt_list.append(round(initial_down_pmt + initial_reg_pmt_amt, 2))
             elif (index - months_until_start) % pmt_freq_mos == 0:
                 item_pmt_list.append(
