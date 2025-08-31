@@ -8,9 +8,54 @@
 {% block content %}
 <div class="container">
     <div class="mb-6 h3 text-center text-black">Savings and Retirement Results</div>
-    <div class="mb-4 h4 text-center text-black">Please ensure at least one scenario is active from each of the following:</div>
-    {% for error in errors %}
-        <li>{{error}}</li>
-    {% endfor %}
+    <div class="mb-4 h5 text-center text-muted">Please address the following configuration issues:</div>
+    
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body">
+            <!-- Missing Scenarios Section -->
+            {% if missing_scenarios %}
+            <div class="mb-4">
+                <h5 class="card-title border-bottom pb-2">Categories Missing Active Scenarios</h5>
+                <ul class="list-group list-group-flush">
+                    {% for category, count in missing_scenarios.items %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="h6 mb-0">{{ category }}</span>
+                            <div class="small text-muted">
+                                Please activate one scenario
+                            </div>
+                        </div>
+                        <span class="badge bg-secondary rounded-pill">{{ count }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <!-- Multiple Scenarios Section -->
+            {% if multiple_scenarios %}
+            <div>
+                <h5 class="card-title border-bottom pb-2">Categories With Multiple Active Scenarios</h5>
+                <ul class="list-group list-group-flush">
+                    {% for category, count in multiple_scenarios.items %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="h6 mb-0">{{ category }}</span>
+                            <div class="small text-muted">
+                                Please select only one active scenario
+                            </div>
+                        </div>
+                        <span class="badge bg-primary rounded-pill">{{ count }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="text-center">
+        <a href="/general/" class="btn btn-primary">Return to Dashboard</a>
+    </div>
 </div>
 {% endblock %}

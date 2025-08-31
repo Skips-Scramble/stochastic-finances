@@ -446,26 +446,29 @@ def calculations(request):
 
     else:
         print("Get request")
-        bad_active_list = []
+        bad_active_dict = {}
         general_inputs_model = GeneralInputsModel.objects.filter(
             created_by=request.user, is_active=True
         )
 
-        if ensure_active_inputs(general_inputs_model, 1):
+
+        if len(general_inputs_model) == 1:
             general_inputs_dict = model_to_dict(general_inputs_model[0], "general")
             # print(f"{general_inputs_dict =}")
         else:
-            bad_active_list.append("General")
+            bad_active_dict["General"] = len(general_inputs_model)
+        
+        # print(f"{general_inputs_dict = }")
 
         savings_inputs_model = SavingsInputsModel.objects.filter(
             created_by=request.user, is_active=True
         )
 
-        if ensure_active_inputs(savings_inputs_model, 1):
+        if len(savings_inputs_model) == 1:
             savings_inputs_dict = model_to_dict(savings_inputs_model[0], "savings")
             # print(f"{savings_inputs_dict =}")
         else:
-            bad_active_list.append("Savings")
+            bad_active_dict["Savings"] = len(savings_inputs_model)
 
         # Non-base bills
         payments_inputs_model = PaymentsInputsModel.objects.filter(
@@ -482,29 +485,34 @@ def calculations(request):
         retirement_inputs_model = RetirementInputsModel.objects.filter(
             created_by=request.user, is_active=True
         )
-        if ensure_active_inputs(retirement_inputs_model, 1):
+        if len(retirement_inputs_model) == 1:
             retirement_inputs_dict = model_to_dict(
                 retirement_inputs_model[0], "retirement"
             )
             # print(f"{retirement_inputs_dict =}")
         else:
-            bad_active_list.append("Retirement")
+            bad_active_dict["Retirement"] = len(retirement_inputs_model)
 
         rates_inputs_model = RatesInputsModel.objects.filter(
             created_by=request.user, is_active=True
         )
-        if ensure_active_inputs(rates_inputs_model, 1):
+        if len(rates_inputs_model) == 1:
             rates_inputs_dict = model_to_dict(rates_inputs_model[0], "rates")
             # print(f"{rates_inputs_dict =}")
         else:
-            bad_active_list.append("Rates")
-        if bad_active_list:
+            bad_active_dict["Rates"] = len(rates_inputs_model)
+        if bad_active_dict:
             print("There were some bad active inputs")
+            # Separate the errors into two categories
+            missing_scenarios = {k: v for k, v in bad_active_dict.items() if v == 0}
+            multiple_scenarios = {k: v for k, v in bad_active_dict.items() if v > 1}
+            
             return render(
                 request,
                 "pages/non_active.html",
                 {
-                    "errors": bad_active_list,
+                    "missing_scenarios": missing_scenarios,
+                    "multiple_scenarios": multiple_scenarios,
                 },
             )
 

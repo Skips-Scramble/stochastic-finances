@@ -42,10 +42,15 @@ inputs_by_model_dict = {
 }
 
 
-def model_to_dict(active_inputs, model):
+def model_to_dict(active_inputs: typing.Any, model: str) -> dict[str, typing.Any]:
     """Convert a Django model instance to a dictionary"""
-    model_dict = {}
+    model_dict: dict[str, typing.Any] = {}
+    # print("~~~~~~~~~~~~~~~~~~")
+    # print("let's get down to business")
+    # print("~~~~~~~~~~~~~~~~~~~~~~~~")
     for field in active_inputs._meta.fields:
+        # print(f"{field = }")
+        # print(f"{field.name = }")
         if field.name in inputs_by_model_dict[model]:
             field_name = field.name
             field_value = getattr(active_inputs, field_name)
