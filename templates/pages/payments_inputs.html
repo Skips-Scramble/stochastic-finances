@@ -18,10 +18,10 @@
     {% for item in payments_inputs %}
         <div class="col-md-4">
             <div class="card shadow {% if item.is_active %}border-primary{% else %}border-dark{% endif %} mb-3 text-black" style="border-width: {% if item.is_active %}4px{% else %}3px{% endif %};">
-                <div class="card-header">Savings Inputs</div>
+                <div class="card-header">Payment Inputs</div>
                 <div class="card-body">
+                    <h4 class="card-title mb-3 fw-bold">Payment Name: {{ item.pmt_name|title }}</h4>
                     <p class="card-text">Use this for calculations: {{ item.is_active|yesno|title }}</p>
-                    <p class="card-text">Extra payment name: {{ item.pmt_name|title }}</p>
                     <p class="card-text">Extra payment start age in years: {{ item.pmt_start_age_yrs }}</p>
                     <p class="card-text">Extra payment start age in months: {{ item.pmt_start_age_mos}}</p>
                     <p class="card-text">Extra payment length in years: {{ item.pmt_length_yrs}}</p>

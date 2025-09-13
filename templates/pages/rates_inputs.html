@@ -18,7 +18,7 @@
     {% for item in rates_inputs %}
         <div class="col-md-4">
             <div class="card shadow {% if item.is_active %}border-primary{% else %}border-dark{% endif %} mb-3 text-black" style="border-width: {% if item.is_active %}4px{% else %}3px{% endif %};">
-                <div class="card-header">Savings Inputs</div>
+                <div class="card-header">Rates Inputs</div>
                 <div class="card-body">
                     <p class="card-text">Use this for calculations: {{ item.is_active|yesno|title }}</p>
                     <p class="card-text">Savings interest rate (%): {{ item.base_rf_interest_per_yr|floatformat:"2g" }}%</p>
