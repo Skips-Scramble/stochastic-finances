@@ -21,7 +21,7 @@ from .models import (
     RetirementInputsModel,
     SavingsInputsModel,
 )
-from .utils import ensure_active_inputs, model_to_dict
+from .utils import model_to_dict
 
 logger = logging.getLogger(__name__)
 
@@ -451,13 +451,12 @@ def calculations(request):
             created_by=request.user, is_active=True
         )
 
-
         if len(general_inputs_model) == 1:
             general_inputs_dict = model_to_dict(general_inputs_model[0], "general")
             # print(f"{general_inputs_dict =}")
         else:
             bad_active_dict["General"] = len(general_inputs_model)
-        
+
         # print(f"{general_inputs_dict = }")
 
         savings_inputs_model = SavingsInputsModel.objects.filter(
@@ -506,7 +505,7 @@ def calculations(request):
             # Separate the errors into two categories
             missing_scenarios = {k: v for k, v in bad_active_dict.items() if v == 0}
             multiple_scenarios = {k: v for k, v in bad_active_dict.items() if v > 1}
-            
+
             return render(
                 request,
                 "pages/non_active.html",

@@ -5,34 +5,52 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('pages', '0011_alter_paymentsinputsmodel_recurring_timeframe'),
+        ("pages", "0011_alter_paymentsinputsmodel_recurring_timeframe"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='paymentsinputsmodel',
-            name='inflation_adj',
+            model_name="paymentsinputsmodel",
+            name="inflation_adj",
         ),
         migrations.AlterField(
-            model_name='paymentsinputsmodel',
-            name='pmt_freq_mos',
-            field=models.IntegerField(blank=True, null=True, validators=[pages.model_validators.validate_positive_int]),
+            model_name="paymentsinputsmodel",
+            name="pmt_freq_mos",
+            field=models.IntegerField(
+                blank=True,
+                null=True,
+                validators=[pages.model_validators.validate_positive_int],
+            ),
         ),
         migrations.AlterField(
-            model_name='paymentsinputsmodel',
-            name='recurring_length',
-            field=models.IntegerField(blank=True, null=True, validators=[pages.model_validators.validate_non_negative_int]),
+            model_name="paymentsinputsmodel",
+            name="recurring_length",
+            field=models.IntegerField(
+                blank=True,
+                null=True,
+                validators=[pages.model_validators.validate_non_negative_int],
+            ),
         ),
         migrations.AlterField(
-            model_name='paymentsinputsmodel',
-            name='recurring_timeframe',
-            field=models.IntegerField(blank=True, null=True, validators=[pages.model_validators.validate_positive_int]),
+            model_name="paymentsinputsmodel",
+            name="recurring_timeframe",
+            field=models.IntegerField(
+                blank=True,
+                null=True,
+                validators=[pages.model_validators.validate_positive_int],
+            ),
         ),
         migrations.AlterField(
-            model_name='paymentsinputsmodel',
-            name='reg_pmt_amt',
-            field=models.FloatField(blank=True, null=True, validators=[pages.model_validators.validate_reg_pmt_amt, pages.model_validators.decimal_validator]),
+            model_name="paymentsinputsmodel",
+            name="reg_pmt_amt",
+            field=models.FloatField(
+                blank=True,
+                null=True,
+                validators=[
+                    pages.model_validators.validate_reg_pmt_amt,
+                    pages.model_validators.decimal_validator,
+                ],
+            ),
         ),
     ]

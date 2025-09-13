@@ -56,8 +56,12 @@ def calc_pmt_list(
         months_until_start = 0
     # If the payment will be in the future
     else:
-        initial_down_pmt = round(item_down_pmt * (1 + inflation_rate) ** months_until_start,2)
-        initial_reg_pmt_amt = round(reg_pmt_amt * (1 + inflation_rate) ** months_until_start,2)
+        initial_down_pmt = round(
+            item_down_pmt * (1 + inflation_rate) ** months_until_start, 2
+        )
+        initial_reg_pmt_amt = round(
+            reg_pmt_amt * (1 + inflation_rate) ** months_until_start, 2
+        )
     for index, month in enumerate(months_list):
         if pmt_start_date <= month <= pmt_end_date:
             if month == pmt_start_date:
