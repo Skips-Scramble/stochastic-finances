@@ -21,6 +21,7 @@
                     <div class="card-header">Retirement Inputs</div>
                     <div class="card-body">
                     <p class="card-text">Use this for calculations: {{ item.is_active|yesno|title }}</p>
+                    <p class="card-text">Retirement Type: {{ item.get_retirement_type_display }}</p>
                     <p class="card-text">Current retriement account: ${{ item.base_retirement|floatformat:"0g" }}</p>
                     <p class="card-text">Monthly retirement contributions: ${{ item.base_retirement_per_mo|floatformat:"0g" }}</p>
                     <p class="card-text">Annual retirement increase: ${{ item.base_retirement_per_yr_increase|floatformat:"0g" }}</p>

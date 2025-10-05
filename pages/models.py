@@ -136,7 +136,19 @@ class PaymentsInputsModel(models.Model):
 
 
 class RetirementInputsModel(models.Model):
+    RETIREMENT_TYPE_CHOICES = [
+        ("traditional_401k", "Traditional 401(k)"),
+        ("roth_401k", "Roth 401(k)"),
+        ("traditional_ira", "Traditional IRA"),
+        ("roth_ira", "Roth IRA"),
+    ]
+
     is_active = models.BooleanField(default=False)
+    retirement_type = models.CharField(
+        max_length=20,
+        choices=RETIREMENT_TYPE_CHOICES,
+        default="traditional_401k",
+    )
     base_retirement = models.FloatField(
         validators=[validate_base_retirement, decimal_validator]
     )

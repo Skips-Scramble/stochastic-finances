@@ -17,6 +17,7 @@ var_descriptions = {
     "down_pmt": "The down payment (if any) for this payment item. This does NOT include the first month's regular monthly payment.",
     "reg_pmt_amt": "The monthly payment for this item. Example: You finance a TV for 12 months paying $100 a month. Put $100 here.",
     "pmt_freq_mos": "The frequency of the payment (in months).",
+    "retirement_type": "Please choose from one of the four standard retirement account types",
     "base_retirement": "The amount of money you have in your retirement account(s) right now.",
     "base_retirement_per_mo": "The amount of money that gets contributed to your retirement account each month. This includes all contributions, including employer contributions.",
     "base_retirement_per_yr_increase": "If you plan to invest more money in your retirement account every year, put that year-over-year increase here (as dollars). Example: In the US, allowed contributions to your 401(k), HSA, etc. generally increase every year. If you think they increase about $500 a year and you plan on maxing them out every year, put $500 here.",

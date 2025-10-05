@@ -134,6 +134,7 @@ class RetirementInputsForm(forms.ModelForm):
         model = RetirementInputsModel
         fields = [
             "is_active",
+            "retirement_type",
             "base_retirement",
             "base_retirement_per_mo",
             "base_retirement_per_yr_increase",
@@ -141,6 +142,7 @@ class RetirementInputsForm(forms.ModelForm):
         ]
         labels = {
             "is_active": "Use this for calculations",
+            "retirement_type": "Retirement Type",
             "base_retirement": "Current retirement amount",
             "base_retirement_per_mo": "Monthly retirement contributions",
             "base_retirement_per_yr_increase": "Yearly retirement contribution increase ($)",
@@ -148,6 +150,7 @@ class RetirementInputsForm(forms.ModelForm):
         }
         widgets = {
             "is_active": forms.CheckboxInput(),
+            "retirement_type": forms.Select(attrs={"class": INPUT_CLASSES}),
             "base_retirement": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
             "base_retirement_per_mo": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
             "base_retirement_per_yr_increase": forms.NumberInput(
