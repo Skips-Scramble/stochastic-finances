@@ -26,6 +26,7 @@ class GeneralInputsForm(forms.ModelForm):
             "retirement_age_yrs",
             "retirement_age_mos",
             "add_healthcare",
+            "retirement_extra_expenses",
         ]
         labels = {
             "is_active": "Use this for calculations",
@@ -33,6 +34,7 @@ class GeneralInputsForm(forms.ModelForm):
             "retirement_age_yrs": "Retirement age (years)",
             "retirement_age_mos": "Retirement age (months)",
             "add_healthcare": "Please automatically include healthcare costs for me",
+            "retirement_extra_expenses": "Extra expenses in retirement (vacations, etc.)",
         }
         widgets = {
             "is_active": forms.CheckboxInput(),
@@ -42,6 +44,9 @@ class GeneralInputsForm(forms.ModelForm):
             "retirement_age_yrs": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
             "retirement_age_mos": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
             "add_healthcare": forms.CheckboxInput(),
+            "retirement_extra_expenses": forms.NumberInput(
+                attrs={"class": INPUT_CLASSES}
+            ),
         }
 
 
@@ -138,7 +143,6 @@ class RetirementInputsForm(forms.ModelForm):
             "base_retirement",
             "base_retirement_per_mo",
             "base_retirement_per_yr_increase",
-            "retirement_extra_expenses",
         ]
         labels = {
             "is_active": "Use this for calculations",
@@ -146,7 +150,6 @@ class RetirementInputsForm(forms.ModelForm):
             "base_retirement": "Current retirement amount",
             "base_retirement_per_mo": "Monthly retirement contributions",
             "base_retirement_per_yr_increase": "Yearly retirement contribution increase ($)",
-            "retirement_extra_expenses": "Extra expenses in retirement (vacations, etc.)",
         }
         widgets = {
             "is_active": forms.CheckboxInput(),
@@ -154,9 +157,6 @@ class RetirementInputsForm(forms.ModelForm):
             "base_retirement": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
             "base_retirement_per_mo": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
             "base_retirement_per_yr_increase": forms.NumberInput(
-                attrs={"class": INPUT_CLASSES}
-            ),
-            "retirement_extra_expenses": forms.NumberInput(
                 attrs={"class": INPUT_CLASSES}
             ),
         }

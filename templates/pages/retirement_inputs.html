@@ -25,7 +25,6 @@
                     <p class="card-text">Current retriement account: ${{ item.base_retirement|floatformat:"0g" }}</p>
                     <p class="card-text">Monthly retirement contributions: ${{ item.base_retirement_per_mo|floatformat:"0g" }}</p>
                     <p class="card-text">Annual retirement increase: ${{ item.base_retirement_per_yr_increase|floatformat:"0g" }}</p>
-                    <p class="card-text">Retirement extra expenses: ${{ item.retirement_extra_expenses|floatformat:"0g" }}</p>
 
                     <a href="{% url 'retirement_inputs_edit' item.id %}" class="btn btn-primary">Edit</a>
                     <a href="{% url 'retirement_inputs_delete' item.id %}" class="btn btn-secondary">Delete</a>

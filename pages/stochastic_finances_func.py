@@ -1,3 +1,4 @@
+import json
 import pandas as pd
 
 
@@ -9,8 +10,8 @@ from pages.random_scenario import RandomScenario
 
 def main(assumptions) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """Main function to calculate the core dfs"""
-    # with open("input_assumptions_full.json") as json_data:
-    #     assumptions = json.load(json_data)
+    with open("input_assumptions_full.json") as json_data:
+        assumptions = json.load(json_data)
 
     # apply_validations(assumptions)
 

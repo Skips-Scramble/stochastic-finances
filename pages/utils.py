@@ -29,6 +29,7 @@ inputs_by_model_dict = {
         "recurring_length",
     ],
     "retirement": [
+        "retirement_type",
         "base_retirement",
         "base_retirement_per_mo",
         "base_retirement_per_yr_increase",

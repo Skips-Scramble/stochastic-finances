@@ -2,6 +2,8 @@
 	"birthdate": "1/1/2000",
 	"retirement_age_yrs": 60,
 	"retirement_age_mos": 6,
+	"add_healthcare": false,
+	"retirement_extra_expenses": 5000,
 	"base_savings": 35000,
 	"base_saved_per_mo": 1000,
 	"base_savings_per_yr_increase": 1.5,
@@ -36,11 +38,20 @@
 			"recurring_length": 3
 		}
 	],
-	"add_healthcare": false,
-	"base_retirement": 20000,
-	"base_retirement_per_mo": 500,
-	"base_retirement_per_yr_increase": 1200,
-	"retirement_extra_expenses": 5000,
+	"retirement_accounts": [
+		{
+			"retirement_type": "traditional_401k",
+			"base_retirement": 20000,
+			"base_retirement_per_mo": 500,
+			"base_retirement_per_yr_increase": 1200
+		},
+		{
+			"retirement_type": "roth_ira",
+			"base_retirement": 10000,
+			"base_retirement_per_mo": 400,
+			"base_retirement_per_yr_increase": 1000
+		}
+	],
 	"ss_incl": true,
 	"ss_amt_per_mo": 2000,
 	"ss_amt_age_yrs": 65,

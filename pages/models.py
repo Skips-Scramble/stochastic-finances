@@ -47,6 +47,11 @@ class GeneralInputsModel(models.Model):
         default=False,
     )
 
+    retirement_extra_expenses = models.FloatField(
+        validators=[validate_retirement_extra_expenses, decimal_validator],
+        default=0,
+    )
+
     created_by = models.ForeignKey(
         CustomUser,
         related_name="general_inputs",
@@ -157,9 +162,6 @@ class RetirementInputsModel(models.Model):
     )
     base_retirement_per_yr_increase = models.FloatField(
         validators=[validate_base_retirement_per_yr_increase, decimal_validator]
-    )
-    retirement_extra_expenses = models.FloatField(
-        validators=[validate_retirement_extra_expenses, decimal_validator]
     )
     created_by = models.ForeignKey(
         CustomUser,

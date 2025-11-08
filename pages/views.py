@@ -481,16 +481,25 @@ def calculations(request):
         print("")
         print(f"{payments_list = }")
 
+        # Retirement
         retirement_inputs_model = RetirementInputsModel.objects.filter(
             created_by=request.user, is_active=True
         )
-        if len(retirement_inputs_model) == 1:
-            retirement_inputs_dict = model_to_dict(
-                retirement_inputs_model[0], "retirement"
-            )
-            # print(f"{retirement_inputs_dict =}")
-        else:
-            bad_active_dict["Retirement"] = len(retirement_inputs_model)
+        retirement_accts_list = []
+        # if len(retirement_inputs_model) == 1:
+        #     retirement_inputs_dict = model_to_dict(
+        #         retirement_inputs_model[0], "retirement"
+        #     )
+        #     print(f"{retirement_inputs_dict =}")
+
+        for retirement in retirement_inputs_model:
+            print(f'Retirement: {model_to_dict(retirement, "retirement")}')
+            retirement_accts_list.append(model_to_dict(retirement, "retirement"))
+
+        print("")
+        print(f"{retirement_accts_list = }")
+        # else:
+        #     bad_active_dict["Retirement"] = len(retirement_inputs_model)
 
         rates_inputs_model = RatesInputsModel.objects.filter(
             created_by=request.user, is_active=True
@@ -520,7 +529,7 @@ def calculations(request):
         **general_inputs_dict,
         **savings_inputs_dict,
         **{"payment_items": payments_list},
-        **retirement_inputs_dict,
+        **{"retirement_accounts": retirement_accts_list},
         **rates_inputs_dict,
     }
 

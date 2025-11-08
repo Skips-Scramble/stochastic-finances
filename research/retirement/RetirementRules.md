@@ -4,6 +4,7 @@
 |---------------------------------|--------------------|-----------------|-------------|----------|
 | **Contributions**               | Pre-tax (reduce taxable income now) | Pre-tax if deductible; non-deductible also possible | After-tax | After-tax |
 | **Withdrawals after 59½**       | Taxed as ordinary income | Taxed as ordinary income | Tax-free if account held ≥5 yrs | Tax-free if account held ≥5 yrs |
+| **Maximum withdrawal amount**   | No limit (can withdraw entire balance as lump sum) | No limit (can withdraw entire balance as lump sum) | No limit (can withdraw entire balance as lump sum) | No limit (can withdraw entire balance as lump sum) |
 | **Withdrawals before 59½**      | Tax + 10% penalty (exceptions: disability, Rule of 55, medical, etc.) | Tax + 10% penalty (more exceptions: education, first-home, medical, etc.) | Contributions always after-tax, but withdrawals before 59½ = taxes + 10% penalty (unless exception) | Contributions can be withdrawn anytime tax- & penalty-free; earnings = tax + 10% penalty unless exception |
 | **Required Minimum Distributions (RMDs)** | Yes, starting age 73/75 (must take from each plan) | Yes, starting age 73/75 (can aggregate across IRAs) | ❌ No RMDs starting in 2024 | ❌ No RMDs ever (during your lifetime) |
 | **Penalty Exceptions**          | Disability, Rule of 55, QDRO, medical >7.5% AGI, SEPP, birth/adoption, disasters | All 401(k) exceptions **plus** higher education & $10k first-time home purchase | Same as traditional 401(k) | Same as traditional IRA |
