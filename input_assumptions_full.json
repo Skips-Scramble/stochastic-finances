@@ -41,16 +41,29 @@
 	"retirement_accounts": [
 		{
 			"retirement_type": "traditional_401k",
-			"base_retirement": 20000,
-			"base_retirement_per_mo": 500,
-			"base_retirement_per_yr_increase": 1200
+			"base_retirement": 11111,
+			"base_retirement_per_mo": 1111,
+			"base_retirement_per_yr_increase": 111
+		},
+		{
+			"retirement_type": "roth_401k",
+			"base_retirement": 22222,
+			"base_retirement_per_mo": 2222,
+			"base_retirement_per_yr_increase": 222
+		},
+		{
+			"retirement_type": "traditional_ira",
+			"base_retirement": 33333,
+			"base_retirement_per_mo": 333,
+			"base_retirement_per_yr_increase": 33
 		},
 		{
 			"retirement_type": "roth_ira",
-			"base_retirement": 10000,
-			"base_retirement_per_mo": 400,
-			"base_retirement_per_yr_increase": 1000
+			"base_retirement": 44444,
+			"base_retirement_per_mo": 444,
+			"base_retirement_per_yr_increase": 44
 		}
+
 	],
 	"ss_incl": true,
 	"ss_amt_per_mo": 2000,

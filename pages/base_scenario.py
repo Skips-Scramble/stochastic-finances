@@ -343,9 +343,10 @@ class Payment(ScenarioCoreInfo):
 class RetirementTrad401k(ScenarioCoreInfo):
     """401k Retirement Account Info"""
 
-    base_retirement: float
-    base_retirement_per_mo: float
-    base_retirement_per_yr_increase: float
+    name: str = "traditional_401k"
+    base_retirement: float = 0.0
+    base_retirement_per_mo: float = 0.0
+    base_retirement_per_yr_increase: float = 0.0
     rmd_age_mos = 0
 
     @cached_property
@@ -364,14 +365,14 @@ class RetirementTrad401k(ScenarioCoreInfo):
         for index, value in enumerate(self.pre_retire_month_count_list):
             if index == 0:  # First month
                 retirement_increase_list.append(
-                    self.assumptions["base_retirement_per_mo"]
+                    self.base_retirement_per_mo
                 )
             elif value == 0:  # Past your retirement date
                 retirement_increase_list.append(0)
             elif index % 12 == 11:  # At the end of the year
                 retirement_increase_list.append(
                     retirement_increase_list[index - 1]
-                    + round(self.assumptions["base_retirement_per_yr_increase"] / 12, 6)
+                    + round(self.base_retirement_per_yr_increase / 12, 6)
                 )
             else:  # Middle of the year
                 retirement_increase_list.append(retirement_increase_list[index - 1])
@@ -384,7 +385,7 @@ class RetirementTrad401k(ScenarioCoreInfo):
         retirement_list = []
         for i in range(self.total_months):
             if i == 0:
-                retirement = float(round(self.assumptions["base_retirement"], 2))
+                retirement = float(round(self.base_retirement, 2))
             elif self.pre_retire_month_count_list[i] != 0:  # If you're not retired
                 retirement = float(
                     round(
@@ -405,9 +406,10 @@ class RetirementTrad401k(ScenarioCoreInfo):
 class RetirementRoth401k(ScenarioCoreInfo):
     """Roth 401k Retirement Account Info"""
 
-    base_retirement: float
-    base_retirement_per_mo: float
-    base_retirement_per_yr_increase: float
+    name: str = "roth_401k"
+    base_retirement: float = 0.0
+    base_retirement_per_mo: float = 0.0
+    base_retirement_per_yr_increase: float = 0.0
 
     @cached_property
     def retirement_increase_list(self) -> list:
@@ -416,14 +418,14 @@ class RetirementRoth401k(ScenarioCoreInfo):
         for index, value in enumerate(self.pre_retire_month_count_list):
             if index == 0:
                 retirement_increase_list.append(
-                    self.assumptions["base_retirement_per_mo"]
+                    self.base_retirement_per_mo
                 )
             elif value == 0:
                 retirement_increase_list.append(0)
             elif index % 12 == 11:
                 retirement_increase_list.append(
                     retirement_increase_list[index - 1]
-                    + round(self.assumptions["base_retirement_per_yr_increase"] / 12, 6)
+                    + round(self.base_retirement_per_yr_increase / 12, 6)
                 )
             else:
                 retirement_increase_list.append(retirement_increase_list[index - 1])
@@ -436,7 +438,7 @@ class RetirementRoth401k(ScenarioCoreInfo):
         retirement_list = []
         for i in range(self.total_months):
             if i == 0:
-                retirement = float(round(self.assumptions["base_retirement"], 2))
+                retirement = float(round(self.base_retirement, 2))
             elif self.pre_retire_month_count_list[i] != 0:  # If you're not retired
                 retirement = float(
                     round(
@@ -457,9 +459,10 @@ class RetirementRoth401k(ScenarioCoreInfo):
 class RetirementTradIRA(ScenarioCoreInfo):
     """Traditional IRA Retirement Account Info"""
 
-    base_retirement: float
-    base_retirement_per_mo: float
-    base_retirement_per_yr_increase: float
+    name: str = "traditional_ira"
+    base_retirement: float = 0.0
+    base_retirement_per_mo: float = 0.0
+    base_retirement_per_yr_increase: float = 0.0
 
     @cached_property
     def retirement_increase_list(self) -> list:
@@ -468,14 +471,14 @@ class RetirementTradIRA(ScenarioCoreInfo):
         for index, value in enumerate(self.pre_retire_month_count_list):
             if index == 0:
                 retirement_increase_list.append(
-                    self.assumptions["base_retirement_per_mo"]
+                    self.base_retirement_per_mo
                 )
             elif value == 0:
                 retirement_increase_list.append(0)
             elif index % 12 == 11:
                 retirement_increase_list.append(
                     retirement_increase_list[index - 1]
-                    + round(self.assumptions["base_retirement_per_yr_increase"] / 12, 6)
+                    + round(self.base_retirement_per_yr_increase / 12, 6)
                 )
             else:
                 retirement_increase_list.append(retirement_increase_list[index - 1])
@@ -488,7 +491,7 @@ class RetirementTradIRA(ScenarioCoreInfo):
         retirement_list = []
         for i in range(self.total_months):
             if i == 0:
-                retirement = float(round(self.assumptions["base_retirement"], 2))
+                retirement = float(round(self.base_retirement, 2))
             elif self.pre_retire_month_count_list[i] != 0:  # If you're not retired
                 retirement = float(
                     round(
@@ -509,9 +512,10 @@ class RetirementTradIRA(ScenarioCoreInfo):
 class RetirementRothIRA(ScenarioCoreInfo):
     """Roth IRA Retirement Account Info"""
 
-    base_retirement: float
-    base_retirement_per_mo: float
-    base_retirement_per_yr_increase: float
+    name: str = "roth_ira"
+    base_retirement: float = 0.0
+    base_retirement_per_mo: float = 0.0
+    base_retirement_per_yr_increase: float = 0.0
 
     @cached_property
     def retirement_increase_list(self) -> list:
@@ -520,14 +524,14 @@ class RetirementRothIRA(ScenarioCoreInfo):
         for index, value in enumerate(self.pre_retire_month_count_list):
             if index == 0:
                 retirement_increase_list.append(
-                    self.assumptions["base_retirement_per_mo"]
+                    self.base_retirement_per_mo
                 )
             elif value == 0:
                 retirement_increase_list.append(0)
             elif index % 12 == 11:
                 retirement_increase_list.append(
                     retirement_increase_list[index - 1]
-                    + round(self.assumptions["base_retirement_per_yr_increase"] / 12, 6)
+                    + round(self.base_retirement_per_yr_increase / 12, 6)
                 )
             else:
                 retirement_increase_list.append(retirement_increase_list[index - 1])
@@ -540,7 +544,7 @@ class RetirementRothIRA(ScenarioCoreInfo):
         retirement_list = []
         for i in range(self.total_months):
             if i == 0:
-                retirement = float(round(self.assumptions["base_retirement"], 2))
+                retirement = float(round(self.base_retirement, 2))
             elif self.pre_retire_month_count_list[i] != 0:  # If you're not retired
                 retirement = float(
                     round(
@@ -790,75 +794,79 @@ class BaseScenario(ScenarioCoreInfo):
     @cached_property
     def savings_retirement_account_list_real(self) -> tuple[list, list]:
         """Calculate the amount of money in your savings and retirement accounts over time
-        
+
         When savings falls below threshold:
         - Stop making Roth IRA contributions
         - Withdraw Roth IRA contributions (not interest) to cover shortfall
         - Allow savings to go negative if Roth IRA contributions are depleted
-        
+
         Returns:
-            tuple: (savings_list, roth_ira_list)
+            tuple: (savings_list, roth_ira_balance_list, roth_ira_contributions_list)
         """
         total_non_base_bills_list = [
             sum(sublist) for sublist in zip(*self.non_base_bills_lists)
         ]
-        
+
         # Initialize account lists
         savings_list = []
-        roth_ira_list = []
-        
+        roth_ira_balance_list = []
+        roth_ira_contributions_list = []
+
         # Track Roth IRA contributions separately from growth
         roth_ira_contributions = 0.0
-        
-        # Get Roth IRA account if it exists
+        # roth_ira_bal = 0.0
+
+        # Get Roth IRA account if it exists. Assume only one Roth IRA for simplicity.
         roth_ira = None
         for ret_account in self.retirement_list:
             if isinstance(ret_account, RetirementRothIRA):
                 roth_ira = ret_account
                 break
-        
+
         for i in range(self.total_months):
             if i == 0:
                 # Initialize accounts
                 savings = float(round(self.assumptions["base_savings"], 6))
-                roth_ira_bal = float(round(roth_ira.base_retirement, 6)) if roth_ira else 0.0
-                # Starting balance counts as contributions
-                roth_ira_contributions = roth_ira_bal
-                
-            elif self.pre_retire_month_count_list[i] != 0:  # If you're not retired
-                # Calculate expenses
-                total_expenses = (
-                    total_non_base_bills_list[i]
-                    + self.healthcare_costs[i]
+                roth_ira_bal = (
+                    float(round(roth_ira.base_retirement, 6)) if roth_ira else 0.0
                 )
-                
-                # Check if we're below threshold
-                below_threshold = savings <= self.monthly_savings_threshold_list[i]
-                
+                # Assume 70% of initial balance is contributions, 30% is growth
+                # TODO: refine this assumption later
+                roth_ira_contributions = roth_ira_bal * 0.7
+
+            elif self.pre_retire_month_count_list[i] != 0:  # If you're not retired
                 # Update savings (pay expenses from savings)
                 savings = float(
                     round(
                         (
                             savings
                             + self.savings_increase_list[i]
-                            - total_expenses
+                            - total_non_base_bills_list[i]
+                            - self.healthcare_costs[i]
                         )
                         * (1 + self.monthly_rf_interest),
                         6,
                     )
                 )
-                
+
                 # If below threshold, pull from Roth IRA contributions
-                if below_threshold and savings < 0 and roth_ira and roth_ira_contributions > 0:
-                    # Calculate how much we need to cover the shortfall
-                    shortfall = abs(savings)
-                    withdrawal = min(shortfall, roth_ira_contributions)
-                    
+                # TODO: adjust below threshold to not get invoked until after a certain point
+                below_threshold = (
+                    savings <= self.monthly_savings_threshold_list[i] and i >= 12 * 10
+                )
+                if below_threshold and roth_ira_contributions > 0:
+                    # Calculate how much we need to reach the threshold
+                    # shortfall = self.monthly_savings_threshold_list[i] - savings
+                    withdrawal = min(
+                        self.monthly_savings_threshold_list[i] - savings,
+                        roth_ira_contributions,
+                    )
+
                     # Update balances
                     savings += withdrawal
                     roth_ira_bal -= withdrawal
                     roth_ira_contributions -= withdrawal
-                
+
                 # Grow Roth IRA with interest (and contributions if above threshold)
                 if roth_ira:
                     if below_threshold:
@@ -871,6 +879,9 @@ class BaseScenario(ScenarioCoreInfo):
                         )
                     else:
                         # Above threshold: add contributions and grow
+                        print(f"{i = }")
+                        print(f"{below_threshold= }")
+                        print(f"{roth_ira = }")
                         contribution = roth_ira.retirement_increase_list[i]
                         roth_ira_bal = float(
                             round(
@@ -881,34 +892,38 @@ class BaseScenario(ScenarioCoreInfo):
                         )
                         # Track the contribution amount (before growth)
                         roth_ira_contributions += contribution
-                
+
             else:  # If you are retired
-                # Calculate total expenses for the month
-                total_expenses = (
-                    self.base_bills_list[i]
-                    + self.post_retire_extra_bills_list[i]
-                    + total_non_base_bills_list[i]
-                    + self.healthcare_costs[i]
-                )
-                
+                # Calculate total expenses for the mont
+
                 # Pay expenses from savings
                 savings = float(
                     round(
-                        (savings - total_expenses) * (1 + self.monthly_rf_interest),
+                        (
+                            savings
+                            - (
+                                self.base_bills_list[i]
+                                + self.post_retire_extra_bills_list[i]
+                                + total_non_base_bills_list[i]
+                                + self.healthcare_costs[i]
+                            )
+                        )
+                        * (1 + self.monthly_rf_interest),
                         6,
                     )
                 )
-                
-                # If below threshold and savings is negative, pull from Roth IRA contributions
-                below_threshold = savings_list[i - 1] <= self.monthly_savings_threshold_list[i - 1]
-                if below_threshold and savings < 0 and roth_ira and roth_ira_contributions > 0:
-                    shortfall = abs(savings)
+
+                # If below threshold, pull from Roth IRA contributions to reach threshold
+                below_threshold = savings <= self.monthly_savings_threshold_list[i]
+                if below_threshold and roth_ira and roth_ira_contributions > 0:
+                    # Calculate how much we need to reach the threshold
+                    shortfall = self.monthly_savings_threshold_list[i] - savings
                     withdrawal = min(shortfall, roth_ira_contributions)
-                    
+
                     savings += withdrawal
                     roth_ira_bal -= withdrawal
                     roth_ira_contributions -= withdrawal
-                
+
                 # Grow Roth IRA (no contributions in retirement)
                 if roth_ira:
                     roth_ira_bal = float(
@@ -917,12 +932,13 @@ class BaseScenario(ScenarioCoreInfo):
                             6,
                         )
                     )
-            
+
             # Append current balances to lists
             savings_list.append(savings)
-            roth_ira_list.append(roth_ira_bal)
-        
-        return savings_list, roth_ira_list
+            roth_ira_balance_list.append(roth_ira_bal)
+            roth_ira_contributions_list.append(roth_ira_contributions)
+
+        return savings_list, roth_ira_balance_list
 
     @cached_property
     def savings_retirement_account_list(self) -> tuple[list, list]:
@@ -958,14 +974,9 @@ class BaseScenario(ScenarioCoreInfo):
                 )
             else:  # If you are retired
                 # If you are below your savings threshold, use all retirement
-                if (
-                    savings_list[i - 1]
-                    <= self.monthly_savings_threshold_list[i - 1]
-                ):
+                if savings_list[i - 1] <= self.monthly_savings_threshold_list[i - 1]:
                     savings = float(
-                        round(
-                            savings_list[i - 1] * (1 + self.monthly_rf_interest), 6
-                        )
+                        round(savings_list[i - 1] * (1 + self.monthly_rf_interest), 6)
                     )
                     retirement = float(
                         round(
@@ -1062,12 +1073,12 @@ class BaseScenario(ScenarioCoreInfo):
         }
         data_3 = {
             "healthcare_cost": self.healthcare_costs,
-            "savings_account": self.savings_retirement_account_list[0],
+            "savings_account": self.savings_retirement_account_list_real[0],
             "yearly_mkt_interest": self.yearly_mkt_interest,
             "monthly_mkt_interest": self.monthly_mkt_interest,
-            "retirement_increase": self.retirement_increase_list,
-            "retirement_account": self.savings_retirement_account_list[1],
         }
+        for ret_account in self.retirement_list:
+            data_3[ret_account.name] = ret_account.retirement_account_list
 
         data = {**data_1, **non_base_items_lists, **data_3}
 
@@ -1077,3 +1088,5 @@ class BaseScenario(ScenarioCoreInfo):
                 for i, v in enumerate(self.assumptions["payment_items"])
             }
         )
+
+
