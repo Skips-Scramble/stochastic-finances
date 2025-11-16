@@ -364,9 +364,7 @@ class RetirementTrad401k(ScenarioCoreInfo):
         retirement_increase_list = []
         for index, value in enumerate(self.pre_retire_month_count_list):
             if index == 0:  # First month
-                retirement_increase_list.append(
-                    self.base_retirement_per_mo
-                )
+                retirement_increase_list.append(self.base_retirement_per_mo)
             elif value == 0:  # Past your retirement date
                 retirement_increase_list.append(0)
             elif index % 12 == 11:  # At the end of the year
@@ -417,9 +415,7 @@ class RetirementRoth401k(ScenarioCoreInfo):
         retirement_increase_list = []
         for index, value in enumerate(self.pre_retire_month_count_list):
             if index == 0:
-                retirement_increase_list.append(
-                    self.base_retirement_per_mo
-                )
+                retirement_increase_list.append(self.base_retirement_per_mo)
             elif value == 0:
                 retirement_increase_list.append(0)
             elif index % 12 == 11:
@@ -470,9 +466,7 @@ class RetirementTradIRA(ScenarioCoreInfo):
         retirement_increase_list = []
         for index, value in enumerate(self.pre_retire_month_count_list):
             if index == 0:
-                retirement_increase_list.append(
-                    self.base_retirement_per_mo
-                )
+                retirement_increase_list.append(self.base_retirement_per_mo)
             elif value == 0:
                 retirement_increase_list.append(0)
             elif index % 12 == 11:
@@ -523,9 +517,7 @@ class RetirementRothIRA(ScenarioCoreInfo):
         retirement_increase_list = []
         for index, value in enumerate(self.pre_retire_month_count_list):
             if index == 0:
-                retirement_increase_list.append(
-                    self.base_retirement_per_mo
-                )
+                retirement_increase_list.append(self.base_retirement_per_mo)
             elif value == 0:
                 retirement_increase_list.append(0)
             elif index % 12 == 11:
@@ -658,6 +650,16 @@ class BaseScenario(ScenarioCoreInfo):
             )
             for count in self.count_list
         ]
+
+    @cached_property
+    def retirement_increase_list(self) -> list:
+        """Aggregate retirement increases from all retirement accounts"""
+        # Sum up all retirement contributions across all accounts
+        total_increases = [0.0] * self.total_months
+        for ret_account in self.retirement_list:
+            for i, increase in enumerate(ret_account.retirement_increase_list):
+                total_increases[i] += increase
+        return [float(round(x, 6)) for x in total_increases]
 
     @cached_property
     def payments_list(self) -> list[Payment]:
@@ -1088,5 +1090,3 @@ class BaseScenario(ScenarioCoreInfo):
                 for i, v in enumerate(self.assumptions["payment_items"])
             }
         )
-
-
