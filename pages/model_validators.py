@@ -1,3 +1,8 @@
+from datetime import date
+
+from django.core.exceptions import ValidationError
+
+
 def validate_reg_pmt_amt(value: float):
     """Ensure regular payment amount is reasonable (absolute value < $100,000,000)"""
     if abs(value) > 100_000_000:
@@ -16,11 +21,6 @@ def validate_non_negative_int(value: int):
     """Ensure value is 0 or greater (for recurring_length)"""
     if value is not None and value < 0:
         raise ValidationError("Please enter a value of 0 or greater.")
-
-
-from datetime import date
-
-from django.core.exceptions import ValidationError
 
 
 def decimal_validator(value: float):
