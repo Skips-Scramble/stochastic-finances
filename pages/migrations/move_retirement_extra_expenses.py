@@ -4,7 +4,7 @@ from pages.model_validators import validate_retirement_extra_expenses, decimal_v
 
 class Migration(migrations.Migration):
     dependencies = [
-        ("pages", "0001_initial"),  # Replace with your last migration
+        ("pages", "0012_remove_paymentsinputsmodel_inflation_adj_and_more"),
     ]
 
     operations = [

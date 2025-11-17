@@ -794,16 +794,10 @@ class BaseScenario(ScenarioCoreInfo):
         return [0.0] * self.total_months
 
     @cached_property
-    def savings_retirement_account_list_real(self) -> tuple[list, list]:
-        """Calculate the amount of money in your savings and retirement accounts over time
-
-        When savings falls below threshold:
-        - Stop making Roth IRA contributions
-        - Withdraw Roth IRA contributions (not interest) to cover shortfall
-        - Allow savings to go negative if Roth IRA contributions are depleted
-
-        Returns:
-            tuple: (savings_list, roth_ira_balance_list, roth_ira_contributions_list)
+    def savings_retirement_account_list(self) -> tuple[list, list]:
+        """Calculate the amount of money in your savings and retirement accounts over time,
+        stopping Roth IRA contributions and withdrawing contributions (not interest) when
+        savings falls below threshold.
         """
         total_non_base_bills_list = [
             sum(sublist) for sublist in zip(*self.non_base_bills_lists)
@@ -943,90 +937,6 @@ class BaseScenario(ScenarioCoreInfo):
         return savings_list, roth_ira_balance_list
 
     @cached_property
-    def savings_retirement_account_list(self) -> tuple[list, list]:
-        """Calculate amount in your savings account by month"""
-        total_non_base_bills_list = [
-            sum(sublist) for sublist in zip(*self.non_base_bills_lists)
-        ]
-        savings_list = []
-        retirement_list = []
-        for i in range(self.total_months):
-            if i == 0:
-                savings = float(round(self.assumptions["base_savings"], 6))
-                retirement = float(round(self.assumptions["base_retirement"], 2))
-            elif self.pre_retire_month_count_list[i] != 0:  # If you're not retired
-                savings = float(
-                    round(
-                        (
-                            savings
-                            + self.savings_increase_list[i]
-                            - total_non_base_bills_list[i]
-                            - self.healthcare_costs[i]
-                        )
-                        * (1 + self.monthly_rf_interest),
-                        6,
-                    )
-                )
-                retirement = float(
-                    round(
-                        (retirement + self.retirement_increase_list[i])
-                        * (1 + self.monthly_mkt_interest),
-                        6,
-                    )
-                )
-            else:  # If you are retired
-                # If you are below your savings threshold, use all retirement
-                if savings_list[i - 1] <= self.monthly_savings_threshold_list[i - 1]:
-                    savings = float(
-                        round(savings_list[i - 1] * (1 + self.monthly_rf_interest), 6)
-                    )
-                    retirement = float(
-                        round(
-                            (
-                                retirement
-                                - self.base_bills_list[i]
-                                - self.post_retire_extra_bills_list[i]
-                                - total_non_base_bills_list[i]
-                                - self.healthcare_costs[i]
-                            )
-                            * (1 + self.monthly_mkt_interest),
-                            6,
-                        )
-                    )
-                # If you are within your savings threshold, use savings and retirement equally
-                else:
-                    savings = float(
-                        round(
-                            (
-                                savings
-                                + self.savings_increase_list[i]
-                                - (self.base_bills_list[i] / 2)
-                                - (self.post_retire_extra_bills_list[i] / 2)
-                                - (total_non_base_bills_list[i] / 2)
-                                - (self.healthcare_costs[i] / 2)
-                            )
-                            * (1 + self.monthly_rf_interest),
-                            6,
-                        )
-                    )
-                    retirement = float(
-                        round(
-                            (
-                                retirement
-                                - (self.base_bills_list[i] / 2)
-                                - (self.post_retire_extra_bills_list[i] / 2)
-                                - (total_non_base_bills_list[i] / 2)
-                                - (self.healthcare_costs[i] / 2)
-                            )
-                            * (1 + self.monthly_mkt_interest),
-                            6,
-                        )
-                    )
-            savings_list.append(savings)
-            retirement_list.append(retirement)
-        return savings_list, retirement_list
-
-    @cached_property
     def ss_amt_by_date(self) -> list[float]:
         """
         Calculate the Social Security amount by date.
@@ -1075,7 +985,7 @@ class BaseScenario(ScenarioCoreInfo):
         }
         data_3 = {
             "healthcare_cost": self.healthcare_costs,
-            "savings_account": self.savings_retirement_account_list_real[0],
+            "savings_account": self.savings_retirement_account_list[0],
             "yearly_mkt_interest": self.yearly_mkt_interest,
             "monthly_mkt_interest": self.monthly_mkt_interest,
         }

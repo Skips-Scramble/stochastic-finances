@@ -6,6 +6,7 @@ inputs_by_model_dict = {
         "retirement_age_yrs",
         "retirement_age_mos",
         "add_healthcare",
+        "retirement_extra_expenses",
     ],
     "savings": [
         "base_savings",
@@ -33,7 +34,6 @@ inputs_by_model_dict = {
         "base_retirement",
         "base_retirement_per_mo",
         "base_retirement_per_yr_increase",
-        "retirement_extra_expenses",
     ],
     "rates": [
         "base_rf_interest_per_yr",
