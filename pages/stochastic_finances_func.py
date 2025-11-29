@@ -73,25 +73,13 @@ def main(assumptions) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
             )
         )
     ).assign(
-        avg=lambda df: df.filter(
-            regex="traditional_401k|traditional_ira|roth_401k|roth_ira"
-        ).mean(axis=1),
+        avg_traditional_401k=lambda df: df.filter(regex="^traditional_401k").mean(
+            axis=1
+        ),
+        avg_traditional_ira=lambda df: df.filter(regex="^traditional_ira").mean(axis=1),
+        avg_roth_401k=lambda df: df.filter(regex="^roth_401k").mean(axis=1),
+        avg_roth_ira=lambda df: df.filter(regex="^roth_ira").mean(axis=1),
         account_type="retirement",
     )
 
-    total_total_df_prep = (
-        total_savings_df.drop(["age_yrs", "age_mos", "account_type"], axis=1)
-        + total_retirement_df.drop(["age_yrs", "age_mos", "account_type"], axis=1)
-    ).assign(account_type="total")
-
-    total_total_df = pd.concat(
-        [total_savings_df[["age_yrs", "age_mos"]], total_total_df_prep], axis=1
-    )
-
-    total_outputs_df = (
-        pd.concat([total_savings_df, total_retirement_df, total_total_df])
-        .sort_values(["age_yrs", "age_mos"])
-        .loc[lambda df: df.age_mos == 0]
-    )
-
-    return total_savings_df, total_retirement_df, total_outputs_df
+    return total_savings_df, total_retirement_df

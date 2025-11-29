@@ -60,8 +60,8 @@
 		{
 			"retirement_type": "roth_ira",
 			"base_retirement": 44444,
-			"base_retirement_per_mo": 444,
-			"base_retirement_per_yr_increase": 44
+			"base_retirement_per_mo": 0,
+			"base_retirement_per_yr_increase": 0
 		}
 
 	],

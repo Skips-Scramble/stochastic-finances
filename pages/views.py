@@ -536,7 +536,7 @@ def calculations(request):
     print(f"full_dict is {full_dict}")
     # print(f'base_bills is {full_dict['base_monthly_bills']}')
 
-    (total_savings_df, total_retirement_df, total_outputs_df) = (
+    (total_savings_df, total_retirement_df) = (
         stochastic_finances_func.main(full_dict)
     )
 
@@ -564,7 +564,15 @@ def calculations(request):
             ]
         )
         .drop(
-            columns=["avg", "account_type", "account_0"]
+            columns=[
+                "avg",
+                "avg_traditional_401k",
+                "avg_traditional_ira",
+                "avg_roth_401k",
+                "avg_roth_ira",
+                "account_type",
+                "account_0",
+            ]
         )  # Don't want to include base account - not stochastic
         .groupby(["age_yrs", "age_mos"])
         .sum()
@@ -602,10 +610,16 @@ def calculations(request):
     # Average retirement at retirement
     ####
 
-    avg_retirement_at_retirement = total_retirement_df.loc[
+    retirement_at_retirement_row = total_retirement_df.loc[
         lambda df: (df.age_yrs == general_inputs_dict["retirement_age_yrs"])
         & (df.age_mos == general_inputs_dict["retirement_age_mos"])
-    ]["avg"].iat[0]
+    ]
+    avg_retirement_at_retirement = (
+        retirement_at_retirement_row["avg_traditional_401k"].iat[0]
+        + retirement_at_retirement_row["avg_traditional_ira"].iat[0]
+        + retirement_at_retirement_row["avg_roth_401k"].iat[0]
+        + retirement_at_retirement_row["avg_roth_ira"].iat[0]
+    )
 
     avg_retirement_at_retirement_fmt = f"${float(avg_retirement_at_retirement):,.0f}"
 
@@ -633,8 +647,14 @@ def calculations(request):
 
     retirement_for_chart = (
         total_retirement_df.loc[lambda df: (df.age_yrs % 5 == 0) & (df.age_mos == 0)][
-            "avg"
+            [
+                "avg_traditional_401k",
+                "avg_traditional_ira",
+                "avg_roth_401k",
+                "avg_roth_ira",
+            ]
         ]
+        .sum(axis=1)
         .round()
         .to_list()
     )
@@ -659,12 +679,35 @@ def calculations(request):
         lambda df: df.age_mos == 0
     ].assign(
         pct_15_retirement=lambda df: df.drop(
-            columns=["age_yrs", "age_mos", "avg", "account_type"]
+            columns=[
+                "age_yrs",
+                "age_mos",
+                "avg_traditional_401k",
+                "avg_traditional_ira",
+                "avg_roth_401k",
+                "avg_roth_ira",
+                "account_type",
+            ]
         ).quantile(0.15, axis=1),
         pct_85_retirement=lambda df: df.drop(
-            columns=["age_yrs", "age_mos", "avg", "account_type"]
+            columns=[
+                "age_yrs",
+                "age_mos",
+                "avg_traditional_401k",
+                "avg_traditional_ira",
+                "avg_roth_401k",
+                "avg_roth_ira",
+                "account_type",
+            ]
         ).quantile(0.85, axis=1),
-        avg_retirement=lambda df: df.avg,
+        avg_retirement=lambda df: df[
+            [
+                "avg_traditional_401k",
+                "avg_traditional_ira",
+                "avg_roth_401k",
+                "avg_roth_ira",
+            ]
+        ].sum(axis=1),
     )[
         [
             "age_yrs",
@@ -687,13 +730,36 @@ def calculations(request):
             .sum()
         )
         .assign(
-            pct_15_tot=lambda df: df.drop(columns=["avg", "account_type"]).quantile(
-                0.15, axis=1
-            ),
-            pct_85_tot=lambda df: df.drop(columns=["avg", "account_type"]).quantile(
-                0.85, axis=1
-            ),
-            avg_tot=lambda df: df.drop(columns=["avg", "account_type"]).mean(axis=1),
+            pct_15_tot=lambda df: df.drop(
+                columns=[
+                    "avg",
+                    "avg_traditional_401k",
+                    "avg_traditional_ira",
+                    "avg_roth_401k",
+                    "avg_roth_ira",
+                    "account_type",
+                ]
+            ).quantile(0.15, axis=1),
+            pct_85_tot=lambda df: df.drop(
+                columns=[
+                    "avg",
+                    "avg_traditional_401k",
+                    "avg_traditional_ira",
+                    "avg_roth_401k",
+                    "avg_roth_ira",
+                    "account_type",
+                ]
+            ).quantile(0.85, axis=1),
+            avg_tot=lambda df: df.drop(
+                columns=[
+                    "avg",
+                    "avg_traditional_401k",
+                    "avg_traditional_ira",
+                    "avg_roth_401k",
+                    "avg_roth_ira",
+                    "account_type",
+                ]
+            ).mean(axis=1),
         )
         .reset_index()
     )[["age_yrs", "age_mos", "avg_tot", "pct_15_tot", "pct_85_tot"]]

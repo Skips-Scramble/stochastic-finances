@@ -1,9 +1,12 @@
 from dataclasses import dataclass
 from datetime import date, datetime
 from functools import cached_property
+import logging
 
 import pandas as pd
 from dateutil.relativedelta import relativedelta
+
+logger = logging.getLogger(__name__)
 
 DEATH_YEARS = 115
 HEALTHCARE_BINS = [0, 19, 45, 65, 85, float("inf")]
@@ -383,7 +386,7 @@ class RetirementTrad401k(ScenarioCoreInfo):
         retirement_list = []
         for i in range(self.total_months):
             if i == 0:
-                retirement = float(round(self.base_retirement, 2))
+                retirement = float(round(self.base_retirement, 2))  # Initialize
             elif self.pre_retire_month_count_list[i] != 0:  # If you're not retired
                 retirement = float(
                     round(
@@ -392,8 +395,13 @@ class RetirementTrad401k(ScenarioCoreInfo):
                         6,
                     )
                 )
-            else:
-                retirement = float(round((1 + self.monthly_mkt_interest), 6))
+            else:  # If you are retired
+                retirement = float(
+                    round(
+                        retirement * (1 + self.monthly_mkt_interest),
+                        6,
+                    )
+                )
 
             retirement_list.append(retirement)
 
@@ -443,8 +451,13 @@ class RetirementRoth401k(ScenarioCoreInfo):
                         6,
                     )
                 )
-            else:
-                retirement = float(round((1 + self.monthly_mkt_interest), 6))
+            else:  # If you are retired
+                retirement = float(
+                    round(
+                        retirement * (1 + self.monthly_mkt_interest),
+                        6,
+                    )
+                )
 
             retirement_list.append(retirement)
 
@@ -494,8 +507,13 @@ class RetirementTradIRA(ScenarioCoreInfo):
                         6,
                     )
                 )
-            else:
-                retirement = float(round((1 + self.monthly_mkt_interest), 6))
+            else:  # If you are retired
+                retirement = float(
+                    round(
+                        retirement * (1 + self.monthly_mkt_interest),
+                        6,
+                    )
+                )
 
             retirement_list.append(retirement)
 
@@ -545,8 +563,13 @@ class RetirementRothIRA(ScenarioCoreInfo):
                         6,
                     )
                 )
-            else:
-                retirement = float(round((1 + self.monthly_mkt_interest), 6))
+            else:  # If you are retired
+                retirement = float(
+                    round(
+                        retirement * (1 + self.monthly_mkt_interest),
+                        6,
+                    )
+                )
 
             retirement_list.append(retirement)
 
@@ -824,7 +847,7 @@ class BaseScenario(ScenarioCoreInfo):
                 # Initialize accounts
                 savings = float(round(self.assumptions["base_savings"], 6))
                 roth_ira_bal = (
-                    float(round(roth_ira.base_retirement, 6)) if roth_ira else 0.0
+                    float(round(roth_ira.base_retirement, 6)) if roth_ira else 12.34
                 )
                 # Assume 70% of initial balance is contributions, 30% is growth
                 # TODO: refine this assumption later
@@ -875,9 +898,9 @@ class BaseScenario(ScenarioCoreInfo):
                         )
                     else:
                         # Above threshold: add contributions and grow
-                        print(f"{i = }")
-                        print(f"{below_threshold= }")
-                        print(f"{roth_ira = }")
+                        logger.info(
+                            f"Month {i}: below_threshold={below_threshold}, roth_ira={roth_ira.name if roth_ira else None}"
+                        )
                         contribution = roth_ira.retirement_increase_list[i]
                         roth_ira_bal = float(
                             round(
@@ -888,6 +911,7 @@ class BaseScenario(ScenarioCoreInfo):
                         )
                         # Track the contribution amount (before growth)
                         roth_ira_contributions += contribution
+                        # print(f"Total Contributions: {roth_ira_contributions}")
 
             else:  # If you are retired
                 # Calculate total expenses for the mont
@@ -933,6 +957,15 @@ class BaseScenario(ScenarioCoreInfo):
             savings_list.append(savings)
             roth_ira_balance_list.append(roth_ira_bal)
             roth_ira_contributions_list.append(roth_ira_contributions)
+
+            print(f"{i = }")
+            print(f"{savings_list[i] = }")
+            print(f"{roth_ira_balance_list[i] = }")
+            print(f"{roth_ira_contributions_list[i] = }")
+
+            # Log every 12 months and critical events
+            # if i % 12 == 0 or savings < 0 or (roth_ira_contributions > 0 and i > 0):
+            #     logger.info(f"Month {i}: savings=${savings:,.2f}, roth_ira_bal=${roth_ira_bal:,.2f}, roth_ira_contributions=${roth_ira_contributions:,.2f}")
 
         return savings_list, roth_ira_balance_list
 
@@ -990,7 +1023,10 @@ class BaseScenario(ScenarioCoreInfo):
             "monthly_mkt_interest": self.monthly_mkt_interest,
         }
         for ret_account in self.retirement_list:
-            data_3[ret_account.name] = ret_account.retirement_account_list
+            if isinstance(ret_account, RetirementRothIRA):
+                data_3[ret_account.name] = self.savings_retirement_account_list[1]
+            else:
+                data_3[ret_account.name] = ret_account.retirement_account_list
 
         data = {**data_1, **non_base_items_lists, **data_3}
 
