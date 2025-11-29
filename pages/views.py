@@ -536,9 +536,7 @@ def calculations(request):
     print(f"full_dict is {full_dict}")
     # print(f'base_bills is {full_dict['base_monthly_bills']}')
 
-    (total_savings_df, total_retirement_df) = (
-        stochastic_finances_func.main(full_dict)
-    )
+    (total_savings_df, total_retirement_df) = stochastic_finances_func.main(full_dict)
 
     # Generate values for cards
 
