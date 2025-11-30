@@ -1,0 +1,63 @@
+{
+	"birthdate": "1/1/2000",
+	"retirement_age_yrs": 60,
+	"retirement_age_mos": 0,
+	"add_healthcare": false,
+	"retirement_extra_expenses": 5000,
+	"base_savings": 35000,
+	"base_saved_per_mo": 1000,
+	"base_savings_per_yr_increase": 1.5,
+	"savings_lower_limit": 30000,
+	"base_monthly_bills": 1000,
+	"payment_items": [
+		{
+			"pmt_name": "Mortgage",
+			"pmt_start_age_yrs": 40,
+			"pmt_start_age_mos": 0,
+			"pmt_length_yrs": 0,
+			"pmt_length_mos": 3,
+			"down_pmt": 30000,
+			"reg_pmt_amt": 1200,
+			"pmt_freq_mos": 1,
+			"recurring_purchase": false,
+			"recurring_timeframe": null,
+			"recurring_length": null
+
+		},
+		{
+			"pmt_name": "Car",
+			"pmt_start_age_yrs": 40,
+			"pmt_start_age_mos": 0,
+			"pmt_length_yrs": 1,
+			"pmt_length_mos": 6,
+			"down_pmt": 10000,
+			"reg_pmt_amt": 300,
+			"pmt_freq_mos": 2,
+			"recurring_purchase": true,
+			"recurring_timeframe": 3,
+			"recurring_length": 3
+		}
+	],
+	"retirement_accounts": [
+		{
+			"retirement_type": "traditional_401k",
+			"base_retirement": 11111,
+			"base_retirement_per_mo": 1111,
+			"base_retirement_per_yr_increase": 111
+		},
+		{
+			"retirement_type": "roth_ira",
+			"base_retirement": 44444,
+			"base_retirement_per_mo": 0,
+			"base_retirement_per_yr_increase": 0
+		}
+
+	],
+	"ss_incl": true,
+	"ss_amt_per_mo": 2000,
+	"ss_amt_age_yrs": 65,
+	"ss_amt_age_mos": 0,
+	"base_rf_interest_per_yr": 1.0,
+	"base_mkt_interest_per_yr": 4.0,
+	"base_inflation_per_yr": 3.0
+}

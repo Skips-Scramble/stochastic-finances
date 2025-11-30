@@ -541,14 +541,26 @@ def calculations(request):
     # Generate values for cards
 
     ####
+    # Build list of avg retirement columns that exist (used throughout)
+    ####
+
+    avg_retirement_columns = [
+        col for col in total_retirement_df.columns if col.startswith("avg_")
+    ]
+
+    ####
     # Probability of having enough money through death
     ####
 
-    print("Total_savings_df:")
-    print(total_savings_df.tail())
+    # print("Total_savings_df:")
+    # print(total_savings_df.tail())
 
     death_age = 110
     death_months = 0
+
+    # Build list of columns to drop for death calculation
+    death_cols_to_drop = ["avg", "account_type", "account_0"]
+    death_cols_to_drop.extend(avg_retirement_columns)
 
     total_all_at_death = (
         pd.concat(
@@ -562,15 +574,7 @@ def calculations(request):
             ]
         )
         .drop(
-            columns=[
-                "avg",
-                "avg_traditional_401k",
-                "avg_traditional_ira",
-                "avg_roth_401k",
-                "avg_roth_ira",
-                "account_type",
-                "account_0",
-            ]
+            columns=death_cols_to_drop
         )  # Don't want to include base account - not stochastic
         .groupby(["age_yrs", "age_mos"])
         .sum()
@@ -598,8 +602,8 @@ def calculations(request):
     ####
 
     avg_savings_at_retirement = total_savings_df.loc[
-        lambda df: (df.age_yrs == general_inputs_dict["retirement_age_yrs"])
-        & (df.age_mos == general_inputs_dict["retirement_age_mos"])
+        lambda df: (df.age_yrs == 65)  # general_inputs_dict["retirement_age_yrs"])
+        & (df.age_mos == 0)  # general_inputs_dict["retirement_age_mos"])
     ]["avg"].iat[0]
 
     avg_savings_at_retirement_fmt = f"${float(avg_savings_at_retirement):,.0f}"
@@ -609,14 +613,12 @@ def calculations(request):
     ####
 
     retirement_at_retirement_row = total_retirement_df.loc[
-        lambda df: (df.age_yrs == general_inputs_dict["retirement_age_yrs"])
-        & (df.age_mos == general_inputs_dict["retirement_age_mos"])
+        lambda df: (df.age_yrs == 65)  # general_inputs_dict["retirement_age_yrs"])
+        & (df.age_mos == 0)  # general_inputs_dict["retirement_age_mos"])
     ]
-    avg_retirement_at_retirement = (
-        retirement_at_retirement_row["avg_traditional_401k"].iat[0]
-        + retirement_at_retirement_row["avg_traditional_ira"].iat[0]
-        + retirement_at_retirement_row["avg_roth_401k"].iat[0]
-        + retirement_at_retirement_row["avg_roth_ira"].iat[0]
+
+    avg_retirement_at_retirement = sum(
+        retirement_at_retirement_row[col].iat[0] for col in avg_retirement_columns
     )
 
     avg_retirement_at_retirement_fmt = f"${float(avg_retirement_at_retirement):,.0f}"
@@ -643,18 +645,41 @@ def calculations(request):
 
     print(f"{savings_for_chart = }")
 
-    # Create separate chart data for each retirement account type
-    chart_df = total_retirement_df.loc[lambda df: (df.age_yrs % 5 == 0) & (df.age_mos == 0)]
-    
-    traditional_401k_for_chart = chart_df["avg_traditional_401k"].round().to_list()
-    traditional_ira_for_chart = chart_df["avg_traditional_ira"].round().to_list()
-    roth_401k_for_chart = chart_df["avg_roth_401k"].round().to_list()
-    roth_ira_for_chart = chart_df["avg_roth_ira"].round().to_list()
+    # Create separate chart data for each retirement account type that exists
+    chart_df = total_retirement_df.loc[
+        lambda df: (df.age_yrs % 5 == 0) & (df.age_mos == 0)
+    ]
 
-    print(f"{traditional_401k_for_chart = }")
-    print(f"{traditional_ira_for_chart = }")
-    print(f"{roth_401k_for_chart = }")
-    print(f"{roth_ira_for_chart = }")
+    # Only create chart lists for columns that actually exist
+    retirement_chart_data = {}
+
+    if "avg_traditional_401k" in chart_df.columns:
+        retirement_chart_data["traditional_401k_by_age"] = (
+            chart_df["avg_traditional_401k"].round().to_list()
+        )
+        print(
+            f"traditional_401k_for_chart = {retirement_chart_data['traditional_401k_by_age']}"
+        )
+
+    if "avg_traditional_ira" in chart_df.columns:
+        retirement_chart_data["traditional_ira_by_age"] = (
+            chart_df["avg_traditional_ira"].round().to_list()
+        )
+        print(
+            f"traditional_ira_for_chart = {retirement_chart_data['traditional_ira_by_age']}"
+        )
+
+    if "avg_roth_401k" in chart_df.columns:
+        retirement_chart_data["roth_401k_by_age"] = (
+            chart_df["avg_roth_401k"].round().to_list()
+        )
+        print(f"roth_401k_for_chart = {retirement_chart_data['roth_401k_by_age']}")
+
+    if "avg_roth_ira" in chart_df.columns:
+        retirement_chart_data["roth_ira_by_age"] = (
+            chart_df["avg_roth_ira"].round().to_list()
+        )
+        print(f"roth_ira_for_chart = {retirement_chart_data['roth_ira_by_age']}")
 
     ####
     # Get data for table
@@ -670,39 +695,29 @@ def calculations(request):
         avg_savings=lambda df: df.avg,
     )[["age_yrs", "age_mos", "avg_savings", "pct_15_savings", "pct_85_savings"]]
 
+    # Build list of columns to drop for retirement quantile calculations
+    retirement_cols_to_drop = ["age_yrs", "age_mos", "account_type"]
+    retirement_cols_to_drop.extend(
+        [col for col in avg_retirement_columns if col in total_retirement_df.columns]
+    )
+
+    # Build list of avg columns to sum for avg_retirement
+    retirement_avg_cols_to_sum = [
+        col for col in avg_retirement_columns if col in total_retirement_df.columns
+    ]
+
     retirement_metrics_by_age_df = total_retirement_df.loc[
         lambda df: df.age_mos == 0
     ].assign(
-        pct_15_retirement=lambda df: df.drop(
-            columns=[
-                "age_yrs",
-                "age_mos",
-                "avg_traditional_401k",
-                "avg_traditional_ira",
-                "avg_roth_401k",
-                "avg_roth_ira",
-                "account_type",
-            ]
-        ).quantile(0.15, axis=1),
-        pct_85_retirement=lambda df: df.drop(
-            columns=[
-                "age_yrs",
-                "age_mos",
-                "avg_traditional_401k",
-                "avg_traditional_ira",
-                "avg_roth_401k",
-                "avg_roth_ira",
-                "account_type",
-            ]
-        ).quantile(0.85, axis=1),
-        avg_retirement=lambda df: df[
-            [
-                "avg_traditional_401k",
-                "avg_traditional_ira",
-                "avg_roth_401k",
-                "avg_roth_ira",
-            ]
-        ].sum(axis=1),
+        pct_15_retirement=lambda df: df.drop(columns=retirement_cols_to_drop).quantile(
+            0.15, axis=1
+        ),
+        pct_85_retirement=lambda df: df.drop(columns=retirement_cols_to_drop).quantile(
+            0.85, axis=1
+        ),
+        avg_retirement=lambda df: df[retirement_avg_cols_to_sum].sum(axis=1)
+        if retirement_avg_cols_to_sum
+        else 0,
     )[
         [
             "age_yrs",
@@ -712,6 +727,12 @@ def calculations(request):
             "pct_85_retirement",
         ]
     ]
+
+    # Build list of columns to drop for total metrics calculations
+    total_cols_to_drop = ["avg", "account_type"]
+    total_cols_to_drop.extend(
+        [col for col in avg_retirement_columns if col in total_retirement_df.columns]
+    )
 
     total_metrics_by_age_df = (
         (
@@ -725,36 +746,13 @@ def calculations(request):
             .sum()
         )
         .assign(
-            pct_15_tot=lambda df: df.drop(
-                columns=[
-                    "avg",
-                    "avg_traditional_401k",
-                    "avg_traditional_ira",
-                    "avg_roth_401k",
-                    "avg_roth_ira",
-                    "account_type",
-                ]
-            ).quantile(0.15, axis=1),
-            pct_85_tot=lambda df: df.drop(
-                columns=[
-                    "avg",
-                    "avg_traditional_401k",
-                    "avg_traditional_ira",
-                    "avg_roth_401k",
-                    "avg_roth_ira",
-                    "account_type",
-                ]
-            ).quantile(0.85, axis=1),
-            avg_tot=lambda df: df.drop(
-                columns=[
-                    "avg",
-                    "avg_traditional_401k",
-                    "avg_traditional_ira",
-                    "avg_roth_401k",
-                    "avg_roth_ira",
-                    "account_type",
-                ]
-            ).mean(axis=1),
+            pct_15_tot=lambda df: df.drop(columns=total_cols_to_drop).quantile(
+                0.15, axis=1
+            ),
+            pct_85_tot=lambda df: df.drop(columns=total_cols_to_drop).quantile(
+                0.85, axis=1
+            ),
+            avg_tot=lambda df: df.drop(columns=total_cols_to_drop).mean(axis=1),
         )
         .reset_index()
     )[["age_yrs", "age_mos", "avg_tot", "pct_15_tot", "pct_85_tot"]]
@@ -772,22 +770,24 @@ def calculations(request):
 
     # print(f"{table_data = }")
 
+    # Build the context dictionary with only the retirement accounts that exist
+    context = {
+        "prob_of_positive": round(
+            (1 - (negative_count / total_scenarios_count)) * 100, 0
+        ),
+        "avg_savings_at_retirement": avg_savings_at_retirement_fmt,
+        "avg_retirement_at_retirement": avg_retirement_at_retirement_fmt,
+        "age_labels": ages_for_chart,
+        "savings_by_age": savings_for_chart,
+        "y_axis_range": [x for x in range(0, 3_000_000, 250_000)],
+        "table_data": table_data,
+    }
+
+    # Add retirement chart data only for accounts that exist
+    context.update(retirement_chart_data)
+
     return render(
         request,
         "pages/calculations.html",
-        {
-            "prob_of_positive": round(
-                (1 - (negative_count / total_scenarios_count)) * 100, 0
-            ),
-            "avg_savings_at_retirement": avg_savings_at_retirement_fmt,
-            "avg_retirement_at_retirement": avg_retirement_at_retirement_fmt,
-            "age_labels": ages_for_chart,
-            "savings_by_age": savings_for_chart,
-            "traditional_401k_by_age": traditional_401k_for_chart,
-            "traditional_ira_by_age": traditional_ira_for_chart,
-            "roth_401k_by_age": roth_401k_for_chart,
-            "roth_ira_by_age": roth_ira_for_chart,
-            "y_axis_range": [x for x in range(0, 3_000_000, 250_000)],
-            "table_data": table_data,
-        },
+        context,
     )

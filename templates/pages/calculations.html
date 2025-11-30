@@ -118,12 +118,8 @@
 {% block javascript %}
     <script>
   document.addEventListener("DOMContentLoaded", function() {
-    // Bar chart
-    new Chart(document.getElementById("chartjs-dashboard-bar"), {
-      type: "bar",
-      data: {
-        labels: {{ age_labels | safe }},
-        datasets: [{
+    // Bar chart - build datasets array dynamically
+    var datasets = [{
           label: "Savings",
           backgroundColor: window.theme["primary-light"],
           borderColor: window.theme["primary-light"],
@@ -132,7 +128,11 @@
           data: {{ savings_by_age | safe }},
           barPercentage: .325,
           categoryPercentage: .5
-        }, {
+        }];
+
+    // Add retirement account datasets only if they exist
+    {% if traditional_401k_by_age %}
+    datasets.push({
           label: "Traditional 401k",
           backgroundColor: "#9b59b6",
           borderColor: "#9b59b6",
@@ -141,16 +141,24 @@
           data: {{ traditional_401k_by_age | safe }},
           barPercentage: .325,
           categoryPercentage: .5
-        }, {
+        });
+    {% endif %}
+
+    {% if traditional_ira_by_age %}
+    datasets.push({
           label: "Traditional IRA",
-          backgroundColor: "#95a5a6",
-          borderColor: "#95a5a6",
-          hoverBackgroundColor: "#95a5a6",
-          hoverBorderColor: "#95a5a6",
+          backgroundColor: "#3498db",
+          borderColor: "#3498db",
+          hoverBackgroundColor: "#3498db",
+          hoverBorderColor: "#3498db",
           data: {{ traditional_ira_by_age | safe }},
           barPercentage: .325,
           categoryPercentage: .5
-        }, {
+        });
+    {% endif %}
+
+    {% if roth_401k_by_age %}
+    datasets.push({
           label: "Roth 401k",
           backgroundColor: window.theme.success,
           borderColor: window.theme.success,
@@ -159,7 +167,11 @@
           data: {{ roth_401k_by_age | safe }},
           barPercentage: .325,
           categoryPercentage: .5
-        }, {
+        });
+    {% endif %}
+
+    {% if roth_ira_by_age %}
+    datasets.push({
           label: "Roth IRA",
           backgroundColor: window.theme.warning,
           borderColor: window.theme.warning,
@@ -168,7 +180,14 @@
           data: {{ roth_ira_by_age | safe }},
           barPercentage: .325,
           categoryPercentage: .5
-        }]
+        });
+    {% endif %}
+
+    new Chart(document.getElementById("chartjs-dashboard-bar"), {
+      type: "bar",
+      data: {
+        labels: {{ age_labels | safe }},
+        datasets: datasets
       },
       options: {
         maintainAspectRatio: false,

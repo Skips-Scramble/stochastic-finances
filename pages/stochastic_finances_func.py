@@ -10,8 +10,8 @@ from pages.random_scenario import RandomScenario
 
 def main(assumptions) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Main function to calculate the core dfs"""
-    with open("input_assumptions_full.json") as json_data:
-        assumptions = json.load(json_data)
+    # with open("input_assumptions_full.json") as json_data:
+    #     assumptions = json.load(json_data)
 
     # apply_validations(assumptions)
 
@@ -64,23 +64,40 @@ def main(assumptions) -> tuple[pd.DataFrame, pd.DataFrame]:
         account_type="savings",
     )
 
-    total_retirement_df = (
-        base_age_df.filter(
-            regex="traditional_401k|traditional_ira|roth_401k|roth_ira|^age"
-        ).rename(
-            columns=lambda x: (
-                x.replace("retirement_", "") if x.startswith("retirement_") else x
+    total_retirement_df = base_age_df.filter(
+        regex="traditional_401k|traditional_ira|roth_401k|roth_ira|^age"
+    ).rename(
+        columns=lambda x: (
+            x.replace("retirement_", "") if x.startswith("retirement_") else x
+        )
+    )
+
+    # Calculate averages only for retirement account types that exist
+    if any(col.startswith("traditional_401k_") for col in total_retirement_df.columns):
+        total_retirement_df = total_retirement_df.assign(
+            avg_traditional_401k=lambda df: df.filter(regex="^traditional_401k_").mean(
+                axis=1
             )
         )
-    ).assign(
-        avg_traditional_401k=lambda df: df.filter(regex="^traditional_401k").mean(
-            axis=1
-        ),
-        avg_traditional_ira=lambda df: df.filter(regex="^traditional_ira").mean(axis=1),
-        avg_roth_401k=lambda df: df.filter(regex="^roth_401k").mean(axis=1),
-        avg_roth_ira=lambda df: df.filter(regex="^roth_ira").mean(axis=1),
-        account_type="retirement",
-    )
+
+    if any(col.startswith("traditional_ira_") for col in total_retirement_df.columns):
+        total_retirement_df = total_retirement_df.assign(
+            avg_traditional_ira=lambda df: df.filter(regex="^traditional_ira_").mean(
+                axis=1
+            )
+        )
+
+    if any(col.startswith("roth_401k_") for col in total_retirement_df.columns):
+        total_retirement_df = total_retirement_df.assign(
+            avg_roth_401k=lambda df: df.filter(regex="^roth_401k_").mean(axis=1)
+        )
+
+    if any(col.startswith("roth_ira_") for col in total_retirement_df.columns):
+        total_retirement_df = total_retirement_df.assign(
+            avg_roth_ira=lambda df: df.filter(regex="^roth_ira_").mean(axis=1)
+        )
+
+    total_retirement_df = total_retirement_df.assign(account_type="retirement")
 
     # Sort columns: age columns first, then grouped by account type, then aggregates
     age_cols = [col for col in total_retirement_df.columns if col.startswith("age_")]
@@ -104,11 +121,16 @@ def main(assumptions) -> tuple[pd.DataFrame, pd.DataFrame]:
     roth_ira_cols = sorted(
         [col for col in total_retirement_df.columns if col.startswith("roth_ira_")]
     )
+    # Only include avg columns that actually exist
     avg_cols = [
-        "avg_traditional_401k",
-        "avg_traditional_ira",
-        "avg_roth_401k",
-        "avg_roth_ira",
+        col
+        for col in [
+            "avg_traditional_401k",
+            "avg_traditional_ira",
+            "avg_roth_401k",
+            "avg_roth_ira",
+        ]
+        if col in total_retirement_df.columns
     ]
     other_cols = ["account_type"]
 
