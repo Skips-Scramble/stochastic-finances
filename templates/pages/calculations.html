@@ -124,21 +124,48 @@
       data: {
         labels: {{ age_labels | safe }},
         datasets: [{
-          label: "Retirement",
-          backgroundColor: window.theme.primary,
-          borderColor: window.theme.primary,
-          hoverBackgroundColor: window.theme.primary,
-          hoverBorderColor: window.theme.primary,
-          data: {{ retirement_by_age | safe }},
-          barPercentage: .325,
-          categoryPercentage: .5
-        }, {
           label: "Savings",
           backgroundColor: window.theme["primary-light"],
           borderColor: window.theme["primary-light"],
           hoverBackgroundColor: window.theme["primary-light"],
           hoverBorderColor: window.theme["primary-light"],
           data: {{ savings_by_age | safe }},
+          barPercentage: .325,
+          categoryPercentage: .5
+        }, {
+          label: "Traditional 401k",
+          backgroundColor: "#9b59b6",
+          borderColor: "#9b59b6",
+          hoverBackgroundColor: "#9b59b6",
+          hoverBorderColor: "#9b59b6",
+          data: {{ traditional_401k_by_age | safe }},
+          barPercentage: .325,
+          categoryPercentage: .5
+        }, {
+          label: "Traditional IRA",
+          backgroundColor: "#95a5a6",
+          borderColor: "#95a5a6",
+          hoverBackgroundColor: "#95a5a6",
+          hoverBorderColor: "#95a5a6",
+          data: {{ traditional_ira_by_age | safe }},
+          barPercentage: .325,
+          categoryPercentage: .5
+        }, {
+          label: "Roth 401k",
+          backgroundColor: window.theme.success,
+          borderColor: window.theme.success,
+          hoverBackgroundColor: window.theme.success,
+          hoverBorderColor: window.theme.success,
+          data: {{ roth_401k_by_age | safe }},
+          barPercentage: .325,
+          categoryPercentage: .5
+        }, {
+          label: "Roth IRA",
+          backgroundColor: window.theme.warning,
+          borderColor: window.theme.warning,
+          hoverBackgroundColor: window.theme.warning,
+          hoverBorderColor: window.theme.warning,
+          data: {{ roth_ira_by_age | safe }},
           barPercentage: .325,
           categoryPercentage: .5
         }]

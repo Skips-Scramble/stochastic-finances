@@ -8,7 +8,7 @@ from pages.random_scenario import RandomScenario
 # from assumption_validations import apply_validations
 
 
-def main(assumptions) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+def main(assumptions) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Main function to calculate the core dfs"""
     with open("input_assumptions_full.json") as json_data:
         assumptions = json.load(json_data)
@@ -81,5 +81,46 @@ def main(assumptions) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         avg_roth_ira=lambda df: df.filter(regex="^roth_ira").mean(axis=1),
         account_type="retirement",
     )
+
+    # Sort columns: age columns first, then grouped by account type, then aggregates
+    age_cols = [col for col in total_retirement_df.columns if col.startswith("age_")]
+    trad_401k_cols = sorted(
+        [
+            col
+            for col in total_retirement_df.columns
+            if col.startswith("traditional_401k_")
+        ]
+    )
+    roth_401k_cols = sorted(
+        [col for col in total_retirement_df.columns if col.startswith("roth_401k_")]
+    )
+    trad_ira_cols = sorted(
+        [
+            col
+            for col in total_retirement_df.columns
+            if col.startswith("traditional_ira_")
+        ]
+    )
+    roth_ira_cols = sorted(
+        [col for col in total_retirement_df.columns if col.startswith("roth_ira_")]
+    )
+    avg_cols = [
+        "avg_traditional_401k",
+        "avg_traditional_ira",
+        "avg_roth_401k",
+        "avg_roth_ira",
+    ]
+    other_cols = ["account_type"]
+
+    column_order = (
+        age_cols
+        + trad_401k_cols
+        + roth_401k_cols
+        + trad_ira_cols
+        + roth_ira_cols
+        + avg_cols
+        + other_cols
+    )
+    total_retirement_df = total_retirement_df[column_order]
 
     return total_savings_df, total_retirement_df

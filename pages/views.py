@@ -643,21 +643,18 @@ def calculations(request):
 
     print(f"{savings_for_chart = }")
 
-    retirement_for_chart = (
-        total_retirement_df.loc[lambda df: (df.age_yrs % 5 == 0) & (df.age_mos == 0)][
-            [
-                "avg_traditional_401k",
-                "avg_traditional_ira",
-                "avg_roth_401k",
-                "avg_roth_ira",
-            ]
-        ]
-        .sum(axis=1)
-        .round()
-        .to_list()
-    )
+    # Create separate chart data for each retirement account type
+    chart_df = total_retirement_df.loc[lambda df: (df.age_yrs % 5 == 0) & (df.age_mos == 0)]
+    
+    traditional_401k_for_chart = chart_df["avg_traditional_401k"].round().to_list()
+    traditional_ira_for_chart = chart_df["avg_traditional_ira"].round().to_list()
+    roth_401k_for_chart = chart_df["avg_roth_401k"].round().to_list()
+    roth_ira_for_chart = chart_df["avg_roth_ira"].round().to_list()
 
-    print(f"{retirement_for_chart = }")
+    print(f"{traditional_401k_for_chart = }")
+    print(f"{traditional_ira_for_chart = }")
+    print(f"{roth_401k_for_chart = }")
+    print(f"{roth_ira_for_chart = }")
 
     ####
     # Get data for table
@@ -786,7 +783,10 @@ def calculations(request):
             "avg_retirement_at_retirement": avg_retirement_at_retirement_fmt,
             "age_labels": ages_for_chart,
             "savings_by_age": savings_for_chart,
-            "retirement_by_age": retirement_for_chart,
+            "traditional_401k_by_age": traditional_401k_for_chart,
+            "traditional_ira_by_age": traditional_ira_for_chart,
+            "roth_401k_by_age": roth_401k_for_chart,
+            "roth_ira_by_age": roth_ira_for_chart,
             "y_axis_range": [x for x in range(0, 3_000_000, 250_000)],
             "table_data": table_data,
         },
