@@ -1,7 +1,7 @@
 {
 	"birthdate": "1/1/2000",
 	"retirement_age_yrs": 60,
-	"retirement_age_mos": 6,
+	"retirement_age_mos": 0,
 	"add_healthcare": false,
 	"retirement_extra_expenses": 5000,
 	"base_savings": 35000,
