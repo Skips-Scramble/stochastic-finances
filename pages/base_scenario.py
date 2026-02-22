@@ -893,13 +893,17 @@ class BaseScenario(ScenarioCoreInfo):
                 # If still below threshold and age >= 59.5, withdraw from full Roth IRA balance
                 age_yrs = self.age_by_year_list[i]
                 age_mos = self.age_by_month_list[i]
-                can_withdraw_earnings = (
-                    age_yrs > ROTH_IRA_WITHDRAWAL_AGE_YRS
-                    or (age_yrs == ROTH_IRA_WITHDRAWAL_AGE_YRS
-                        and age_mos >= ROTH_IRA_WITHDRAWAL_AGE_MOS)
+                can_withdraw_earnings = age_yrs > ROTH_IRA_WITHDRAWAL_AGE_YRS or (
+                    age_yrs == ROTH_IRA_WITHDRAWAL_AGE_YRS
+                    and age_mos >= ROTH_IRA_WITHDRAWAL_AGE_MOS
                 )
                 still_below = savings <= self.monthly_savings_threshold_list[i]
-                if still_below and can_withdraw_earnings and roth_ira and roth_ira_bal > 0:
+                if (
+                    still_below
+                    and can_withdraw_earnings
+                    and roth_ira
+                    and roth_ira_bal > 0
+                ):
                     shortfall = self.monthly_savings_threshold_list[i] - savings
                     withdrawal = min(shortfall, roth_ira_bal)
                     savings += withdrawal
@@ -971,13 +975,17 @@ class BaseScenario(ScenarioCoreInfo):
                 # If still below threshold and age >= 59.5, withdraw from full Roth IRA balance
                 age_yrs = self.age_by_year_list[i]
                 age_mos = self.age_by_month_list[i]
-                can_withdraw_earnings = (
-                    age_yrs > ROTH_IRA_WITHDRAWAL_AGE_YRS
-                    or (age_yrs == ROTH_IRA_WITHDRAWAL_AGE_YRS
-                        and age_mos >= ROTH_IRA_WITHDRAWAL_AGE_MOS)
+                can_withdraw_earnings = age_yrs > ROTH_IRA_WITHDRAWAL_AGE_YRS or (
+                    age_yrs == ROTH_IRA_WITHDRAWAL_AGE_YRS
+                    and age_mos >= ROTH_IRA_WITHDRAWAL_AGE_MOS
                 )
                 still_below = savings <= self.monthly_savings_threshold_list[i]
-                if still_below and can_withdraw_earnings and roth_ira and roth_ira_bal > 0:
+                if (
+                    still_below
+                    and can_withdraw_earnings
+                    and roth_ira
+                    and roth_ira_bal > 0
+                ):
                     shortfall = self.monthly_savings_threshold_list[i] - savings
                     withdrawal = min(shortfall, roth_ira_bal)
                     savings += withdrawal
@@ -1005,7 +1013,9 @@ class BaseScenario(ScenarioCoreInfo):
 
             # Log every 12 months and critical events
             if i % 12 == 0 or savings < 0 or (roth_ira_contributions > 0 and i > 0):
-                logger.info(f"Month {i}: savings=${savings:,.2f}, roth_ira_bal=${roth_ira_bal:,.2f}, roth_ira_contributions=${roth_ira_contributions:,.2f}")
+                logger.info(
+                    f"Month {i}: savings=${savings:,.2f}, roth_ira_bal=${roth_ira_bal:,.2f}, roth_ira_contributions=${roth_ira_contributions:,.2f}"
+                )
 
         return savings_list, roth_ira_balance_list
 
@@ -1064,7 +1074,9 @@ class BaseScenario(ScenarioCoreInfo):
             "retirement_contribution": self.retirement_increase_list,
         }
         for ret_account in self.retirement_list:
-            data_3[f"{ret_account.name}_contribution"] = ret_account.retirement_increase_list
+            data_3[f"{ret_account.name}_contribution"] = (
+                ret_account.retirement_increase_list
+            )
             if isinstance(ret_account, RetirementRothIRA):
                 data_3[ret_account.name] = self.savings_retirement_account_list[1]
             else:

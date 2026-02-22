@@ -563,8 +563,8 @@ def calculations(request):
     death_cols_to_drop.extend(avg_retirement_columns)
 
     # Show all columns and rows in pandas
-    pd.set_option('display.max_columns', None)
-    pd.set_option('display.max_rows', None)
+    pd.set_option("display.max_columns", None)
+    pd.set_option("display.max_rows", None)
 
     total_all_at_death = (
         pd.concat(
@@ -618,8 +618,8 @@ def calculations(request):
     ####
 
     retirement_at_retirement_row = total_retirement_df.loc[
-        lambda df: (df.age_yrs == 65)  # general_inputs_dict["retirement_age_yrs"])
-        & (df.age_mos == 0)  # general_inputs_dict["retirement_age_mos"])
+        lambda df: (df.age_yrs == general_inputs_dict["retirement_age_yrs"])
+        & (df.age_mos == general_inputs_dict["retirement_age_mos"])
     ]
 
     avg_retirement_at_retirement = sum(
@@ -703,7 +703,9 @@ def calculations(request):
         avg_savings=lambda df: df.avg,
     )[["age_yrs", "age_mos", "avg_savings", "pct_15_savings", "pct_85_savings"]]
 
-    savings_metrics_by_age_df.to_csv("./outputs/savings_metrics_by_age_df.csv", index=False)
+    savings_metrics_by_age_df.to_csv(
+        "./outputs/savings_metrics_by_age_df.csv", index=False
+    )
 
     # Build list of columns to drop for retirement quantile calculations
     retirement_cols_to_drop = ["age_yrs", "age_mos", "account_type"]
@@ -740,7 +742,9 @@ def calculations(request):
         ]
     ]
 
-    retirement_metrics_by_age_df.to_csv("./outputs/retirement_metrics_by_age_df.csv", index=False)
+    retirement_metrics_by_age_df.to_csv(
+        "./outputs/retirement_metrics_by_age_df.csv", index=False
+    )
 
     # Build list of columns to drop for total metrics calculations
     total_cols_to_drop = ["avg", "account_type"]
@@ -751,15 +755,19 @@ def calculations(request):
     total_metrics_by_age_df = (
         savings_metrics_by_age_df.merge(
             retirement_metrics_by_age_df, on=["age_yrs", "age_mos"], how="left"
-        )
-        .assign(
-            avg_tot=lambda df: df["avg_savings"].fillna(0) + df["avg_retirement"].fillna(0),
-            pct_15_tot=lambda df: df["pct_15_savings"].fillna(0) + df["pct_15_retirement"].fillna(0),
-            pct_85_tot=lambda df: df["pct_85_savings"].fillna(0) + df["pct_85_retirement"].fillna(0),
+        ).assign(
+            avg_tot=lambda df: df["avg_savings"].fillna(0)
+            + df["avg_retirement"].fillna(0),
+            pct_15_tot=lambda df: df["pct_15_savings"].fillna(0)
+            + df["pct_15_retirement"].fillna(0),
+            pct_85_tot=lambda df: df["pct_85_savings"].fillna(0)
+            + df["pct_85_retirement"].fillna(0),
         )
     )[["age_yrs", "age_mos", "avg_tot", "pct_15_tot", "pct_85_tot"]]
 
-    total_metrics_by_age_df.to_csv("./outputs/test_total_metrics_by_age_df.csv", index=False)
+    total_metrics_by_age_df.to_csv(
+        "./outputs/test_total_metrics_by_age_df.csv", index=False
+    )
 
     # total_metrics_by_age_df = (
     #     (
