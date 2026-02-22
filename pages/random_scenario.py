@@ -10,6 +10,7 @@ from .base_scenario import (
     RetirementRothIRA,
     ROTH_IRA_WITHDRAWAL_AGE_MOS,
     ROTH_IRA_WITHDRAWAL_AGE_YRS,
+    uniform_lifetime_table,
 )
 
 RF_INTEREST_CHANGE_MOS = 6
@@ -125,11 +126,15 @@ class RandomScenario:
         ]
 
     @cached_property
-    def var_savings_retirement_account_list(self) -> tuple[list, list]:
+    def var_savings_retirement_account_list(self) -> tuple[list, list, list]:
         """Calculate the amount of money in your savings and retirement accounts over time,
         stopping Roth IRA contributions and withdrawing contributions (not interest) when
         savings falls below threshold. Once age >= 59.5, withdraw from full Roth IRA
-        balance (including earnings) penalty-free.
+        balance (including earnings) penalty-free. At RMD age, take required minimum
+        distributions from Roth IRA and direct them into savings.
+
+        Returns:
+            tuple of (savings_list, roth_ira_balance_list, rmd_withdrawal_list)
         """
         total_non_base_bills_list = [
             sum(sublist) for sublist in zip(*self.base_scenario.non_base_bills_lists)
@@ -139,6 +144,7 @@ class RandomScenario:
         savings_list = []
         roth_ira_balance_list = []
         roth_ira_contributions_list = []
+        rmd_withdrawal_list = []
 
         # Track Roth IRA contributions separately from growth
         roth_ira_contributions = 0.0
@@ -311,12 +317,33 @@ class RandomScenario:
                         )
                     )
 
+            # RMD: If at or past RMD age, take required minimum distribution
+            rmd_amount = 0.0
+            if roth_ira and roth_ira_bal > 0:
+                age_yrs_rmd = self.base_scenario.age_by_year_list[i]
+                age_mos_rmd = self.base_scenario.age_by_month_list[i]
+                at_rmd_age = age_yrs_rmd > roth_ira.rmd_age_yrs or (
+                    age_yrs_rmd == roth_ira.rmd_age_yrs
+                    and age_mos_rmd >= roth_ira.rmd_age_mos
+                )
+                if at_rmd_age and age_yrs_rmd in uniform_lifetime_table:
+                    distribution_period = uniform_lifetime_table[age_yrs_rmd]
+                    annual_rmd = roth_ira_bal / distribution_period
+                    monthly_rmd = annual_rmd / 12
+                    rmd_amount = min(monthly_rmd, roth_ira_bal)
+                    savings += rmd_amount
+                    roth_ira_bal -= rmd_amount
+                    roth_ira_contributions = max(
+                        0, roth_ira_contributions - rmd_amount
+                    )
+
             # Append current balances to lists
             savings_list.append(savings)
             roth_ira_balance_list.append(roth_ira_bal)
             roth_ira_contributions_list.append(roth_ira_contributions)
+            rmd_withdrawal_list.append(rmd_amount)
 
-        return savings_list, roth_ira_balance_list
+        return savings_list, roth_ira_balance_list, rmd_withdrawal_list
 
     def create_full_df(self) -> pd.DataFrame:
         """Create full dataframe with base and variable scenarios"""
@@ -328,6 +355,7 @@ class RandomScenario:
             "var_retire_extra": self.var_post_retire_extra_bills_list,
             "var_savings_increase": self.var_savings_increase_list,
             "var_savings_account": self.var_savings_retirement_account_list[0],
+            "var_roth_ira_rmd": self.var_savings_retirement_account_list[2],
             "var_yearly_mkt_interest": self.var_yearly_mkt_interest,
             "var_monthly_mkt_interest": self.var_monthly_mkt_interest,
         }

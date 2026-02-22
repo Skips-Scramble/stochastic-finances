@@ -530,6 +530,16 @@ class RetirementRothIRA(ScenarioCoreInfo):
     base_retirement: float = 0.0
     base_retirement_per_mo: float = 0.0
     base_retirement_per_yr_increase: float = 0.0
+    rmd_age_mos: int = 0
+
+    @cached_property
+    def rmd_age_yrs(self) -> int:
+        """Calculate RMD age based on birthdate"""
+        if self.birthdate.year <= 1950:
+            return 72
+        if 1951 <= self.birthdate.year <= 1959:
+            return 73
+        return 75
 
     @cached_property
     def retirement_increase_list(self) -> list:
@@ -819,11 +829,15 @@ class BaseScenario(ScenarioCoreInfo):
         return [0.0] * self.total_months
 
     @cached_property
-    def savings_retirement_account_list(self) -> tuple[list, list]:
+    def savings_retirement_account_list(self) -> tuple[list, list, list]:
         """Calculate the amount of money in your savings and retirement accounts over time,
         stopping Roth IRA contributions and withdrawing contributions (not interest) when
         savings falls below threshold. Once age >= 59.5, withdraw from full Roth IRA
-        balance (including earnings) penalty-free.
+        balance (including earnings) penalty-free. At RMD age, take required minimum
+        distributions from Roth IRA and direct them into savings.
+
+        Returns:
+            tuple of (savings_list, roth_ira_balance_list, rmd_withdrawal_list)
         """
         total_non_base_bills_list = [
             sum(sublist) for sublist in zip(*self.non_base_bills_lists)
@@ -833,6 +847,7 @@ class BaseScenario(ScenarioCoreInfo):
         savings_list = []
         roth_ira_balance_list = []
         roth_ira_contributions_list = []
+        rmd_withdrawal_list = []
 
         # Track Roth IRA contributions separately from growth
         roth_ira_contributions = 0.0
@@ -1001,15 +1016,32 @@ class BaseScenario(ScenarioCoreInfo):
                         )
                     )
 
+            # RMD: If at or past RMD age, take required minimum distribution
+            rmd_amount = 0.0
+            if roth_ira and roth_ira_bal > 0:
+                age_yrs_rmd = self.age_by_year_list[i]
+                age_mos_rmd = self.age_by_month_list[i]
+                at_rmd_age = age_yrs_rmd > roth_ira.rmd_age_yrs or (
+                    age_yrs_rmd == roth_ira.rmd_age_yrs
+                    and age_mos_rmd >= roth_ira.rmd_age_mos
+                )
+                if at_rmd_age and age_yrs_rmd in uniform_lifetime_table:
+                    # Annual RMD = balance / distribution period, spread monthly
+                    distribution_period = uniform_lifetime_table[age_yrs_rmd]
+                    annual_rmd = roth_ira_bal / distribution_period
+                    monthly_rmd = annual_rmd / 12
+                    rmd_amount = min(monthly_rmd, roth_ira_bal)
+                    savings += rmd_amount
+                    roth_ira_bal -= rmd_amount
+                    roth_ira_contributions = max(
+                        0, roth_ira_contributions - rmd_amount
+                    )
+
             # Append current balances to lists
             savings_list.append(savings)
             roth_ira_balance_list.append(roth_ira_bal)
             roth_ira_contributions_list.append(roth_ira_contributions)
-
-            # print(f"{i = }")
-            # print(f"{savings_list[i] = }")
-            # print(f"{roth_ira_balance_list[i] = }")
-            # print(f"{roth_ira_contributions_list[i] = }")
+            rmd_withdrawal_list.append(rmd_amount)
 
             # Log every 12 months and critical events
             if i % 12 == 0 or savings < 0 or (roth_ira_contributions > 0 and i > 0):
@@ -1017,7 +1049,7 @@ class BaseScenario(ScenarioCoreInfo):
                     f"Month {i}: savings=${savings:,.2f}, roth_ira_bal=${roth_ira_bal:,.2f}, roth_ira_contributions=${roth_ira_contributions:,.2f}"
                 )
 
-        return savings_list, roth_ira_balance_list
+        return savings_list, roth_ira_balance_list, rmd_withdrawal_list
 
     @cached_property
     def ss_amt_by_date(self) -> list[float]:
@@ -1071,6 +1103,7 @@ class BaseScenario(ScenarioCoreInfo):
             "savings_account": self.savings_retirement_account_list[0],
             "yearly_mkt_interest": self.yearly_mkt_interest,
             "monthly_mkt_interest": self.monthly_mkt_interest,
+            "roth_ira_rmd": self.savings_retirement_account_list[2],
             "retirement_contribution": self.retirement_increase_list,
         }
         for ret_account in self.retirement_list:
