@@ -5,7 +5,12 @@ from functools import cached_property
 import numpy as np
 import pandas as pd
 
-from .base_scenario import BaseScenario, RetirementRothIRA
+from .base_scenario import (
+    BaseScenario,
+    RetirementRothIRA,
+    ROTH_IRA_WITHDRAWAL_AGE_MOS,
+    ROTH_IRA_WITHDRAWAL_AGE_YRS,
+)
 
 RF_INTEREST_CHANGE_MOS = 6
 
@@ -123,7 +128,8 @@ class RandomScenario:
     def var_savings_retirement_account_list(self) -> tuple[list, list]:
         """Calculate the amount of money in your savings and retirement accounts over time,
         stopping Roth IRA contributions and withdrawing contributions (not interest) when
-        savings falls below threshold.
+        savings falls below threshold. Once age >= 59.5, withdraw from full Roth IRA
+        balance (including earnings) penalty-free.
         """
         total_non_base_bills_list = [
             sum(sublist) for sublist in zip(*self.base_scenario.non_base_bills_lists)
@@ -192,6 +198,22 @@ class RandomScenario:
                     roth_ira_bal -= withdrawal
                     roth_ira_contributions -= withdrawal
 
+                # If still below threshold and age >= 59.5, withdraw from full Roth IRA balance
+                age_yrs = self.base_scenario.age_by_year_list[i]
+                age_mos = self.base_scenario.age_by_month_list[i]
+                can_withdraw_earnings = (
+                    age_yrs > ROTH_IRA_WITHDRAWAL_AGE_YRS
+                    or (age_yrs == ROTH_IRA_WITHDRAWAL_AGE_YRS
+                        and age_mos >= ROTH_IRA_WITHDRAWAL_AGE_MOS)
+                )
+                still_below = savings <= self.base_scenario.monthly_savings_threshold_list[i]
+                if still_below and can_withdraw_earnings and roth_ira and roth_ira_bal > 0:
+                    shortfall = self.base_scenario.monthly_savings_threshold_list[i] - savings
+                    withdrawal = min(shortfall, roth_ira_bal)
+                    savings += withdrawal
+                    roth_ira_bal -= withdrawal
+                    roth_ira_contributions = max(0, roth_ira_contributions - withdrawal)
+
                 # Grow Roth IRA with interest (and contributions if above threshold)
                 if roth_ira:
                     if below_threshold:
@@ -247,6 +269,22 @@ class RandomScenario:
                     savings += withdrawal
                     roth_ira_bal -= withdrawal
                     roth_ira_contributions -= withdrawal
+
+                # If still below threshold and age >= 59.5, withdraw from full Roth IRA balance
+                age_yrs = self.base_scenario.age_by_year_list[i]
+                age_mos = self.base_scenario.age_by_month_list[i]
+                can_withdraw_earnings = (
+                    age_yrs > ROTH_IRA_WITHDRAWAL_AGE_YRS
+                    or (age_yrs == ROTH_IRA_WITHDRAWAL_AGE_YRS
+                        and age_mos >= ROTH_IRA_WITHDRAWAL_AGE_MOS)
+                )
+                still_below = savings <= self.base_scenario.monthly_savings_threshold_list[i]
+                if still_below and can_withdraw_earnings and roth_ira and roth_ira_bal > 0:
+                    shortfall = self.base_scenario.monthly_savings_threshold_list[i] - savings
+                    withdrawal = min(shortfall, roth_ira_bal)
+                    savings += withdrawal
+                    roth_ira_bal -= withdrawal
+                    roth_ira_contributions = max(0, roth_ira_contributions - withdrawal)
 
                 # Grow Roth IRA (no contributions in retirement)
                 if roth_ira:

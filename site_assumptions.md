@@ -1,7 +1,7 @@
 ### Assumptions
 
 #### Inputs
-1. Exactly one scenario must be selected, except for payments
+1. Exactly one scenario must be selected, except for payments and retirement
 
 #### Payments
 1. We are assuming all money is in today's dollars

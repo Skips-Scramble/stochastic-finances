@@ -562,6 +562,10 @@ def calculations(request):
     death_cols_to_drop = ["avg", "account_type", "account_0"]
     death_cols_to_drop.extend(avg_retirement_columns)
 
+    # Show all columns and rows in pandas
+    pd.set_option('display.max_columns', None)
+    pd.set_option('display.max_rows', None)
+
     total_all_at_death = (
         pd.concat(
             [
@@ -580,8 +584,9 @@ def calculations(request):
         .sum()
     )
 
-    print("total_all_at_death")
-    print(total_all_at_death.head())
+    # print("total_all_at_death")
+    # print(total_all_at_death.head())
+    # total_all_at_death.to_csv("./outputs/total_all_at_death.csv")
 
     negative_count = (
         (total_all_at_death.reset_index().drop(columns=["age_yrs", "age_mos"]) < 0)
@@ -628,6 +633,9 @@ def calculations(request):
     ####
     # Get data for chart
     ####
+
+    total_savings_df.to_csv("./outputs/total_savings_df.csv", index=False)
+    total_retirement_df.to_csv("./outputs/total_retirement_df.csv", index=False)
 
     ages_for_chart = total_savings_df.loc[
         lambda df: (df.age_yrs % 5 == 0) & (df.age_mos == 0)
@@ -695,6 +703,8 @@ def calculations(request):
         avg_savings=lambda df: df.avg,
     )[["age_yrs", "age_mos", "avg_savings", "pct_15_savings", "pct_85_savings"]]
 
+    savings_metrics_by_age_df.to_csv("./outputs/savings_metrics_by_age_df.csv", index=False)
+
     # Build list of columns to drop for retirement quantile calculations
     retirement_cols_to_drop = ["age_yrs", "age_mos", "account_type"]
     retirement_cols_to_drop.extend(
@@ -705,6 +715,8 @@ def calculations(request):
     retirement_avg_cols_to_sum = [
         col for col in avg_retirement_columns if col in total_retirement_df.columns
     ]
+
+    print(f"{retirement_avg_cols_to_sum = }")
 
     retirement_metrics_by_age_df = total_retirement_df.loc[
         lambda df: df.age_mos == 0
@@ -728,6 +740,8 @@ def calculations(request):
         ]
     ]
 
+    retirement_metrics_by_age_df.to_csv("./outputs/retirement_metrics_by_age_df.csv", index=False)
+
     # Build list of columns to drop for total metrics calculations
     total_cols_to_drop = ["avg", "account_type"]
     total_cols_to_drop.extend(
@@ -735,36 +749,51 @@ def calculations(request):
     )
 
     total_metrics_by_age_df = (
-        (
-            pd.concat(
-                [
-                    total_savings_df.loc[lambda df: df.age_mos == 0],
-                    total_retirement_df.loc[lambda df: df.age_mos == 0],
-                ]
-            )
-            .groupby(["age_yrs", "age_mos"])
-            .sum()
+        savings_metrics_by_age_df.merge(
+            retirement_metrics_by_age_df, on=["age_yrs", "age_mos"], how="left"
         )
         .assign(
-            pct_15_tot=lambda df: df.drop(columns=total_cols_to_drop).quantile(
-                0.15, axis=1
-            ),
-            pct_85_tot=lambda df: df.drop(columns=total_cols_to_drop).quantile(
-                0.85, axis=1
-            ),
-            avg_tot=lambda df: df.drop(columns=total_cols_to_drop).mean(axis=1),
+            avg_tot=lambda df: df["avg_savings"].fillna(0) + df["avg_retirement"].fillna(0),
+            pct_15_tot=lambda df: df["pct_15_savings"].fillna(0) + df["pct_15_retirement"].fillna(0),
+            pct_85_tot=lambda df: df["pct_85_savings"].fillna(0) + df["pct_85_retirement"].fillna(0),
         )
-        .reset_index()
     )[["age_yrs", "age_mos", "avg_tot", "pct_15_tot", "pct_85_tot"]]
 
-    print("Total metrics by age")
-    print(total_metrics_by_age_df.head())
+    total_metrics_by_age_df.to_csv("./outputs/test_total_metrics_by_age_df.csv", index=False)
+
+    # total_metrics_by_age_df = (
+    #     (
+    #         pd.concat(
+    #             [
+    #                 total_savings_df.loc[lambda df: df.age_mos == 0],
+    #                 total_retirement_df.loc[lambda df: df.age_mos == 0],
+    #             ]
+    #         )
+    #         .groupby(["age_yrs", "age_mos"])
+    #         .sum()
+    #     )
+    #     .assign(
+    #         pct_15_tot=lambda df: df.drop(columns=total_cols_to_drop).quantile(
+    #             0.15, axis=1
+    #         ),
+    #         pct_85_tot=lambda df: df.drop(columns=total_cols_to_drop).quantile(
+    #             0.85, axis=1
+    #         ),
+    #         avg_tot=lambda df: df.drop(columns=total_cols_to_drop).mean(axis=1),
+    #     )
+    #     .reset_index()
+    # )[["age_yrs", "age_mos", "avg_tot", "pct_15_tot", "pct_85_tot"]]
+
+    total_metrics_by_age_df.to_csv("./outputs/total_metrics_by_age_df.csv", index=False)
 
     all_metrics_combined_df = total_metrics_by_age_df.merge(
         savings_metrics_by_age_df, on=["age_yrs", "age_mos"], how="left"
     ).merge(retirement_metrics_by_age_df, on=["age_yrs", "age_mos"], how="left")
 
-    print(all_metrics_combined_df.head())
+    # print("All metrics combined df")
+    # print(all_metrics_combined_df.head())
+
+    all_metrics_combined_df.to_csv("./outputs/all_metrics_combined_df.csv", index=False)
 
     table_data = all_metrics_combined_df.to_dict(orient="records")
 
