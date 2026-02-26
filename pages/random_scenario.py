@@ -333,9 +333,7 @@ class RandomScenario:
                     rmd_amount = min(monthly_rmd, roth_ira_bal)
                     savings += rmd_amount
                     roth_ira_bal -= rmd_amount
-                    roth_ira_contributions = max(
-                        0, roth_ira_contributions - rmd_amount
-                    )
+                    roth_ira_contributions = max(0, roth_ira_contributions - rmd_amount)
 
             # Append current balances to lists
             savings_list.append(savings)
