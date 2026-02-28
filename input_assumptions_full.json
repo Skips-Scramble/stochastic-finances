@@ -26,13 +26,13 @@
 		},
 		{
 			"pmt_name": "Car",
-			"pmt_start_age_yrs": 40,
+			"pmt_start_age_yrs": 50,
 			"pmt_start_age_mos": 0,
 			"pmt_length_yrs": 1,
 			"pmt_length_mos": 6,
 			"down_pmt": 10000,
 			"reg_pmt_amt": 300,
-			"pmt_freq_mos": 2,
+			"pmt_freq_mos": 1,
 			"recurring_purchase": true,
 			"recurring_timeframe": 3,
 			"recurring_length": 3

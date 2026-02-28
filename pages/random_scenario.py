@@ -8,6 +8,8 @@ import pandas as pd
 from .base_scenario import (
     BaseScenario,
     RetirementRothIRA,
+    RetirementRoth401k,
+    RetirementTrad401k,
     ROTH_IRA_WITHDRAWAL_AGE_MOS,
     ROTH_IRA_WITHDRAWAL_AGE_YRS,
     uniform_lifetime_table,
@@ -126,15 +128,22 @@ class RandomScenario:
         ]
 
     @cached_property
-    def var_savings_retirement_account_list(self) -> tuple[list, list, list]:
+    def var_savings_retirement_account_list(
+        self,
+    ) -> tuple[list, list, list, list, list, list, list, list]:
         """Calculate the amount of money in your savings and retirement accounts over time,
         stopping Roth IRA contributions and withdrawing contributions (not interest) when
         savings falls below threshold. Once age >= 59.5, withdraw from full Roth IRA
         balance (including earnings) penalty-free. At RMD age, take required minimum
-        distributions from Roth IRA and direct them into savings.
+        distributions from Traditional 401k and direct them into savings.
+        Roth IRAs and Roth 401(k)s are exempt from RMDs (SECURE Act 2.0).
 
         Returns:
-            tuple of (savings_list, roth_ira_balance_list, rmd_withdrawal_list)
+            tuple of (savings_list, roth_ira_balance_list,
+                      roth_401k_balance_list,
+                      trad_401k_balance_list, trad_401k_rmd_list,
+                      roth_ira_transfer_list, roth_401k_transfer_list,
+                      trad_401k_transfer_list)
         """
         total_non_base_bills_list = [
             sum(sublist) for sublist in zip(*self.base_scenario.non_base_bills_lists)
@@ -144,7 +153,12 @@ class RandomScenario:
         savings_list = []
         roth_ira_balance_list = []
         roth_ira_contributions_list = []
-        rmd_withdrawal_list = []
+        roth_401k_balance_list = []
+        trad_401k_balance_list = []
+        trad_401k_rmd_list = []
+        roth_ira_transfer_list = []
+        roth_401k_transfer_list = []
+        trad_401k_transfer_list = []
 
         # Track Roth IRA contributions separately from growth
         roth_ira_contributions = 0.0
@@ -156,7 +170,25 @@ class RandomScenario:
                 roth_ira = ret_account
                 break
 
+        # Get Roth 401k account if it exists. Assume only one Roth 401k for simplicity.
+        roth_401k = None
+        for ret_account in self.base_scenario.retirement_list:
+            if isinstance(ret_account, RetirementRoth401k):
+                roth_401k = ret_account
+                break
+
+        # Get Traditional 401k account if it exists. Assume only one for simplicity.
+        trad_401k = None
+        for ret_account in self.base_scenario.retirement_list:
+            if isinstance(ret_account, RetirementTrad401k):
+                trad_401k = ret_account
+                break
+
         for i in range(self.base_scenario.total_months):
+            roth_ira_transfer = 0.0
+            roth_401k_transfer = 0.0
+            trad_401k_transfer = 0.0
+
             if i == 0:
                 # Initialize accounts
                 savings = float(
@@ -168,6 +200,12 @@ class RandomScenario:
                 # Assume 70% of initial balance is contributions, 30% is growth
                 # TODO: refine this assumption later
                 roth_ira_contributions = roth_ira_bal * 0.7
+                roth_401k_bal = (
+                    float(round(roth_401k.base_retirement, 6)) if roth_401k else 0.0
+                )
+                trad_401k_bal = (
+                    float(round(trad_401k.base_retirement, 6)) if trad_401k else 0.0
+                )
 
             elif (
                 self.base_scenario.pre_retire_month_count_list[i] != 0
@@ -203,6 +241,7 @@ class RandomScenario:
                     savings += withdrawal
                     roth_ira_bal -= withdrawal
                     roth_ira_contributions -= withdrawal
+                    roth_ira_transfer += withdrawal
 
                 # If still below threshold and age >= 59.5, withdraw from full Roth IRA balance
                 age_yrs = self.base_scenario.age_by_year_list[i]
@@ -227,6 +266,43 @@ class RandomScenario:
                     savings += withdrawal
                     roth_ira_bal -= withdrawal
                     roth_ira_contributions = max(0, roth_ira_contributions - withdrawal)
+                    roth_ira_transfer += withdrawal
+
+                # If still below threshold and age >= 59.5, withdraw from Roth 401k
+                still_below = (
+                    savings <= self.base_scenario.monthly_savings_threshold_list[i]
+                )
+                if (
+                    still_below
+                    and can_withdraw_earnings
+                    and roth_401k
+                    and roth_401k_bal > 0
+                ):
+                    shortfall = (
+                        self.base_scenario.monthly_savings_threshold_list[i] - savings
+                    )
+                    withdrawal = min(shortfall, roth_401k_bal)
+                    savings += withdrawal
+                    roth_401k_bal -= withdrawal
+                    roth_401k_transfer += withdrawal
+
+                # If still below threshold and age >= 59.5, withdraw from Traditional 401k
+                still_below = (
+                    savings <= self.base_scenario.monthly_savings_threshold_list[i]
+                )
+                if (
+                    still_below
+                    and can_withdraw_earnings
+                    and trad_401k
+                    and trad_401k_bal > 0
+                ):
+                    shortfall = (
+                        self.base_scenario.monthly_savings_threshold_list[i] - savings
+                    )
+                    withdrawal = min(shortfall, trad_401k_bal)
+                    savings += withdrawal
+                    trad_401k_bal -= withdrawal
+                    trad_401k_transfer += withdrawal
 
                 # Grow Roth IRA with interest (and contributions if above threshold)
                 if roth_ira:
@@ -250,6 +326,28 @@ class RandomScenario:
                         )
                         # Track the contribution amount (before growth)
                         roth_ira_contributions += contribution
+
+                # Grow Roth 401k with interest and contributions pre-retirement
+                if roth_401k:
+                    contribution_401k = roth_401k.retirement_increase_list[i]
+                    roth_401k_bal = float(
+                        round(
+                            (roth_401k_bal + contribution_401k)
+                            * (1 + self.var_monthly_mkt_interest[i]),
+                            6,
+                        )
+                    )
+
+                # Grow Traditional 401k with interest and contributions pre-retirement
+                if trad_401k:
+                    contribution_trad_401k = trad_401k.retirement_increase_list[i]
+                    trad_401k_bal = float(
+                        round(
+                            (trad_401k_bal + contribution_trad_401k)
+                            * (1 + self.var_monthly_mkt_interest[i]),
+                            6,
+                        )
+                    )
 
             else:  # If you are retired
                 # Pay expenses from savings
@@ -283,6 +381,7 @@ class RandomScenario:
                     savings += withdrawal
                     roth_ira_bal -= withdrawal
                     roth_ira_contributions -= withdrawal
+                    roth_ira_transfer += withdrawal
 
                 # If still below threshold and age >= 59.5, withdraw from full Roth IRA balance
                 age_yrs = self.base_scenario.age_by_year_list[i]
@@ -307,6 +406,43 @@ class RandomScenario:
                     savings += withdrawal
                     roth_ira_bal -= withdrawal
                     roth_ira_contributions = max(0, roth_ira_contributions - withdrawal)
+                    roth_ira_transfer += withdrawal
+
+                # If still below threshold and age >= 59.5, withdraw from Roth 401k
+                still_below = (
+                    savings <= self.base_scenario.monthly_savings_threshold_list[i]
+                )
+                if (
+                    still_below
+                    and can_withdraw_earnings
+                    and roth_401k
+                    and roth_401k_bal > 0
+                ):
+                    shortfall = (
+                        self.base_scenario.monthly_savings_threshold_list[i] - savings
+                    )
+                    withdrawal = min(shortfall, roth_401k_bal)
+                    savings += withdrawal
+                    roth_401k_bal -= withdrawal
+                    roth_401k_transfer += withdrawal
+
+                # If still below threshold and age >= 59.5, withdraw from Traditional 401k
+                still_below = (
+                    savings <= self.base_scenario.monthly_savings_threshold_list[i]
+                )
+                if (
+                    still_below
+                    and can_withdraw_earnings
+                    and trad_401k
+                    and trad_401k_bal > 0
+                ):
+                    shortfall = (
+                        self.base_scenario.monthly_savings_threshold_list[i] - savings
+                    )
+                    withdrawal = min(shortfall, trad_401k_bal)
+                    savings += withdrawal
+                    trad_401k_bal -= withdrawal
+                    trad_401k_transfer += withdrawal
 
                 # Grow Roth IRA (no contributions in retirement)
                 if roth_ira:
@@ -317,31 +453,62 @@ class RandomScenario:
                         )
                     )
 
-            # RMD: If at or past RMD age, take required minimum distribution
-            rmd_amount = 0.0
-            if roth_ira and roth_ira_bal > 0:
+                # Grow Roth 401k (no contributions in retirement)
+                if roth_401k:
+                    roth_401k_bal = float(
+                        round(
+                            roth_401k_bal * (1 + self.var_monthly_mkt_interest[i]),
+                            6,
+                        )
+                    )
+
+                # Grow Traditional 401k (no contributions in retirement)
+                if trad_401k:
+                    trad_401k_bal = float(
+                        round(
+                            trad_401k_bal * (1 + self.var_monthly_mkt_interest[i]),
+                            6,
+                        )
+                    )
+
+            # RMD for Traditional 401k: If at or past RMD age, take required minimum distribution
+            trad_401k_rmd_amount = 0.0
+            if trad_401k and trad_401k_bal > 0:
                 age_yrs_rmd = self.base_scenario.age_by_year_list[i]
                 age_mos_rmd = self.base_scenario.age_by_month_list[i]
-                at_rmd_age = age_yrs_rmd > roth_ira.rmd_age_yrs or (
-                    age_yrs_rmd == roth_ira.rmd_age_yrs
-                    and age_mos_rmd >= roth_ira.rmd_age_mos
+                at_rmd_age = age_yrs_rmd > trad_401k.rmd_age_yrs or (
+                    age_yrs_rmd == trad_401k.rmd_age_yrs
+                    and age_mos_rmd >= trad_401k.rmd_age_mos
                 )
                 if at_rmd_age and age_yrs_rmd in uniform_lifetime_table:
                     distribution_period = uniform_lifetime_table[age_yrs_rmd]
-                    annual_rmd = roth_ira_bal / distribution_period
+                    annual_rmd = trad_401k_bal / distribution_period
                     monthly_rmd = annual_rmd / 12
-                    rmd_amount = min(monthly_rmd, roth_ira_bal)
-                    savings += rmd_amount
-                    roth_ira_bal -= rmd_amount
-                    roth_ira_contributions = max(0, roth_ira_contributions - rmd_amount)
+                    trad_401k_rmd_amount = min(monthly_rmd, trad_401k_bal)
+                    savings += trad_401k_rmd_amount
+                    trad_401k_bal -= trad_401k_rmd_amount
 
             # Append current balances to lists
             savings_list.append(savings)
             roth_ira_balance_list.append(roth_ira_bal)
             roth_ira_contributions_list.append(roth_ira_contributions)
-            rmd_withdrawal_list.append(rmd_amount)
+            roth_401k_balance_list.append(roth_401k_bal if roth_401k else 0.0)
+            trad_401k_balance_list.append(trad_401k_bal if trad_401k else 0.0)
+            trad_401k_rmd_list.append(trad_401k_rmd_amount)
+            roth_ira_transfer_list.append(roth_ira_transfer)
+            roth_401k_transfer_list.append(roth_401k_transfer)
+            trad_401k_transfer_list.append(trad_401k_transfer)
 
-        return savings_list, roth_ira_balance_list, rmd_withdrawal_list
+        return (
+            savings_list,
+            roth_ira_balance_list,
+            roth_401k_balance_list,
+            trad_401k_balance_list,
+            trad_401k_rmd_list,
+            roth_ira_transfer_list,
+            roth_401k_transfer_list,
+            trad_401k_transfer_list,
+        )
 
     def create_full_df(self) -> pd.DataFrame:
         """Create full dataframe with base and variable scenarios"""
@@ -353,12 +520,32 @@ class RandomScenario:
             "var_retire_extra": self.var_post_retire_extra_bills_list,
             "var_savings_increase": self.var_savings_increase_list,
             "var_savings_account": self.var_savings_retirement_account_list[0],
-            "var_roth_ira_rmd": self.var_savings_retirement_account_list[2],
+            "var_trad_401k_rmd": self.var_savings_retirement_account_list[4],
+            "var_roth_ira_transfer": self.var_savings_retirement_account_list[5],
+            "var_roth_401k_transfer": self.var_savings_retirement_account_list[6],
+            "var_traditional_401k_transfer": self.var_savings_retirement_account_list[
+                7
+            ],
             "var_yearly_mkt_interest": self.var_yearly_mkt_interest,
             "var_monthly_mkt_interest": self.var_monthly_mkt_interest,
         }
         for ret_account in self.base_scenario.retirement_list:
-            var_data[f"var_{ret_account.name}"] = ret_account.retirement_account_list
+            if isinstance(ret_account, RetirementRothIRA):
+                var_data[f"var_{ret_account.name}"] = (
+                    self.var_savings_retirement_account_list[1]
+                )
+            elif isinstance(ret_account, RetirementRoth401k):
+                var_data[f"var_{ret_account.name}"] = (
+                    self.var_savings_retirement_account_list[2]
+                )
+            elif isinstance(ret_account, RetirementTrad401k):
+                var_data[f"var_{ret_account.name}"] = (
+                    self.var_savings_retirement_account_list[3]
+                )
+            else:
+                var_data[f"var_{ret_account.name}"] = (
+                    ret_account.retirement_account_list
+                )
 
         var_df = pd.DataFrame(var_data)
         return self.base_scenario.create_base_df().merge(var_df, on="count", how="left")

@@ -286,60 +286,81 @@ class Payment(ScenarioCoreInfo):
 
     @cached_property
     def calc_pmt_list(self) -> list:
-        """Calculate list of payment amounts"""
+        """Calculate list of payment amounts.
 
-        pmt_start_date = calc_date_on_age(
-            self.birthdate,
-            self.pmt_start_age_yrs,
-            self.pmt_start_age_mos,
+        If recurring_purchase is True, the payment pattern repeats
+        recurring_length times, each starting recurring_timeframe months
+        after the previous occurrence.
+        """
+        num_occurrences = (
+            self.recurring_length
+            if self.recurring_purchase and self.recurring_length
+            else 1
         )
-
-        pmt_end_date = pmt_start_date + relativedelta(
-            months=(self.pmt_length_yrs * 12 + self.pmt_length_mos - 1)
+        timeframe_mos = (
+            self.recurring_timeframe
+            if self.recurring_purchase and self.recurring_timeframe
+            else 0
         )
+        pmt_length_mos = self.pmt_length_yrs * 12 + self.pmt_length_mos
 
-        item_pmt_list = []
-        print(f"pmt_start_date = {pmt_start_date}")
-        print(f"Today: {datetime.today().month}")
-        months_until_start = (pmt_start_date.year - datetime.today().year) * 12 + (
-            pmt_start_date.month - datetime.today().month
-        )
-        print(f"{months_until_start=}")
-        print(f"{self.monthly_inflation=}")
+        # Build the combined payment list across all occurrences
+        item_pmt_list = [0.0] * len(self.month_list)
 
-        # If the payment has already started
-        if months_until_start <= 0:
-            initial_down_pmt: float = 0.0
-            initial_reg_pmt_amt = self.reg_pmt_amt
-            months_until_start = 0
-        # If the payment will be in the future
-        else:
-            initial_down_pmt = round(
-                self.down_pmt * (1 + self.monthly_inflation) ** months_until_start, 2
+        for occurrence in range(num_occurrences):
+            offset_mos = occurrence * timeframe_mos
+
+            occ_start_age_yrs = self.pmt_start_age_yrs + (
+                (self.pmt_start_age_mos + offset_mos) // 12
             )
-            initial_reg_pmt_amt = round(
-                self.reg_pmt_amt * (1 + self.monthly_inflation) ** months_until_start, 2
+            occ_start_age_mos = (self.pmt_start_age_mos + offset_mos) % 12
+
+            pmt_start_date = calc_date_on_age(
+                self.birthdate,
+                occ_start_age_yrs,
+                occ_start_age_mos,
             )
-        for index, month in enumerate(self.month_list):
-            if pmt_start_date <= month <= pmt_end_date:
-                if month == pmt_start_date:
-                    months_until_start = index
-                    item_pmt_list.append(
-                        round(initial_down_pmt + initial_reg_pmt_amt, 2)
-                    )
-                elif (index - months_until_start) % self.pmt_freq_mos == 0:
-                    item_pmt_list.append(
-                        round(
+
+            pmt_end_date = pmt_start_date + relativedelta(
+                months=(pmt_length_mos - 1)
+            )
+
+            months_until_start = (
+                pmt_start_date.year - datetime.today().year
+            ) * 12 + (pmt_start_date.month - datetime.today().month)
+
+            # If the payment has already started
+            if months_until_start <= 0:
+                initial_down_pmt: float = 0.0
+                initial_reg_pmt_amt = self.reg_pmt_amt
+                months_until_start = 0
+            # If the payment will be in the future
+            else:
+                initial_down_pmt = round(
+                    self.down_pmt
+                    * (1 + self.monthly_inflation) ** months_until_start,
+                    2,
+                )
+                initial_reg_pmt_amt = round(
+                    self.reg_pmt_amt
+                    * (1 + self.monthly_inflation) ** months_until_start,
+                    2,
+                )
+
+            for index, month in enumerate(self.month_list):
+                if pmt_start_date <= month <= pmt_end_date:
+                    if month == pmt_start_date:
+                        months_until_start = index
+                        item_pmt_list[index] += round(
+                            initial_down_pmt + initial_reg_pmt_amt, 2
+                        )
+                    elif (index - months_until_start) % self.pmt_freq_mos == 0:
+                        item_pmt_list[index] += round(
                             initial_reg_pmt_amt
                             * (1 + self.monthly_inflation)
                             ** (index - months_until_start),
                             2,
                         )
-                    )
-                else:
-                    item_pmt_list.append(round(0, 2))
-            else:
-                item_pmt_list.append(round(0, 2))
 
         return item_pmt_list
 
@@ -418,16 +439,6 @@ class RetirementRoth401k(ScenarioCoreInfo):
     base_retirement: float = 0.0
     base_retirement_per_mo: float = 0.0
     base_retirement_per_yr_increase: float = 0.0
-    rmd_age_mos: int = 0
-
-    @cached_property
-    def rmd_age_yrs(self) -> int:
-        """Calculate RMD age based on birthdate"""
-        if self.birthdate.year <= 1950:
-            return 72
-        if 1951 <= self.birthdate.year <= 1959:
-            return 73
-        return 75
 
     @cached_property
     def retirement_increase_list(self) -> list:
@@ -540,16 +551,6 @@ class RetirementRothIRA(ScenarioCoreInfo):
     base_retirement: float = 0.0
     base_retirement_per_mo: float = 0.0
     base_retirement_per_yr_increase: float = 0.0
-    rmd_age_mos: int = 0
-
-    @cached_property
-    def rmd_age_yrs(self) -> int:
-        """Calculate RMD age based on birthdate"""
-        if self.birthdate.year <= 1950:
-            return 72
-        if 1951 <= self.birthdate.year <= 1959:
-            return 73
-        return 75
 
     @cached_property
     def retirement_increase_list(self) -> list:
@@ -843,16 +844,22 @@ class BaseScenario(ScenarioCoreInfo):
         return [0.0] * self.total_months
 
     @cached_property
-    def savings_retirement_account_list(self) -> tuple[list, list, list, list, list]:
+    def savings_retirement_account_list(
+        self,
+    ) -> tuple[list, list, list, list, list, list, list, list]:
         """Calculate the amount of money in your savings and retirement accounts over time,
         stopping Roth IRA contributions and withdrawing contributions (not interest) when
         savings falls below threshold. Once age >= 59.5, withdraw from full Roth IRA
         balance (including earnings) penalty-free. At RMD age, take required minimum
-        distributions from Roth IRA and Roth 401k and direct them into savings.
+        distributions from Traditional 401k and direct them into savings.
+        Roth IRAs and Roth 401(k)s are exempt from RMDs (SECURE Act 2.0).
 
         Returns:
-            tuple of (savings_list, roth_ira_balance_list, roth_ira_rmd_list,
-                      roth_401k_balance_list, roth_401k_rmd_list)
+            tuple of (savings_list, roth_ira_balance_list,
+                      roth_401k_balance_list,
+                      trad_401k_balance_list, trad_401k_rmd_list,
+                      roth_ira_transfer_list, roth_401k_transfer_list,
+                      trad_401k_transfer_list)
         """
         total_non_base_bills_list = [
             sum(sublist) for sublist in zip(*self.non_base_bills_lists)
@@ -862,9 +869,12 @@ class BaseScenario(ScenarioCoreInfo):
         savings_list = []
         roth_ira_balance_list = []
         roth_ira_contributions_list = []
-        roth_ira_rmd_list = []
         roth_401k_balance_list = []
-        roth_401k_rmd_list = []
+        trad_401k_balance_list = []
+        trad_401k_rmd_list = []
+        roth_ira_transfer_list = []
+        roth_401k_transfer_list = []
+        trad_401k_transfer_list = []
 
         # Track Roth IRA contributions separately from growth
         roth_ira_contributions = 0.0
@@ -884,7 +894,18 @@ class BaseScenario(ScenarioCoreInfo):
                 roth_401k = ret_account
                 break
 
+        # Get Traditional 401k account if it exists. Assume only one for simplicity.
+        trad_401k = None
+        for ret_account in self.retirement_list:
+            if isinstance(ret_account, RetirementTrad401k):
+                trad_401k = ret_account
+                break
+
         for i in range(self.total_months):
+            roth_ira_transfer = 0.0
+            roth_401k_transfer = 0.0
+            trad_401k_transfer = 0.0
+
             if i == 0:
                 # Initialize accounts
                 savings = float(round(self.assumptions["base_savings"], 6))
@@ -896,6 +917,9 @@ class BaseScenario(ScenarioCoreInfo):
                 roth_ira_contributions = roth_ira_bal * 0.7
                 roth_401k_bal = (
                     float(round(roth_401k.base_retirement, 6)) if roth_401k else 0.0
+                )
+                trad_401k_bal = (
+                    float(round(trad_401k.base_retirement, 6)) if trad_401k else 0.0
                 )
 
             elif self.pre_retire_month_count_list[i] != 0:  # If you're not retired
@@ -931,6 +955,7 @@ class BaseScenario(ScenarioCoreInfo):
                     savings += withdrawal
                     roth_ira_bal -= withdrawal
                     roth_ira_contributions -= withdrawal
+                    roth_ira_transfer += withdrawal
 
                 # If still below threshold and age >= 59.5, withdraw from full Roth IRA balance
                 age_yrs = self.age_by_year_list[i]
@@ -952,6 +977,35 @@ class BaseScenario(ScenarioCoreInfo):
                     roth_ira_bal -= withdrawal
                     # Reduce contributions tracker proportionally
                     roth_ira_contributions = max(0, roth_ira_contributions - withdrawal)
+                    roth_ira_transfer += withdrawal
+
+                # If still below threshold and age >= 59.5, withdraw from Roth 401k
+                still_below = savings <= self.monthly_savings_threshold_list[i]
+                if (
+                    still_below
+                    and can_withdraw_earnings
+                    and roth_401k
+                    and roth_401k_bal > 0
+                ):
+                    shortfall = self.monthly_savings_threshold_list[i] - savings
+                    withdrawal = min(shortfall, roth_401k_bal)
+                    savings += withdrawal
+                    roth_401k_bal -= withdrawal
+                    roth_401k_transfer += withdrawal
+
+                # If still below threshold and age >= 59.5, withdraw from Traditional 401k
+                still_below = savings <= self.monthly_savings_threshold_list[i]
+                if (
+                    still_below
+                    and can_withdraw_earnings
+                    and trad_401k
+                    and trad_401k_bal > 0
+                ):
+                    shortfall = self.monthly_savings_threshold_list[i] - savings
+                    withdrawal = min(shortfall, trad_401k_bal)
+                    savings += withdrawal
+                    trad_401k_bal -= withdrawal
+                    trad_401k_transfer += withdrawal
 
                 # Grow Roth IRA with interest (and contributions if above threshold)
                 if roth_ira:
@@ -965,12 +1019,12 @@ class BaseScenario(ScenarioCoreInfo):
                         )
                     else:
                         # Above threshold: add contributions and grow
-                        logger.info(
-                            "Month %s: below_threshold=%s, roth_ira=%s",
-                            i,
-                            below_threshold,
-                            roth_ira.name if roth_ira else None,
-                        )
+                        # logger.info(
+                        #     "Month %s: below_threshold=%s, roth_ira=%s",
+                        #     i,
+                        #     below_threshold,
+                        #     roth_ira.name if roth_ira else None,
+                        # )
                         contribution = roth_ira.retirement_increase_list[i]
                         roth_ira_bal = float(
                             round(
@@ -989,6 +1043,17 @@ class BaseScenario(ScenarioCoreInfo):
                     roth_401k_bal = float(
                         round(
                             (roth_401k_bal + contribution_401k)
+                            * (1 + self.monthly_mkt_interest),
+                            6,
+                        )
+                    )
+
+                # Grow Traditional 401k with interest and contributions pre-retirement
+                if trad_401k:
+                    contribution_trad_401k = trad_401k.retirement_increase_list[i]
+                    trad_401k_bal = float(
+                        round(
+                            (trad_401k_bal + contribution_trad_401k)
                             * (1 + self.monthly_mkt_interest),
                             6,
                         )
@@ -1024,6 +1089,7 @@ class BaseScenario(ScenarioCoreInfo):
                     savings += withdrawal
                     roth_ira_bal -= withdrawal
                     roth_ira_contributions -= withdrawal
+                    roth_ira_transfer += withdrawal
 
                 # If still below threshold and age >= 59.5, withdraw from full Roth IRA balance
                 age_yrs = self.age_by_year_list[i]
@@ -1044,6 +1110,35 @@ class BaseScenario(ScenarioCoreInfo):
                     savings += withdrawal
                     roth_ira_bal -= withdrawal
                     roth_ira_contributions = max(0, roth_ira_contributions - withdrawal)
+                    roth_ira_transfer += withdrawal
+
+                # If still below threshold and age >= 59.5, withdraw from Roth 401k
+                still_below = savings <= self.monthly_savings_threshold_list[i]
+                if (
+                    still_below
+                    and can_withdraw_earnings
+                    and roth_401k
+                    and roth_401k_bal > 0
+                ):
+                    shortfall = self.monthly_savings_threshold_list[i] - savings
+                    withdrawal = min(shortfall, roth_401k_bal)
+                    savings += withdrawal
+                    roth_401k_bal -= withdrawal
+                    roth_401k_transfer += withdrawal
+
+                # If still below threshold and age >= 59.5, withdraw from Traditional 401k
+                still_below = savings <= self.monthly_savings_threshold_list[i]
+                if (
+                    still_below
+                    and can_withdraw_earnings
+                    and trad_401k
+                    and trad_401k_bal > 0
+                ):
+                    shortfall = self.monthly_savings_threshold_list[i] - savings
+                    withdrawal = min(shortfall, trad_401k_bal)
+                    savings += withdrawal
+                    trad_401k_bal -= withdrawal
+                    trad_401k_transfer += withdrawal
 
                 # Grow Roth IRA (no contributions in retirement)
                 if roth_ira:
@@ -1063,60 +1158,60 @@ class BaseScenario(ScenarioCoreInfo):
                         )
                     )
 
-            # RMD: If at or past RMD age, take required minimum distribution
-            roth_ira_rmd_amount = 0.0
-            if roth_ira and roth_ira_bal > 0:
-                age_yrs_rmd = self.age_by_year_list[i]
-                age_mos_rmd = self.age_by_month_list[i]
-                at_rmd_age = age_yrs_rmd > roth_ira.rmd_age_yrs or (
-                    age_yrs_rmd == roth_ira.rmd_age_yrs
-                    and age_mos_rmd >= roth_ira.rmd_age_mos
-                )
-                if at_rmd_age and age_yrs_rmd in uniform_lifetime_table:
-                    # Annual RMD = balance / distribution period, spread monthly
-                    distribution_period = uniform_lifetime_table[age_yrs_rmd]
-                    annual_rmd = roth_ira_bal / distribution_period
-                    monthly_rmd = annual_rmd / 12
-                    roth_ira_rmd_amount = min(monthly_rmd, roth_ira_bal)
-                    savings += roth_ira_rmd_amount
-                    roth_ira_bal -= roth_ira_rmd_amount
-                    roth_ira_contributions = max(
-                        0, roth_ira_contributions - roth_ira_rmd_amount
+                # Grow Traditional 401k (no contributions in retirement)
+                if trad_401k:
+                    trad_401k_bal = float(
+                        round(
+                            trad_401k_bal * (1 + self.monthly_mkt_interest),
+                            6,
+                        )
                     )
 
-            # RMD for Roth 401k: If at or past RMD age, take required minimum distribution
-            roth_401k_rmd_amount = 0.0
-            if roth_401k and roth_401k_bal > 0:
+            # RMD for Traditional 401k: If at or past RMD age, take required minimum distribution
+            trad_401k_rmd_amount = 0.0
+            if trad_401k and trad_401k_bal > 0:
                 age_yrs_rmd = self.age_by_year_list[i]
                 age_mos_rmd = self.age_by_month_list[i]
-                at_rmd_age = age_yrs_rmd > roth_401k.rmd_age_yrs or (
-                    age_yrs_rmd == roth_401k.rmd_age_yrs
-                    and age_mos_rmd >= roth_401k.rmd_age_mos
+                at_rmd_age = age_yrs_rmd > trad_401k.rmd_age_yrs or (
+                    age_yrs_rmd == trad_401k.rmd_age_yrs
+                    and age_mos_rmd >= trad_401k.rmd_age_mos
                 )
                 if at_rmd_age and age_yrs_rmd in uniform_lifetime_table:
                     # Annual RMD = balance / distribution period, spread monthly
                     distribution_period = uniform_lifetime_table[age_yrs_rmd]
-                    annual_rmd = roth_401k_bal / distribution_period
+                    annual_rmd = trad_401k_bal / distribution_period
                     monthly_rmd = annual_rmd / 12
-                    roth_401k_rmd_amount = min(monthly_rmd, roth_401k_bal)
-                    savings += roth_401k_rmd_amount
-                    roth_401k_bal -= roth_401k_rmd_amount
+                    trad_401k_rmd_amount = min(monthly_rmd, trad_401k_bal)
+                    savings += trad_401k_rmd_amount
+                    trad_401k_bal -= trad_401k_rmd_amount
 
             # Append current balances to lists
             savings_list.append(savings)
             roth_ira_balance_list.append(roth_ira_bal)
             roth_ira_contributions_list.append(roth_ira_contributions)
-            roth_ira_rmd_list.append(roth_ira_rmd_amount)
             roth_401k_balance_list.append(roth_401k_bal if roth_401k else 0.0)
-            roth_401k_rmd_list.append(roth_401k_rmd_amount)
+            trad_401k_balance_list.append(trad_401k_bal if trad_401k else 0.0)
+            trad_401k_rmd_list.append(trad_401k_rmd_amount)
+            roth_ira_transfer_list.append(roth_ira_transfer)
+            roth_401k_transfer_list.append(roth_401k_transfer)
+            trad_401k_transfer_list.append(trad_401k_transfer)
 
             # Log every 12 months and critical events
-            if i % 12 == 0 or savings < 0 or (roth_ira_contributions > 0 and i > 0):
-                logger.info(
-                    f"Month {i}: savings=${savings:,.2f}, roth_ira_bal=${roth_ira_bal:,.2f}, roth_ira_contributions=${roth_ira_contributions:,.2f}"
-                )
+            # if i % 12 == 0 or savings < 0 or (roth_ira_contributions > 0 and i > 0):
+            #     logger.info(
+            #         f"Month {i}: savings=${savings:,.2f}, roth_ira_bal=${roth_ira_bal:,.2f}, roth_ira_contributions=${roth_ira_contributions:,.2f}"
+            #     )
 
-        return savings_list, roth_ira_balance_list, roth_ira_rmd_list, roth_401k_balance_list, roth_401k_rmd_list
+        return (
+            savings_list,
+            roth_ira_balance_list,
+            roth_401k_balance_list,
+            trad_401k_balance_list,
+            trad_401k_rmd_list,
+            roth_ira_transfer_list,
+            roth_401k_transfer_list,
+            trad_401k_transfer_list,
+        )
 
     @cached_property
     def ss_amt_by_date(self) -> list[float]:
@@ -1170,8 +1265,10 @@ class BaseScenario(ScenarioCoreInfo):
             "savings_account": self.savings_retirement_account_list[0],
             "yearly_mkt_interest": self.yearly_mkt_interest,
             "monthly_mkt_interest": self.monthly_mkt_interest,
-            "roth_ira_rmd": self.savings_retirement_account_list[2],
-            "roth_401k_rmd": self.savings_retirement_account_list[4],
+            "trad_401k_rmd": self.savings_retirement_account_list[4],
+            "roth_ira_transfer": self.savings_retirement_account_list[5],
+            "roth_401k_transfer": self.savings_retirement_account_list[6],
+            "traditional_401k_transfer": self.savings_retirement_account_list[7],
             "retirement_contribution": self.retirement_increase_list,
         }
         for ret_account in self.retirement_list:
@@ -1181,6 +1278,8 @@ class BaseScenario(ScenarioCoreInfo):
             if isinstance(ret_account, RetirementRothIRA):
                 data_3[ret_account.name] = self.savings_retirement_account_list[1]
             elif isinstance(ret_account, RetirementRoth401k):
+                data_3[ret_account.name] = self.savings_retirement_account_list[2]
+            elif isinstance(ret_account, RetirementTrad401k):
                 data_3[ret_account.name] = self.savings_retirement_account_list[3]
             else:
                 data_3[ret_account.name] = ret_account.retirement_account_list
