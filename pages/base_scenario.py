@@ -72,73 +72,6 @@ def calc_date_on_age(birthdate: date, age_yrs: int, age_mos: int) -> date:
     return (birthdate + relativedelta(months=months_add)).replace(day=1)
 
 
-def calc_pmt_list(
-    birthdate: date,
-    months_list: list,
-    pmt_start_age_yrs: int,
-    pmt_start_age_mos: int,
-    pmt_length_yrs: int,
-    pmt_length_mos: int,
-    item_down_pmt: int,
-    reg_pmt_amt: float,
-    pmt_freq_mos: int,
-    inflation_rate: float,
-) -> list:
-    """Calculate list of payment amounts"""
-
-    pmt_start_date = calc_date_on_age(
-        birthdate,
-        pmt_start_age_yrs,
-        pmt_start_age_mos,
-    )
-
-    pmt_end_date = pmt_start_date + relativedelta(
-        months=(pmt_length_yrs * 12 + pmt_length_mos - 1)
-    )
-
-    item_pmt_list = []
-    print(f"pmt_start_date = {pmt_start_date}")
-    print(f"Today: {datetime.today().month}")
-    months_until_start = (pmt_start_date.year - datetime.today().year) * 12 + (
-        pmt_start_date.month - datetime.today().month
-    )
-    print(f"{months_until_start=}")
-    print(f"{inflation_rate=}")
-
-    # If the payment has already started
-    if months_until_start <= 0:
-        initial_down_pmt: float = 0.0
-        initial_reg_pmt_amt = reg_pmt_amt
-        months_until_start = 0
-    # If the payment will be in the future
-    else:
-        initial_down_pmt = round(
-            item_down_pmt * (1 + inflation_rate) ** months_until_start, 2
-        )
-        initial_reg_pmt_amt = round(
-            reg_pmt_amt * (1 + inflation_rate) ** months_until_start, 2
-        )
-    for index, month in enumerate(months_list):
-        if pmt_start_date <= month <= pmt_end_date:
-            if month == pmt_start_date:
-                months_until_start = index
-                item_pmt_list.append(round(initial_down_pmt + initial_reg_pmt_amt, 2))
-            elif (index - months_until_start) % pmt_freq_mos == 0:
-                item_pmt_list.append(
-                    round(
-                        initial_reg_pmt_amt
-                        * (1 + inflation_rate) ** (index - months_until_start),
-                        2,
-                    )
-                )
-            else:
-                item_pmt_list.append(round(0, 2))
-        else:
-            item_pmt_list.append(round(0, 2))
-
-    return item_pmt_list
-
-
 def ss_fra(birthdate: date) -> tuple:
     """
     Calculate the full retirement age (FRA) based on the birthdate.
@@ -248,7 +181,7 @@ class ScenarioCoreInfo:
         """List of 1,2,3,... for each month pre-retirement"""
         pre_retire_months_cnt_list = []
         for index, _ in enumerate(self.month_list):
-            if self.month_list[index] <= self.retirement_date:
+            if self.month_list[index] < self.retirement_date:
                 pre_retire_months_cnt_list.append(index)
             else:
                 pre_retire_months_cnt_list.append(0)
@@ -259,7 +192,7 @@ class ScenarioCoreInfo:
         """List of 1,2,3,... for each month post-retirement"""
         post_retire_months_cnt_list = []
         for index, _ in enumerate(self.month_list):
-            if self.month_list[index] <= self.retirement_date:
+            if self.month_list[index] < self.retirement_date:
                 post_retire_months_cnt_list.append(0)
             else:
                 post_retire_months_cnt_list.append(
@@ -355,12 +288,7 @@ class Payment(ScenarioCoreInfo):
                             initial_down_pmt + initial_reg_pmt_amt, 2
                         )
                     elif (index - months_until_start) % self.pmt_freq_mos == 0:
-                        item_pmt_list[index] += round(
-                            initial_reg_pmt_amt
-                            * (1 + self.monthly_inflation)
-                            ** (index - months_until_start),
-                            2,
-                        )
+                        item_pmt_list[index] += round(initial_reg_pmt_amt, 2)
 
         return item_pmt_list
 
