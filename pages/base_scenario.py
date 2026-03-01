@@ -1269,7 +1269,6 @@ class BaseScenario(ScenarioCoreInfo):
             "roth_ira_transfer": self.savings_retirement_account_list[5],
             "roth_401k_transfer": self.savings_retirement_account_list[6],
             "traditional_401k_transfer": self.savings_retirement_account_list[7],
-            "retirement_contribution": self.retirement_increase_list,
         }
         for ret_account in self.retirement_list:
             data_3[f"{ret_account.name}_contribution"] = (
