@@ -774,7 +774,7 @@ class BaseScenario(ScenarioCoreInfo):
     @cached_property
     def savings_retirement_account_list(
         self,
-    ) -> tuple[list, list, list, list, list, list, list, list]:
+    ) -> tuple[list, list, list, list, list, list, list, list, list]:
         """Calculate the amount of money in your savings and retirement accounts over time,
         stopping Roth IRA contributions and withdrawing contributions (not interest) when
         savings falls below threshold. Once age >= 59.5, withdraw from full Roth IRA
@@ -787,7 +787,7 @@ class BaseScenario(ScenarioCoreInfo):
                       roth_401k_balance_list,
                       trad_401k_balance_list, trad_401k_rmd_list,
                       roth_ira_transfer_list, roth_401k_transfer_list,
-                      trad_401k_transfer_list)
+                      trad_401k_transfer_list, trad_ira_balance_list)
         """
         total_non_base_bills_list = [
             sum(sublist) for sublist in zip(*self.non_base_bills_lists)
@@ -799,6 +799,7 @@ class BaseScenario(ScenarioCoreInfo):
         roth_ira_contributions_list = []
         roth_401k_balance_list = []
         trad_401k_balance_list = []
+        trad_ira_balance_list = []
         trad_401k_rmd_list = []
         roth_ira_transfer_list = []
         roth_401k_transfer_list = []
@@ -829,6 +830,13 @@ class BaseScenario(ScenarioCoreInfo):
                 trad_401k = ret_account
                 break
 
+        # Get Traditional IRA account if it exists. Assume only one for simplicity.
+        trad_ira = None
+        for ret_account in self.retirement_list:
+            if isinstance(ret_account, RetirementTradIRA):
+                trad_ira = ret_account
+                break
+
         for i in range(self.total_months):
             roth_ira_transfer = 0.0
             roth_401k_transfer = 0.0
@@ -838,7 +846,7 @@ class BaseScenario(ScenarioCoreInfo):
                 # Initialize accounts
                 savings = float(round(self.assumptions["base_savings"], 6))
                 roth_ira_bal = (
-                    float(round(roth_ira.base_retirement, 6)) if roth_ira else 12.34
+                    float(round(roth_ira.base_retirement, 6)) if roth_ira else 0.0
                 )
                 # Assume 70% of initial balance is contributions, 30% is growth
                 # TODO: refine this assumption later
@@ -848,6 +856,9 @@ class BaseScenario(ScenarioCoreInfo):
                 )
                 trad_401k_bal = (
                     float(round(trad_401k.base_retirement, 6)) if trad_401k else 0.0
+                )
+                trad_ira_bal = (
+                    float(round(trad_ira.base_retirement, 6)) if trad_ira else 0.0
                 )
 
             elif self.pre_retire_month_count_list[i] != 0:  # If you're not retired
@@ -987,6 +998,17 @@ class BaseScenario(ScenarioCoreInfo):
                         )
                     )
 
+                # Grow Traditional IRA with interest and contributions pre-retirement
+                if trad_ira:
+                    contribution_trad_ira = trad_ira.retirement_increase_list[i]
+                    trad_ira_bal = float(
+                        round(
+                            (trad_ira_bal + contribution_trad_ira)
+                            * (1 + self.monthly_mkt_interest),
+                            6,
+                        )
+                    )
+
             else:  # If you are retired
                 # Calculate total expenses for the month
 
@@ -1095,6 +1117,15 @@ class BaseScenario(ScenarioCoreInfo):
                         )
                     )
 
+                # Grow Traditional IRA (no contributions in retirement)
+                if trad_ira:
+                    trad_ira_bal = float(
+                        round(
+                            trad_ira_bal * (1 + self.monthly_mkt_interest),
+                            6,
+                        )
+                    )
+
             # RMD for Traditional 401k: If at or past RMD age, take required minimum distribution
             trad_401k_rmd_amount = 0.0
             if trad_401k and trad_401k_bal > 0:
@@ -1119,6 +1150,7 @@ class BaseScenario(ScenarioCoreInfo):
             roth_ira_contributions_list.append(roth_ira_contributions)
             roth_401k_balance_list.append(roth_401k_bal if roth_401k else 0.0)
             trad_401k_balance_list.append(trad_401k_bal if trad_401k else 0.0)
+            trad_ira_balance_list.append(trad_ira_bal if trad_ira else 0.0)
             trad_401k_rmd_list.append(trad_401k_rmd_amount)
             roth_ira_transfer_list.append(roth_ira_transfer)
             roth_401k_transfer_list.append(roth_401k_transfer)
@@ -1139,6 +1171,7 @@ class BaseScenario(ScenarioCoreInfo):
             roth_ira_transfer_list,
             roth_401k_transfer_list,
             trad_401k_transfer_list,
+            trad_ira_balance_list,
         )
 
     @cached_property
@@ -1208,8 +1241,8 @@ class BaseScenario(ScenarioCoreInfo):
                 data_3[ret_account.name] = self.savings_retirement_account_list[2]
             elif isinstance(ret_account, RetirementTrad401k):
                 data_3[ret_account.name] = self.savings_retirement_account_list[3]
-            else:
-                data_3[ret_account.name] = ret_account.retirement_account_list
+            elif isinstance(ret_account, RetirementTradIRA):
+                data_3[ret_account.name] = self.savings_retirement_account_list[8]
 
         data = {**data_1, **non_base_items_lists, **data_3}
 
