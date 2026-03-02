@@ -442,10 +442,11 @@ def rates_inputs_delete(request, pk):
 def calculations(request):
     """This will run the financial calculations"""
     if request.method == "POST":
-        print("Post request")
+        # print("Post request")
+        pass
 
     else:
-        print("Get request")
+        # print("Get request")
         bad_active_dict = {}
         general_inputs_model = GeneralInputsModel.objects.filter(
             created_by=request.user, is_active=True
@@ -475,11 +476,11 @@ def calculations(request):
         )
         payments_list = []
         for payment in payments_inputs_model:
-            print(f'Payment: {model_to_dict(payment, "payments")}')
+            # print(f'Payment: {model_to_dict(payment, "payments")}')
             payments_list.append(model_to_dict(payment, "payments"))
 
-        print("")
-        print(f"{payments_list = }")
+        # print("")
+        # print(f"{payments_list = }")
 
         # Retirement
         retirement_inputs_model = RetirementInputsModel.objects.filter(
@@ -493,11 +494,11 @@ def calculations(request):
         #     print(f"{retirement_inputs_dict =}")
 
         for retirement in retirement_inputs_model:
-            print(f'Retirement: {model_to_dict(retirement, "retirement")}')
+            # print(f'Retirement: {model_to_dict(retirement, "retirement")}')
             retirement_accts_list.append(model_to_dict(retirement, "retirement"))
 
-        print("")
-        print(f"{retirement_accts_list = }")
+        # print("")
+        # print(f"{retirement_accts_list = }")
         # else:
         #     bad_active_dict["Retirement"] = len(retirement_inputs_model)
 
@@ -510,7 +511,7 @@ def calculations(request):
         else:
             bad_active_dict["Rates"] = len(rates_inputs_model)
         if bad_active_dict:
-            print("There were some bad active inputs")
+            # print("There were some bad active inputs")
             # Separate the errors into two categories
             missing_scenarios = {k: v for k, v in bad_active_dict.items() if v == 0}
             multiple_scenarios = {k: v for k, v in bad_active_dict.items() if v > 1}
@@ -533,7 +534,7 @@ def calculations(request):
         **rates_inputs_dict,
     }
 
-    print(f"full_dict is {full_dict}")
+    # print(f"full_dict is {full_dict}")
     # print(f'base_bills is {full_dict['base_monthly_bills']}')
 
     (total_savings_df, total_retirement_df) = stochastic_finances_func.main(full_dict)
@@ -594,13 +595,13 @@ def calculations(request):
         .iat[0]
     )
 
-    print(f"{negative_count = }")
+    # print(f"{negative_count = }")
 
     total_scenarios_count = (
         total_all_at_death.reset_index().drop(columns=["age_yrs", "age_mos"]).shape[1]
     )
 
-    print(f"total scenarios is {total_scenarios_count}")
+    # print(f"total scenarios is {total_scenarios_count}")
 
     ####
     # Average savings at retirement
@@ -628,7 +629,7 @@ def calculations(request):
 
     avg_retirement_at_retirement_fmt = f"${float(avg_retirement_at_retirement):,.0f}"
 
-    print(f"{avg_retirement_at_retirement_fmt = }")
+    # print(f"{avg_retirement_at_retirement_fmt = }")
 
     ####
     # Get data for chart
@@ -641,7 +642,7 @@ def calculations(request):
         lambda df: (df.age_yrs % 5 == 0) & (df.age_mos == 0)
     ]["age_yrs"].to_list()
 
-    print(f"{ages_for_chart = }")
+    # print(f"{ages_for_chart = }")
 
     savings_for_chart = (
         total_savings_df.loc[lambda df: (df.age_yrs % 5 == 0) & (df.age_mos == 0)][
@@ -651,7 +652,7 @@ def calculations(request):
         .to_list()
     )
 
-    print(f"{savings_for_chart = }")
+    # print(f"{savings_for_chart = }")
 
     # Create separate chart data for each retirement account type that exists
     chart_df = total_retirement_df.loc[
@@ -665,29 +666,29 @@ def calculations(request):
         retirement_chart_data["traditional_401k_by_age"] = (
             chart_df["avg_traditional_401k"].round().to_list()
         )
-        print(
-            f"traditional_401k_for_chart = {retirement_chart_data['traditional_401k_by_age']}"
-        )
+        # print(
+        #     f"traditional_401k_for_chart = {retirement_chart_data['traditional_401k_by_age']}"
+        # )
 
     if "avg_traditional_ira" in chart_df.columns:
         retirement_chart_data["traditional_ira_by_age"] = (
             chart_df["avg_traditional_ira"].round().to_list()
         )
-        print(
-            f"traditional_ira_for_chart = {retirement_chart_data['traditional_ira_by_age']}"
-        )
+        # print(
+        #     f"traditional_ira_for_chart = {retirement_chart_data['traditional_ira_by_age']}"
+        # )
 
     if "avg_roth_401k" in chart_df.columns:
         retirement_chart_data["roth_401k_by_age"] = (
             chart_df["avg_roth_401k"].round().to_list()
         )
-        print(f"roth_401k_for_chart = {retirement_chart_data['roth_401k_by_age']}")
+        # print(f"roth_401k_for_chart = {retirement_chart_data['roth_401k_by_age']}")
 
     if "avg_roth_ira" in chart_df.columns:
         retirement_chart_data["roth_ira_by_age"] = (
             chart_df["avg_roth_ira"].round().to_list()
         )
-        print(f"roth_ira_for_chart = {retirement_chart_data['roth_ira_by_age']}")
+        # print(f"roth_ira_for_chart = {retirement_chart_data['roth_ira_by_age']}")
 
     ####
     # Get data for table
@@ -718,7 +719,7 @@ def calculations(request):
         col for col in avg_retirement_columns if col in total_retirement_df.columns
     ]
 
-    print(f"{retirement_avg_cols_to_sum = }")
+    # print(f"{retirement_avg_cols_to_sum = }")
 
     retirement_metrics_by_age_df = total_retirement_df.loc[
         lambda df: df.age_mos == 0
