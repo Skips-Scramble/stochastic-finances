@@ -254,13 +254,11 @@ class Payment(ScenarioCoreInfo):
                 occ_start_age_mos,
             )
 
-            pmt_end_date = pmt_start_date + relativedelta(
-                months=(pmt_length_mos - 1)
-            )
+            pmt_end_date = pmt_start_date + relativedelta(months=(pmt_length_mos - 1))
 
-            months_until_start = (
-                pmt_start_date.year - datetime.today().year
-            ) * 12 + (pmt_start_date.month - datetime.today().month)
+            months_until_start = (pmt_start_date.year - datetime.today().year) * 12 + (
+                pmt_start_date.month - datetime.today().month
+            )
 
             # If the payment has already started
             if months_until_start <= 0:
@@ -270,8 +268,7 @@ class Payment(ScenarioCoreInfo):
             # If the payment will be in the future
             else:
                 initial_down_pmt = round(
-                    self.down_pmt
-                    * (1 + self.monthly_inflation) ** months_until_start,
+                    self.down_pmt * (1 + self.monthly_inflation) ** months_until_start,
                     2,
                 )
                 initial_reg_pmt_amt = round(
