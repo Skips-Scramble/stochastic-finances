@@ -11,8 +11,10 @@ from .base_scenario import (
     RetirementRoth401k,
     RetirementTrad401k,
     RetirementTradIRA,
+    RetirementHSA,
     ROTH_IRA_WITHDRAWAL_AGE_MOS,
     ROTH_IRA_WITHDRAWAL_AGE_YRS,
+    HSA_WITHDRAWAL_AGE_YRS,
     uniform_lifetime_table,
 )
 
@@ -131,20 +133,22 @@ class RandomScenario:
     @cached_property
     def var_savings_retirement_account_list(
         self,
-    ) -> tuple[list, list, list, list, list, list, list, list, list]:
+    ) -> tuple[list, list, list, list, list, list, list, list, list, list, list]:
         """Calculate the amount of money in your savings and retirement accounts over time,
         stopping Roth IRA contributions and withdrawing contributions (not interest) when
         savings falls below threshold. Once age >= 59.5, withdraw from full Roth IRA
         balance (including earnings) penalty-free. At RMD age, take required minimum
         distributions from Traditional 401k and direct them into savings.
         Roth IRAs and Roth 401(k)s are exempt from RMDs (SECURE Act 2.0).
+        HSA funds can be withdrawn for general expenses at age 65+ (no RMDs ever).
 
         Returns:
             tuple of (savings_list, roth_ira_balance_list,
                       roth_401k_balance_list,
                       trad_401k_balance_list, trad_401k_rmd_list,
                       roth_ira_transfer_list, roth_401k_transfer_list,
-                      trad_401k_transfer_list, trad_ira_balance_list)
+                      trad_401k_transfer_list, trad_ira_balance_list,
+                      hsa_balance_list, hsa_transfer_list)
         """
         total_non_base_bills_list = [
             sum(sublist) for sublist in zip(*self.base_scenario.non_base_bills_lists)
@@ -157,10 +161,12 @@ class RandomScenario:
         roth_401k_balance_list = []
         trad_401k_balance_list = []
         trad_ira_balance_list = []
+        hsa_balance_list = []
         trad_401k_rmd_list = []
         roth_ira_transfer_list = []
         roth_401k_transfer_list = []
         trad_401k_transfer_list = []
+        hsa_transfer_list = []
 
         # Track Roth IRA contributions separately from growth
         roth_ira_contributions = 0.0
@@ -193,10 +199,18 @@ class RandomScenario:
                 trad_ira = ret_account
                 break
 
+        # Get HSA account if it exists. Assume only one for simplicity.
+        hsa = None
+        for ret_account in self.base_scenario.retirement_list:
+            if isinstance(ret_account, RetirementHSA):
+                hsa = ret_account
+                break
+
         for i in range(self.base_scenario.total_months):
             roth_ira_transfer = 0.0
             roth_401k_transfer = 0.0
             trad_401k_transfer = 0.0
+            hsa_transfer = 0.0
 
             if i == 0:
                 # Initialize accounts
@@ -217,6 +231,9 @@ class RandomScenario:
                 )
                 trad_ira_bal = (
                     float(round(trad_ira.base_retirement, 6)) if trad_ira else 0.0
+                )
+                hsa_bal = (
+                    float(round(hsa.base_retirement, 6)) if hsa else 0.0
                 )
 
             elif (
@@ -316,6 +333,26 @@ class RandomScenario:
                     trad_401k_bal -= withdrawal
                     trad_401k_transfer += withdrawal
 
+                # If still below threshold and age >= 65, withdraw from HSA for general expenses
+                age_yrs = self.base_scenario.age_by_year_list[i]
+                can_withdraw_hsa = age_yrs >= HSA_WITHDRAWAL_AGE_YRS
+                still_below = (
+                    savings <= self.base_scenario.monthly_savings_threshold_list[i]
+                )
+                if (
+                    still_below
+                    and can_withdraw_hsa
+                    and hsa
+                    and hsa_bal > 0
+                ):
+                    shortfall = (
+                        self.base_scenario.monthly_savings_threshold_list[i] - savings
+                    )
+                    withdrawal = min(shortfall, hsa_bal)
+                    savings += withdrawal
+                    hsa_bal -= withdrawal
+                    hsa_transfer += withdrawal
+
                 # Grow Roth IRA with interest (and contributions if above threshold)
                 if roth_ira:
                     if below_threshold:
@@ -367,6 +404,17 @@ class RandomScenario:
                     trad_ira_bal = float(
                         round(
                             (trad_ira_bal + contribution_trad_ira)
+                            * (1 + self.var_monthly_mkt_interest[i]),
+                            6,
+                        )
+                    )
+
+                # Grow HSA with interest and contributions pre-retirement
+                if hsa:
+                    contribution_hsa = hsa.retirement_increase_list[i]
+                    hsa_bal = float(
+                        round(
+                            (hsa_bal + contribution_hsa)
                             * (1 + self.var_monthly_mkt_interest[i]),
                             6,
                         )
@@ -467,6 +515,25 @@ class RandomScenario:
                     trad_401k_bal -= withdrawal
                     trad_401k_transfer += withdrawal
 
+                # If still below threshold and age >= 65, withdraw from HSA for general expenses
+                can_withdraw_hsa = age_yrs >= HSA_WITHDRAWAL_AGE_YRS
+                still_below = (
+                    savings <= self.base_scenario.monthly_savings_threshold_list[i]
+                )
+                if (
+                    still_below
+                    and can_withdraw_hsa
+                    and hsa
+                    and hsa_bal > 0
+                ):
+                    shortfall = (
+                        self.base_scenario.monthly_savings_threshold_list[i] - savings
+                    )
+                    withdrawal = min(shortfall, hsa_bal)
+                    savings += withdrawal
+                    hsa_bal -= withdrawal
+                    hsa_transfer += withdrawal
+
                 # Grow Roth IRA (no contributions in retirement)
                 if roth_ira:
                     roth_ira_bal = float(
@@ -503,6 +570,15 @@ class RandomScenario:
                         )
                     )
 
+                # Grow HSA (no contributions in retirement)
+                if hsa:
+                    hsa_bal = float(
+                        round(
+                            hsa_bal * (1 + self.var_monthly_mkt_interest[i]),
+                            6,
+                        )
+                    )
+
             # RMD for Traditional 401k: If at or past RMD age, take required minimum distribution
             trad_401k_rmd_amount = 0.0
             if trad_401k and trad_401k_bal > 0:
@@ -527,10 +603,12 @@ class RandomScenario:
             roth_401k_balance_list.append(roth_401k_bal if roth_401k else 0.0)
             trad_401k_balance_list.append(trad_401k_bal if trad_401k else 0.0)
             trad_ira_balance_list.append(trad_ira_bal if trad_ira else 0.0)
+            hsa_balance_list.append(hsa_bal if hsa else 0.0)
             trad_401k_rmd_list.append(trad_401k_rmd_amount)
             roth_ira_transfer_list.append(roth_ira_transfer)
             roth_401k_transfer_list.append(roth_401k_transfer)
             trad_401k_transfer_list.append(trad_401k_transfer)
+            hsa_transfer_list.append(hsa_transfer)
 
         return (
             savings_list,
@@ -542,6 +620,8 @@ class RandomScenario:
             roth_401k_transfer_list,
             trad_401k_transfer_list,
             trad_ira_balance_list,
+            hsa_balance_list,
+            hsa_transfer_list,
         )
 
     def create_full_df(self) -> pd.DataFrame:
@@ -560,6 +640,7 @@ class RandomScenario:
             "var_traditional_401k_transfer": self.var_savings_retirement_account_list[
                 7
             ],
+            "var_hsa_transfer": self.var_savings_retirement_account_list[10],
             "var_yearly_mkt_interest": self.var_yearly_mkt_interest,
             "var_monthly_mkt_interest": self.var_monthly_mkt_interest,
         }
@@ -579,6 +660,10 @@ class RandomScenario:
             elif isinstance(ret_account, RetirementTradIRA):
                 var_data[f"var_{ret_account.name}"] = (
                     self.var_savings_retirement_account_list[8]
+                )
+            elif isinstance(ret_account, RetirementHSA):
+                var_data[f"var_{ret_account.name}"] = (
+                    self.var_savings_retirement_account_list[9]
                 )
 
         var_df = pd.DataFrame(var_data)

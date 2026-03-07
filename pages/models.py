@@ -146,6 +146,7 @@ class RetirementInputsModel(models.Model):
         ("roth_401k", "Roth 401(k)"),
         ("traditional_ira", "Traditional IRA"),
         ("roth_ira", "Roth IRA"),
+        ("hsa", "HSA"),
     ]
 
     is_active = models.BooleanField(default=False)

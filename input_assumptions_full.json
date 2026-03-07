@@ -62,6 +62,12 @@
 			"base_retirement": 44444,
 			"base_retirement_per_mo": 0,
 			"base_retirement_per_yr_increase": 0
+		},
+		{
+			"retirement_type": "hsa",
+			"base_retirement": 5000,
+			"base_retirement_per_mo": 300,
+			"base_retirement_per_yr_increase": 25
 		}
 
 	],

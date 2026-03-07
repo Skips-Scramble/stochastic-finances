@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 DEATH_YEARS = 115
 ROTH_IRA_WITHDRAWAL_AGE_YRS = 59
 ROTH_IRA_WITHDRAWAL_AGE_MOS = 6
+HSA_WITHDRAWAL_AGE_YRS = 65
 HEALTHCARE_BINS = [0, 19, 45, 65, 85, float("inf")]
 HEALTHCARE_LABELS = ["0-18", "19-44", "45-64", "65-84", "85+"]
 uniform_lifetime_table = {
@@ -525,6 +526,68 @@ class RetirementRothIRA(ScenarioCoreInfo):
 
 
 @dataclass
+class RetirementHSA(ScenarioCoreInfo):
+    """HSA (Health Savings Account) Info.
+
+    After age 65, HSA funds can be withdrawn for any purpose (not just medical)
+    without penalty — non-medical withdrawals are taxed as ordinary income.
+    Before age 65, non-medical withdrawals incur a 20% penalty plus income tax.
+    HSAs are NEVER subject to Required Minimum Distributions (RMDs).
+    """
+
+    name: str = "hsa"
+    base_retirement: float = 0.0
+    base_retirement_per_mo: float = 0.0
+    base_retirement_per_yr_increase: float = 0.0
+
+    @cached_property
+    def retirement_increase_list(self) -> list:
+        """List of how much your HSA will increase each month (with assumed increase factor)"""
+        retirement_increase_list = []
+        for index, value in enumerate(self.pre_retire_month_count_list):
+            if index == 0:
+                retirement_increase_list.append(self.base_retirement_per_mo)
+            elif value == 0:
+                retirement_increase_list.append(0)
+            elif index % 12 == 11:
+                retirement_increase_list.append(
+                    retirement_increase_list[index - 1]
+                    + round(self.base_retirement_per_yr_increase / 12, 6)
+                )
+            else:
+                retirement_increase_list.append(retirement_increase_list[index - 1])
+
+        return [float(round(x, 6)) for x in retirement_increase_list]
+
+    @cached_property
+    def retirement_account_list(self) -> list:
+        """Calculate amount in your HSA by month"""
+        retirement_list = []
+        for i in range(self.total_months):
+            if i == 0:
+                retirement = float(round(self.base_retirement, 2))
+            elif self.pre_retire_month_count_list[i] != 0:  # If you're not retired
+                retirement = float(
+                    round(
+                        (retirement + self.retirement_increase_list[i])
+                        * (1 + self.monthly_mkt_interest),
+                        6,
+                    )
+                )
+            else:  # If you are retired
+                retirement = float(
+                    round(
+                        retirement * (1 + self.monthly_mkt_interest),
+                        6,
+                    )
+                )
+
+            retirement_list.append(retirement)
+
+        return retirement_list
+
+
+@dataclass
 class BaseScenario(ScenarioCoreInfo):
     """Calculate a base scenario"""
 
@@ -672,7 +735,11 @@ class BaseScenario(ScenarioCoreInfo):
     def retirement_list(
         self,
     ) -> list[
-        RetirementTrad401k | RetirementRoth401k | RetirementTradIRA | RetirementRothIRA
+        RetirementTrad401k
+        | RetirementRoth401k
+        | RetirementTradIRA
+        | RetirementRothIRA
+        | RetirementHSA
     ]:
         # Don't know if this will be used
         """List of Retirement objects"""
@@ -681,6 +748,7 @@ class BaseScenario(ScenarioCoreInfo):
             | RetirementRoth401k
             | RetirementTradIRA
             | RetirementRothIRA
+            | RetirementHSA
         ] = []
         for item in self.assumptions["retirement_accounts"]:
             if item["retirement_type"] == "traditional_401k":
@@ -716,9 +784,20 @@ class BaseScenario(ScenarioCoreInfo):
                         ],
                     )
                 )
-            else:
+            elif item["retirement_type"] == "roth_ira":
                 retirement_list.append(
                     RetirementRothIRA(
+                        assumptions=self.assumptions,
+                        base_retirement=item["base_retirement"],
+                        base_retirement_per_mo=item["base_retirement_per_mo"],
+                        base_retirement_per_yr_increase=item[
+                            "base_retirement_per_yr_increase"
+                        ],
+                    )
+                )
+            elif item["retirement_type"] == "hsa":
+                retirement_list.append(
+                    RetirementHSA(
                         assumptions=self.assumptions,
                         base_retirement=item["base_retirement"],
                         base_retirement_per_mo=item["base_retirement_per_mo"],
@@ -771,20 +850,22 @@ class BaseScenario(ScenarioCoreInfo):
     @cached_property
     def savings_retirement_account_list(
         self,
-    ) -> tuple[list, list, list, list, list, list, list, list, list]:
+    ) -> tuple[list, list, list, list, list, list, list, list, list, list, list]:
         """Calculate the amount of money in your savings and retirement accounts over time,
         stopping Roth IRA contributions and withdrawing contributions (not interest) when
         savings falls below threshold. Once age >= 59.5, withdraw from full Roth IRA
         balance (including earnings) penalty-free. At RMD age, take required minimum
         distributions from Traditional 401k and direct them into savings.
         Roth IRAs and Roth 401(k)s are exempt from RMDs (SECURE Act 2.0).
+        HSA funds can be withdrawn for general expenses at age 65+ (no RMDs ever).
 
         Returns:
             tuple of (savings_list, roth_ira_balance_list,
                       roth_401k_balance_list,
                       trad_401k_balance_list, trad_401k_rmd_list,
                       roth_ira_transfer_list, roth_401k_transfer_list,
-                      trad_401k_transfer_list, trad_ira_balance_list)
+                      trad_401k_transfer_list, trad_ira_balance_list,
+                      hsa_balance_list, hsa_transfer_list)
         """
         total_non_base_bills_list = [
             sum(sublist) for sublist in zip(*self.non_base_bills_lists)
@@ -797,10 +878,12 @@ class BaseScenario(ScenarioCoreInfo):
         roth_401k_balance_list = []
         trad_401k_balance_list = []
         trad_ira_balance_list = []
+        hsa_balance_list = []
         trad_401k_rmd_list = []
         roth_ira_transfer_list = []
         roth_401k_transfer_list = []
         trad_401k_transfer_list = []
+        hsa_transfer_list = []
 
         # Track Roth IRA contributions separately from growth
         roth_ira_contributions = 0.0
@@ -834,10 +917,18 @@ class BaseScenario(ScenarioCoreInfo):
                 trad_ira = ret_account
                 break
 
+        # Get HSA account if it exists. Assume only one for simplicity.
+        hsa = None
+        for ret_account in self.retirement_list:
+            if isinstance(ret_account, RetirementHSA):
+                hsa = ret_account
+                break
+
         for i in range(self.total_months):
             roth_ira_transfer = 0.0
             roth_401k_transfer = 0.0
             trad_401k_transfer = 0.0
+            hsa_transfer = 0.0
 
             if i == 0:
                 # Initialize accounts
@@ -856,6 +947,9 @@ class BaseScenario(ScenarioCoreInfo):
                 )
                 trad_ira_bal = (
                     float(round(trad_ira.base_retirement, 6)) if trad_ira else 0.0
+                )
+                hsa_bal = (
+                    float(round(hsa.base_retirement, 6)) if hsa else 0.0
                 )
 
             elif self.pre_retire_month_count_list[i] != 0:  # If you're not retired
@@ -943,6 +1037,22 @@ class BaseScenario(ScenarioCoreInfo):
                     trad_401k_bal -= withdrawal
                     trad_401k_transfer += withdrawal
 
+                # If still below threshold and age >= 65, withdraw from HSA for general expenses
+                age_yrs = self.age_by_year_list[i]
+                can_withdraw_hsa = age_yrs >= HSA_WITHDRAWAL_AGE_YRS
+                still_below = savings <= self.monthly_savings_threshold_list[i]
+                if (
+                    still_below
+                    and can_withdraw_hsa
+                    and hsa
+                    and hsa_bal > 0
+                ):
+                    shortfall = self.monthly_savings_threshold_list[i] - savings
+                    withdrawal = min(shortfall, hsa_bal)
+                    savings += withdrawal
+                    hsa_bal -= withdrawal
+                    hsa_transfer += withdrawal
+
                 # Grow Roth IRA with interest (and contributions if above threshold)
                 if roth_ira:
                     if below_threshold:
@@ -1001,6 +1111,17 @@ class BaseScenario(ScenarioCoreInfo):
                     trad_ira_bal = float(
                         round(
                             (trad_ira_bal + contribution_trad_ira)
+                            * (1 + self.monthly_mkt_interest),
+                            6,
+                        )
+                    )
+
+                # Grow HSA with interest and contributions pre-retirement
+                if hsa:
+                    contribution_hsa = hsa.retirement_increase_list[i]
+                    hsa_bal = float(
+                        round(
+                            (hsa_bal + contribution_hsa)
                             * (1 + self.monthly_mkt_interest),
                             6,
                         )
@@ -1087,6 +1208,21 @@ class BaseScenario(ScenarioCoreInfo):
                     trad_401k_bal -= withdrawal
                     trad_401k_transfer += withdrawal
 
+                # If still below threshold and age >= 65, withdraw from HSA for general expenses
+                can_withdraw_hsa = age_yrs >= HSA_WITHDRAWAL_AGE_YRS
+                still_below = savings <= self.monthly_savings_threshold_list[i]
+                if (
+                    still_below
+                    and can_withdraw_hsa
+                    and hsa
+                    and hsa_bal > 0
+                ):
+                    shortfall = self.monthly_savings_threshold_list[i] - savings
+                    withdrawal = min(shortfall, hsa_bal)
+                    savings += withdrawal
+                    hsa_bal -= withdrawal
+                    hsa_transfer += withdrawal
+
                 # Grow Roth IRA (no contributions in retirement)
                 if roth_ira:
                     roth_ira_bal = float(
@@ -1123,6 +1259,15 @@ class BaseScenario(ScenarioCoreInfo):
                         )
                     )
 
+                # Grow HSA (no contributions in retirement)
+                if hsa:
+                    hsa_bal = float(
+                        round(
+                            hsa_bal * (1 + self.monthly_mkt_interest),
+                            6,
+                        )
+                    )
+
             # RMD for Traditional 401k: If at or past RMD age, take required minimum distribution
             trad_401k_rmd_amount = 0.0
             if trad_401k and trad_401k_bal > 0:
@@ -1148,10 +1293,12 @@ class BaseScenario(ScenarioCoreInfo):
             roth_401k_balance_list.append(roth_401k_bal if roth_401k else 0.0)
             trad_401k_balance_list.append(trad_401k_bal if trad_401k else 0.0)
             trad_ira_balance_list.append(trad_ira_bal if trad_ira else 0.0)
+            hsa_balance_list.append(hsa_bal if hsa else 0.0)
             trad_401k_rmd_list.append(trad_401k_rmd_amount)
             roth_ira_transfer_list.append(roth_ira_transfer)
             roth_401k_transfer_list.append(roth_401k_transfer)
             trad_401k_transfer_list.append(trad_401k_transfer)
+            hsa_transfer_list.append(hsa_transfer)
 
             # Log every 12 months and critical events
             # if i % 12 == 0 or savings < 0 or (roth_ira_contributions > 0 and i > 0):
@@ -1169,6 +1316,8 @@ class BaseScenario(ScenarioCoreInfo):
             roth_401k_transfer_list,
             trad_401k_transfer_list,
             trad_ira_balance_list,
+            hsa_balance_list,
+            hsa_transfer_list,
         )
 
     @cached_property
@@ -1227,6 +1376,7 @@ class BaseScenario(ScenarioCoreInfo):
             "roth_ira_transfer": self.savings_retirement_account_list[5],
             "roth_401k_transfer": self.savings_retirement_account_list[6],
             "traditional_401k_transfer": self.savings_retirement_account_list[7],
+            "hsa_transfer": self.savings_retirement_account_list[10],
         }
         for ret_account in self.retirement_list:
             data_3[f"{ret_account.name}_contribution"] = (
@@ -1240,6 +1390,8 @@ class BaseScenario(ScenarioCoreInfo):
                 data_3[ret_account.name] = self.savings_retirement_account_list[3]
             elif isinstance(ret_account, RetirementTradIRA):
                 data_3[ret_account.name] = self.savings_retirement_account_list[8]
+            elif isinstance(ret_account, RetirementHSA):
+                data_3[ret_account.name] = self.savings_retirement_account_list[9]
 
         data = {**data_1, **non_base_items_lists, **data_3}
 
