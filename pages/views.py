@@ -608,8 +608,8 @@ def calculations(request):
     ####
 
     avg_savings_at_retirement = total_savings_df.loc[
-        lambda df: (df.age_yrs == 65)  # general_inputs_dict["retirement_age_yrs"])
-        & (df.age_mos == 0)  # general_inputs_dict["retirement_age_mos"])
+        lambda df: (df.age_yrs == general_inputs_dict["retirement_age_yrs"])
+        & (df.age_mos == general_inputs_dict["retirement_age_mos"])
     ]["avg"].iat[0]
 
     avg_savings_at_retirement_fmt = f"${float(avg_savings_at_retirement):,.0f}"

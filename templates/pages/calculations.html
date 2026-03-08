@@ -95,19 +95,20 @@
                     </tr>
                 </thead>
                 {% load humanize %}
+                {% load custom_filters %}
                 <tbody>
                     {% for age in table_data %}
                         <tr>
                             <td style="text-align: center; border-right: 1px solid black;">{{ age.age_yrs }}</td>
-                            <td style="text-align: center;">${{ age.avg_tot|floatformat:0|intcomma }}</td>
-                            <td style="text-align: center;">${{ age.pct_15_tot|floatformat:0|intcomma }}</td>
-                            <td style="text-align: center; border-right: 1px solid black;">${{ age.pct_85_tot|floatformat:0|intcomma }}</td>
-                            <td style="text-align: center;">${{ age.avg_savings|floatformat:0|intcomma }}</td>
-                            <td style="text-align: center;">${{ age.pct_15_savings|floatformat:0|intcomma }}</td>
-                            <td style="text-align: center; border-right: 1px solid black;">${{ age.pct_85_savings|floatformat:0|intcomma }}</td>
-                            <td style="text-align: center;">${{ age.avg_retirement|floatformat:0|intcomma }}</td>
-                            <td style="text-align: center;">${{ age.pct_15_retirement|floatformat:0|intcomma }}</td>
-                            <td style="text-align: center;">${{ age.pct_85_retirement|floatformat:0|intcomma }}</td>
+                            <td style="text-align: center;">{{ age.avg_tot|neg_dollar }}</td>
+                            <td style="text-align: center;">{{ age.pct_15_tot|neg_dollar }}</td>
+                            <td style="text-align: center; border-right: 1px solid black;">{{ age.pct_85_tot|neg_dollar }}</td>
+                            <td style="text-align: center;">{{ age.avg_savings|neg_dollar }}</td>
+                            <td style="text-align: center;">{{ age.pct_15_savings|neg_dollar }}</td>
+                            <td style="text-align: center; border-right: 1px solid black;">{{ age.pct_85_savings|neg_dollar }}</td>
+                            <td style="text-align: center;">{{ age.avg_retirement|neg_dollar }}</td>
+                            <td style="text-align: center;">{{ age.pct_15_retirement|neg_dollar }}</td>
+                            <td style="text-align: center;">{{ age.pct_85_retirement|neg_dollar }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -215,8 +216,7 @@
             },
             ticks: {
               callback: function(value) {
-                // Format the y-axis values as dollars
-                return '$' + value.toLocaleString();
+                return formatDollar(value);
               },
               stepsize: 20
             },
