@@ -559,47 +559,30 @@ def calculations(request):
     death_age = 110
     death_months = 0
 
-    # Build list of columns to drop for death calculation
-    death_cols_to_drop = ["avg", "account_type", "account_0"]
-    death_cols_to_drop.extend(avg_retirement_columns)
-
     # Show all columns and rows in pandas
     pd.set_option("display.max_columns", None)
     pd.set_option("display.max_rows", None)
 
-    total_all_at_death = (
-        pd.concat(
-            [
-                total_savings_df.loc[
-                    lambda df: (df.age_yrs == death_age) & (df.age_mos == death_months)
-                ],
-                total_retirement_df.loc[
-                    lambda df: (df.age_yrs == death_age) & (df.age_mos == death_months)
-                ],
-            ]
-        )
-        .drop(
-            columns=death_cols_to_drop
-        )  # Don't want to include base account - not stochastic
-        .groupby(["age_yrs", "age_mos"])
-        .sum()
-    )
+    # Get savings and retirement rows at death age
+    savings_at_death = total_savings_df.loc[
+        lambda df: (df.age_yrs == death_age) & (df.age_mos == death_months)
+    ]
+    retirement_at_death = total_retirement_df.loc[
+        lambda df: (df.age_yrs == death_age) & (df.age_mos == death_months)
+    ]
 
-    # print("total_all_at_death")
-    # print(total_all_at_death.head())
-    # total_all_at_death.to_csv("./outputs/total_all_at_death.csv")
+    # For each scenario 1-100, sum savings + all retirement account balances
+    num_scenarios = 100
+    scenario_totals = []
+    for n in range(1, num_scenarios + 1):
+        total = savings_at_death[f"account_{n}"].iat[0]
+        for col in retirement_at_death.columns:
+            if col.endswith(f"_{n}"):
+                total += retirement_at_death[col].iat[0]
+        scenario_totals.append(total)
 
-    negative_count = (
-        (total_all_at_death.reset_index().drop(columns=["age_yrs", "age_mos"]) < 0)
-        .sum(axis=1)
-        .iat[0]
-    )
-
-    # print(f"{negative_count = }")
-
-    total_scenarios_count = (
-        total_all_at_death.reset_index().drop(columns=["age_yrs", "age_mos"]).shape[1]
-    )
+    negative_count = sum(1 for t in scenario_totals if t < 0)
+    total_scenarios_count = num_scenarios
 
     # print(f"total scenarios is {total_scenarios_count}")
 
