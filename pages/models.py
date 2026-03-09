@@ -147,6 +147,7 @@ class RetirementInputsModel(models.Model):
         ("traditional_ira", "Traditional IRA"),
         ("roth_ira", "Roth IRA"),
         ("hsa", "HSA"),
+        ("brokerage", "Brokerage"),
     ]
 
     is_active = models.BooleanField(default=False)

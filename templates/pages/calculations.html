@@ -197,6 +197,19 @@
         });
     {% endif %}
 
+    {% if brokerage_by_age %}
+    datasets.push({
+          label: "Brokerage",
+          backgroundColor: "#1abc9c",
+          borderColor: "#1abc9c",
+          hoverBackgroundColor: "#1abc9c",
+          hoverBorderColor: "#1abc9c",
+          data: {{ brokerage_by_age | safe }},
+          barPercentage: .325,
+          categoryPercentage: .5
+        });
+    {% endif %}
+
     new Chart(document.getElementById("chartjs-dashboard-bar"), {
       type: "bar",
       data: {

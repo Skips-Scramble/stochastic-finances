@@ -678,6 +678,11 @@ def calculations(request):
             chart_df["avg_hsa"].round().to_list()
         )
 
+    if "avg_brokerage" in chart_df.columns:
+        retirement_chart_data["brokerage_by_age"] = (
+            chart_df["avg_brokerage"].round().to_list()
+        )
+
     ####
     # Get data for table
     ####
