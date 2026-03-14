@@ -16,6 +16,7 @@ from .base_scenario import (
     ROTH_IRA_WITHDRAWAL_AGE_MOS,
     ROTH_IRA_WITHDRAWAL_AGE_YRS,
     HSA_WITHDRAWAL_AGE_YRS,
+    TRAD_401K_TAX_RATE,
     uniform_lifetime_table,
 )
 
@@ -134,7 +135,7 @@ class RandomScenario:
     @cached_property
     def var_savings_retirement_account_list(
         self,
-    ) -> tuple[list, list, list, list, list, list, list, list, list, list, list, list, list]:
+    ) -> tuple[list, list, list, list, list, list, list, list, list, list, list, list, list, list]:
         """Calculate the amount of money in your savings and retirement accounts over time,
         stopping Roth IRA contributions and withdrawing contributions (not interest) when
         savings falls below threshold. Once age >= 59.5, withdraw from full Roth IRA
@@ -151,7 +152,8 @@ class RandomScenario:
                       roth_ira_transfer_list, roth_401k_transfer_list,
                       trad_401k_transfer_list, trad_ira_balance_list,
                       hsa_balance_list, hsa_transfer_list,
-                      brokerage_balance_list, brokerage_transfer_list)
+                      brokerage_balance_list, brokerage_transfer_list,
+                      trad_401k_tax_list)
         """
         total_non_base_bills_list = [
             sum(sublist) for sublist in zip(*self.base_scenario.non_base_bills_lists)
@@ -172,6 +174,7 @@ class RandomScenario:
         trad_401k_transfer_list = []
         hsa_transfer_list = []
         brokerage_transfer_list = []
+        trad_401k_tax_list = []
 
         # Track Roth IRA contributions separately from growth
         roth_ira_contributions = 0.0
@@ -224,6 +227,7 @@ class RandomScenario:
             trad_401k_transfer = 0.0
             hsa_transfer = 0.0
             brokerage_transfer = 0.0
+            trad_401k_tax = 0.0
 
             if i == 0:
                 # Initialize accounts
@@ -361,10 +365,13 @@ class RandomScenario:
                     shortfall = (
                         self.base_scenario.monthly_savings_threshold_list[i] - savings
                     )
-                    withdrawal = min(shortfall, trad_401k_bal)
-                    savings += withdrawal
+                    gross_needed = shortfall / (1 - TRAD_401K_TAX_RATE)
+                    withdrawal = min(gross_needed, trad_401k_bal)
+                    tax = withdrawal * TRAD_401K_TAX_RATE
+                    trad_401k_tax += tax
+                    savings += withdrawal - tax
                     trad_401k_bal -= withdrawal
-                    trad_401k_transfer += withdrawal
+                    trad_401k_transfer += withdrawal - tax
 
                 # If still below threshold and age >= 65, withdraw from HSA for general expenses
                 age_yrs = self.base_scenario.age_by_year_list[i]
@@ -571,10 +578,13 @@ class RandomScenario:
                     shortfall = (
                         self.base_scenario.monthly_savings_threshold_list[i] - savings
                     )
-                    withdrawal = min(shortfall, trad_401k_bal)
-                    savings += withdrawal
+                    gross_needed = shortfall / (1 - TRAD_401K_TAX_RATE)
+                    withdrawal = min(gross_needed, trad_401k_bal)
+                    tax = withdrawal * TRAD_401K_TAX_RATE
+                    trad_401k_tax += tax
+                    savings += withdrawal - tax
                     trad_401k_bal -= withdrawal
-                    trad_401k_transfer += withdrawal
+                    trad_401k_transfer += withdrawal - tax
 
                 # If still below threshold and age >= 65, withdraw from HSA for general expenses
                 can_withdraw_hsa = age_yrs >= HSA_WITHDRAWAL_AGE_YRS
@@ -663,8 +673,11 @@ class RandomScenario:
                     annual_rmd = trad_401k_bal / distribution_period
                     monthly_rmd = annual_rmd / 12
                     trad_401k_rmd_amount = min(monthly_rmd, trad_401k_bal)
-                    savings += trad_401k_rmd_amount
+                    tax = trad_401k_rmd_amount * TRAD_401K_TAX_RATE
+                    trad_401k_tax += tax
+                    savings += trad_401k_rmd_amount - tax
                     trad_401k_bal -= trad_401k_rmd_amount
+                    trad_401k_transfer += trad_401k_rmd_amount - tax
 
             # Append current balances to lists
             savings_list.append(savings)
@@ -681,6 +694,7 @@ class RandomScenario:
             trad_401k_transfer_list.append(trad_401k_transfer)
             hsa_transfer_list.append(hsa_transfer)
             brokerage_transfer_list.append(brokerage_transfer)
+            trad_401k_tax_list.append(trad_401k_tax)
 
         return (
             savings_list,
@@ -696,6 +710,7 @@ class RandomScenario:
             hsa_transfer_list,
             brokerage_balance_list,
             brokerage_transfer_list,
+            trad_401k_tax_list,
         )
 
     def create_full_df(self) -> pd.DataFrame:
@@ -716,6 +731,7 @@ class RandomScenario:
             ],
             "var_hsa_transfer": self.var_savings_retirement_account_list[10],
             "var_brokerage_transfer": self.var_savings_retirement_account_list[12],
+            "var_trad_401k_tax": self.var_savings_retirement_account_list[13],
             "var_yearly_mkt_interest": self.var_yearly_mkt_interest,
             "var_monthly_mkt_interest": self.var_monthly_mkt_interest,
         }
