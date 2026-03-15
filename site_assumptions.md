@@ -30,3 +30,7 @@ When the savings account balance drops below the `savings_lower_limit` (inflatio
 6. **HSA** — Requires age >= 65 (for non-medical use).
 
 At each step, the withdrawal amount is the lesser of the shortfall (threshold minus current savings) and the available balance in that account.
+
+#### Brokerage Account Taxes
+- Each month's brokerage interest is tracked. In January, the prior calendar year's total interest is finalized. In April, that amount is taxed at 20% and the tax is deducted from the savings account.
+- If the simulation starts mid-year, interest is accumulated from the start month through December and taxed the following April.

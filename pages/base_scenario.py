@@ -13,6 +13,7 @@ ROTH_IRA_WITHDRAWAL_AGE_YRS = 59
 ROTH_IRA_WITHDRAWAL_AGE_MOS = 6
 HSA_WITHDRAWAL_AGE_YRS = 65
 TRAD_401K_TAX_RATE = 0.20
+BROKERAGE_TAX_RATE = 0.20
 HEALTHCARE_BINS = [0, 19, 45, 65, 85, float("inf")]
 HEALTHCARE_LABELS = ["0-18", "19-44", "45-64", "65-84", "85+"]
 uniform_lifetime_table = {
@@ -940,6 +941,8 @@ class BaseScenario(ScenarioCoreInfo):
         list,
         list,
         list,
+        list,
+        list,
     ]:
         """Calculate the amount of money in your savings and retirement accounts over time,
         stopping Roth IRA contributions and withdrawing contributions (not interest) when
@@ -958,7 +961,8 @@ class BaseScenario(ScenarioCoreInfo):
                       trad_401k_transfer_list, trad_ira_balance_list,
                       hsa_balance_list, hsa_transfer_list,
                       brokerage_balance_list, brokerage_transfer_list,
-                      trad_401k_tax_list)
+                      trad_401k_tax_list, brokerage_interest_list,
+                      brokerage_income_tax_list)
         """
         total_non_base_bills_list = [
             sum(sublist) for sublist in zip(*self.non_base_bills_lists)
@@ -980,9 +984,13 @@ class BaseScenario(ScenarioCoreInfo):
         hsa_transfer_list = []
         brokerage_transfer_list = []
         trad_401k_tax_list = []
+        brokerage_interest_list = []
+        brokerage_income_tax_list = []
 
         # Track Roth IRA contributions separately from growth
         roth_ira_contributions = 0.0
+        brokerage_current_year_interest = 0.0
+        brokerage_prior_year_interest = 0.0
         # roth_ira_bal = 0.0
 
         # Get Roth IRA account if it exists. Assume only one Roth IRA for simplicity.
@@ -1034,6 +1042,8 @@ class BaseScenario(ScenarioCoreInfo):
             hsa_transfer = 0.0
             brokerage_transfer = 0.0
             trad_401k_tax = 0.0
+            brokerage_interest = 0.0
+            brokerage_income_tax = 0.0
 
             if i == 0:
                 # Initialize accounts
@@ -1243,10 +1253,12 @@ class BaseScenario(ScenarioCoreInfo):
                 # Grow Brokerage with interest and contributions pre-retirement
                 if brokerage:
                     contribution_brokerage = brokerage.retirement_increase_list[i]
+                    pre_growth_bal = brokerage_bal + contribution_brokerage
+                    interest_earned = pre_growth_bal * self.monthly_mkt_interest
+                    brokerage_interest = interest_earned
                     brokerage_bal = float(
                         round(
-                            (brokerage_bal + contribution_brokerage)
-                            * (1 + self.monthly_mkt_interest),
+                            pre_growth_bal + interest_earned,
                             6,
                         )
                     )
@@ -1401,9 +1413,11 @@ class BaseScenario(ScenarioCoreInfo):
 
                 # Grow Brokerage (no contributions in retirement)
                 if brokerage:
+                    interest_earned = brokerage_bal * self.monthly_mkt_interest
+                    brokerage_interest = interest_earned
                     brokerage_bal = float(
                         round(
-                            brokerage_bal * (1 + self.monthly_mkt_interest),
+                            brokerage_bal + interest_earned,
                             6,
                         )
                     )
@@ -1445,6 +1459,26 @@ class BaseScenario(ScenarioCoreInfo):
             hsa_transfer_list.append(hsa_transfer)
             brokerage_transfer_list.append(brokerage_transfer)
             trad_401k_tax_list.append(trad_401k_tax)
+            brokerage_interest_list.append(round(brokerage_interest, 6))
+
+            # At the start of each January, roll current year interest into prior year
+            current_month = self.month_list[i]
+            if current_month.month == 1:
+                brokerage_prior_year_interest = brokerage_current_year_interest
+                brokerage_current_year_interest = 0.0
+
+            # Accumulate this month's interest into the current calendar year
+            brokerage_current_year_interest += brokerage_interest
+
+            # In April, tax the prior calendar year's brokerage interest
+            if current_month.month == 4 and brokerage_prior_year_interest > 0:
+                brokerage_income_tax = round(
+                    brokerage_prior_year_interest * BROKERAGE_TAX_RATE, 6
+                )
+                savings -= brokerage_income_tax
+                brokerage_prior_year_interest = 0.0
+
+            brokerage_income_tax_list.append(brokerage_income_tax)
 
             # Log every 12 months and critical events
             # if i % 12 == 0 or savings < 0 or (roth_ira_contributions > 0 and i > 0):
@@ -1467,6 +1501,8 @@ class BaseScenario(ScenarioCoreInfo):
             brokerage_balance_list,
             brokerage_transfer_list,
             trad_401k_tax_list,
+            brokerage_interest_list,
+            brokerage_income_tax_list,
         )
 
     @cached_property
@@ -1528,6 +1564,8 @@ class BaseScenario(ScenarioCoreInfo):
             "hsa_transfer": self.savings_retirement_account_list[10],
             "brokerage_transfer": self.savings_retirement_account_list[12],
             "trad_401k_tax": self.savings_retirement_account_list[13],
+            "brokerage_interest": self.savings_retirement_account_list[14],
+            "brokerage_income_tax": self.savings_retirement_account_list[15],
         }
         for ret_account in self.retirement_list:
             data_3[f"{ret_account.name}_contribution"] = (
