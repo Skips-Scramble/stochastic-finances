@@ -1114,9 +1114,15 @@ class BaseScenario(ScenarioCoreInfo):
                 still_below = savings <= self.monthly_savings_threshold_list[i]
                 if still_below and brokerage and brokerage_bal > 0:
                     shortfall = self.monthly_savings_threshold_list[i] - savings
-                    gain_ratio = max(0, (brokerage_bal - brokerage_cost_basis) / brokerage_bal)
+                    gain_ratio = max(
+                        0, (brokerage_bal - brokerage_cost_basis) / brokerage_bal
+                    )
                     effective_tax_rate = gain_ratio * BROKERAGE_TAX_RATE
-                    gross_needed = shortfall / (1 - effective_tax_rate) if effective_tax_rate < 1 else shortfall
+                    gross_needed = (
+                        shortfall / (1 - effective_tax_rate)
+                        if effective_tax_rate < 1
+                        else shortfall
+                    )
                     withdrawal = min(gross_needed, brokerage_bal)
                     tax = withdrawal * gain_ratio * BROKERAGE_TAX_RATE
                     basis_ratio = brokerage_cost_basis / brokerage_bal
@@ -1315,9 +1321,15 @@ class BaseScenario(ScenarioCoreInfo):
                 still_below = savings <= self.monthly_savings_threshold_list[i]
                 if still_below and brokerage and brokerage_bal > 0:
                     shortfall = self.monthly_savings_threshold_list[i] - savings
-                    gain_ratio = max(0, (brokerage_bal - brokerage_cost_basis) / brokerage_bal)
+                    gain_ratio = max(
+                        0, (brokerage_bal - brokerage_cost_basis) / brokerage_bal
+                    )
                     effective_tax_rate = gain_ratio * BROKERAGE_TAX_RATE
-                    gross_needed = shortfall / (1 - effective_tax_rate) if effective_tax_rate < 1 else shortfall
+                    gross_needed = (
+                        shortfall / (1 - effective_tax_rate)
+                        if effective_tax_rate < 1
+                        else shortfall
+                    )
                     withdrawal = min(gross_needed, brokerage_bal)
                     tax = withdrawal * gain_ratio * BROKERAGE_TAX_RATE
                     basis_ratio = brokerage_cost_basis / brokerage_bal
