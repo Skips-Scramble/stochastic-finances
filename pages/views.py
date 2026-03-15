@@ -674,9 +674,7 @@ def calculations(request):
         # print(f"roth_ira_for_chart = {retirement_chart_data['roth_ira_by_age']}")
 
     if "avg_hsa" in chart_df.columns:
-        retirement_chart_data["hsa_by_age"] = (
-            chart_df["avg_hsa"].round().to_list()
-        )
+        retirement_chart_data["hsa_by_age"] = chart_df["avg_hsa"].round().to_list()
 
     if "avg_brokerage" in chart_df.columns:
         retirement_chart_data["brokerage_by_age"] = (

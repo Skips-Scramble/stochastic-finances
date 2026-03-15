@@ -135,7 +135,22 @@ class RandomScenario:
     @cached_property
     def var_savings_retirement_account_list(
         self,
-    ) -> tuple[list, list, list, list, list, list, list, list, list, list, list, list, list, list]:
+    ) -> tuple[
+        list,
+        list,
+        list,
+        list,
+        list,
+        list,
+        list,
+        list,
+        list,
+        list,
+        list,
+        list,
+        list,
+        list,
+    ]:
         """Calculate the amount of money in your savings and retirement accounts over time,
         stopping Roth IRA contributions and withdrawing contributions (not interest) when
         savings falls below threshold. Once age >= 59.5, withdraw from full Roth IRA
@@ -249,9 +264,7 @@ class RandomScenario:
                 trad_ira_bal = (
                     float(round(trad_ira.base_retirement, 6)) if trad_ira else 0.0
                 )
-                hsa_bal = (
-                    float(round(hsa.base_retirement, 6)) if hsa else 0.0
-                )
+                hsa_bal = float(round(hsa.base_retirement, 6)) if hsa else 0.0
                 brokerage_bal = (
                     float(round(brokerage.base_retirement, 6)) if brokerage else 0.0
                 )
@@ -296,11 +309,7 @@ class RandomScenario:
                 still_below = (
                     savings <= self.base_scenario.monthly_savings_threshold_list[i]
                 )
-                if (
-                    still_below
-                    and brokerage
-                    and brokerage_bal > 0
-                ):
+                if still_below and brokerage and brokerage_bal > 0:
                     shortfall = (
                         self.base_scenario.monthly_savings_threshold_list[i] - savings
                     )
@@ -379,12 +388,7 @@ class RandomScenario:
                 still_below = (
                     savings <= self.base_scenario.monthly_savings_threshold_list[i]
                 )
-                if (
-                    still_below
-                    and can_withdraw_hsa
-                    and hsa
-                    and hsa_bal > 0
-                ):
+                if still_below and can_withdraw_hsa and hsa and hsa_bal > 0:
                     shortfall = (
                         self.base_scenario.monthly_savings_threshold_list[i] - savings
                     )
@@ -509,11 +513,7 @@ class RandomScenario:
                 still_below = (
                     savings <= self.base_scenario.monthly_savings_threshold_list[i]
                 )
-                if (
-                    still_below
-                    and brokerage
-                    and brokerage_bal > 0
-                ):
+                if still_below and brokerage and brokerage_bal > 0:
                     shortfall = (
                         self.base_scenario.monthly_savings_threshold_list[i] - savings
                     )
@@ -591,12 +591,7 @@ class RandomScenario:
                 still_below = (
                     savings <= self.base_scenario.monthly_savings_threshold_list[i]
                 )
-                if (
-                    still_below
-                    and can_withdraw_hsa
-                    and hsa
-                    and hsa_bal > 0
-                ):
+                if still_below and can_withdraw_hsa and hsa and hsa_bal > 0:
                     shortfall = (
                         self.base_scenario.monthly_savings_threshold_list[i] - savings
                     )
