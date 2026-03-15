@@ -13,7 +13,7 @@ ROTH_IRA_WITHDRAWAL_AGE_YRS = 59
 ROTH_IRA_WITHDRAWAL_AGE_MOS = 6
 HSA_WITHDRAWAL_AGE_YRS = 65
 TRAD_401K_TAX_RATE = 0.20
-BROKERAGE_TAX_RATE = 0.20
+BROKERAGE_TAX_RATE = 0.15
 HEALTHCARE_BINS = [0, 19, 45, 65, 85, float("inf")]
 HEALTHCARE_LABELS = ["0-18", "19-44", "45-64", "65-84", "85+"]
 uniform_lifetime_table = {
@@ -943,6 +943,7 @@ class BaseScenario(ScenarioCoreInfo):
         list,
         list,
         list,
+        list,
     ]:
         """Calculate the amount of money in your savings and retirement accounts over time,
         stopping Roth IRA contributions and withdrawing contributions (not interest) when
@@ -952,6 +953,7 @@ class BaseScenario(ScenarioCoreInfo):
         Roth IRAs and Roth 401(k)s are exempt from RMDs (SECURE Act 2.0).
         HSA funds can be withdrawn for general expenses at age 65+ (no RMDs ever).
         Brokerage funds can be withdrawn at any age (no RMDs, no penalties).
+        Brokerage withdrawals are subject to capital gains tax on the gains portion.
 
         Returns:
             tuple of (savings_list, roth_ira_balance_list,
@@ -962,7 +964,7 @@ class BaseScenario(ScenarioCoreInfo):
                       hsa_balance_list, hsa_transfer_list,
                       brokerage_balance_list, brokerage_transfer_list,
                       trad_401k_tax_list, brokerage_interest_list,
-                      brokerage_income_tax_list)
+                      brokerage_income_tax_list, brokerage_tax_list)
         """
         total_non_base_bills_list = [
             sum(sublist) for sublist in zip(*self.non_base_bills_lists)
@@ -986,9 +988,11 @@ class BaseScenario(ScenarioCoreInfo):
         trad_401k_tax_list = []
         brokerage_interest_list = []
         brokerage_income_tax_list = []
+        brokerage_tax_list = []
 
         # Track Roth IRA contributions separately from growth
         roth_ira_contributions = 0.0
+        brokerage_cost_basis = 0.0
         brokerage_current_year_interest = 0.0
         brokerage_prior_year_interest = 0.0
         # roth_ira_bal = 0.0
@@ -1042,6 +1046,7 @@ class BaseScenario(ScenarioCoreInfo):
             hsa_transfer = 0.0
             brokerage_transfer = 0.0
             trad_401k_tax = 0.0
+            brokerage_tax = 0.0
             brokerage_interest = 0.0
             brokerage_income_tax = 0.0
 
@@ -1067,6 +1072,7 @@ class BaseScenario(ScenarioCoreInfo):
                 brokerage_bal = (
                     float(round(brokerage.base_retirement, 6)) if brokerage else 0.0
                 )
+                brokerage_cost_basis = brokerage_bal
 
             elif self.pre_retire_month_count_list[i] != 0:  # If you're not retired
                 # Update savings (pay expenses from savings)
@@ -1104,13 +1110,21 @@ class BaseScenario(ScenarioCoreInfo):
                     roth_ira_transfer += withdrawal
 
                 # If still below threshold, withdraw from brokerage (no age restriction)
+                # Capital gains tax applies to the gains portion of the withdrawal
                 still_below = savings <= self.monthly_savings_threshold_list[i]
                 if still_below and brokerage and brokerage_bal > 0:
                     shortfall = self.monthly_savings_threshold_list[i] - savings
-                    withdrawal = min(shortfall, brokerage_bal)
-                    savings += withdrawal
+                    gain_ratio = max(0, (brokerage_bal - brokerage_cost_basis) / brokerage_bal)
+                    effective_tax_rate = gain_ratio * BROKERAGE_TAX_RATE
+                    gross_needed = shortfall / (1 - effective_tax_rate) if effective_tax_rate < 1 else shortfall
+                    withdrawal = min(gross_needed, brokerage_bal)
+                    tax = withdrawal * gain_ratio * BROKERAGE_TAX_RATE
+                    basis_ratio = brokerage_cost_basis / brokerage_bal
+                    brokerage_cost_basis -= withdrawal * basis_ratio
                     brokerage_bal -= withdrawal
-                    brokerage_transfer += withdrawal
+                    savings += withdrawal - tax
+                    brokerage_transfer += withdrawal - tax
+                    brokerage_tax += tax
 
                 # If still below threshold and age >= 59.5, withdraw from full Roth IRA balance
                 age_yrs = self.age_by_year_list[i]
@@ -1253,6 +1267,7 @@ class BaseScenario(ScenarioCoreInfo):
                 # Grow Brokerage with interest and contributions pre-retirement
                 if brokerage:
                     contribution_brokerage = brokerage.retirement_increase_list[i]
+                    brokerage_cost_basis += contribution_brokerage
                     pre_growth_bal = brokerage_bal + contribution_brokerage
                     interest_earned = pre_growth_bal * self.monthly_mkt_interest
                     brokerage_interest = interest_earned
@@ -1296,13 +1311,21 @@ class BaseScenario(ScenarioCoreInfo):
                     roth_ira_transfer += withdrawal
 
                 # If still below threshold, withdraw from brokerage (no age restriction)
+                # Capital gains tax applies to the gains portion of the withdrawal
                 still_below = savings <= self.monthly_savings_threshold_list[i]
                 if still_below and brokerage and brokerage_bal > 0:
                     shortfall = self.monthly_savings_threshold_list[i] - savings
-                    withdrawal = min(shortfall, brokerage_bal)
-                    savings += withdrawal
+                    gain_ratio = max(0, (brokerage_bal - brokerage_cost_basis) / brokerage_bal)
+                    effective_tax_rate = gain_ratio * BROKERAGE_TAX_RATE
+                    gross_needed = shortfall / (1 - effective_tax_rate) if effective_tax_rate < 1 else shortfall
+                    withdrawal = min(gross_needed, brokerage_bal)
+                    tax = withdrawal * gain_ratio * BROKERAGE_TAX_RATE
+                    basis_ratio = brokerage_cost_basis / brokerage_bal
+                    brokerage_cost_basis -= withdrawal * basis_ratio
                     brokerage_bal -= withdrawal
-                    brokerage_transfer += withdrawal
+                    savings += withdrawal - tax
+                    brokerage_transfer += withdrawal - tax
+                    brokerage_tax += tax
 
                 # If still below threshold and age >= 59.5, withdraw from full Roth IRA balance
                 age_yrs = self.age_by_year_list[i]
@@ -1459,6 +1482,7 @@ class BaseScenario(ScenarioCoreInfo):
             hsa_transfer_list.append(hsa_transfer)
             brokerage_transfer_list.append(brokerage_transfer)
             trad_401k_tax_list.append(trad_401k_tax)
+            brokerage_tax_list.append(brokerage_tax)
             brokerage_interest_list.append(round(brokerage_interest, 6))
 
             # At the start of each January, roll current year interest into prior year
@@ -1503,6 +1527,7 @@ class BaseScenario(ScenarioCoreInfo):
             trad_401k_tax_list,
             brokerage_interest_list,
             brokerage_income_tax_list,
+            brokerage_tax_list,
         )
 
     @cached_property
@@ -1566,6 +1591,7 @@ class BaseScenario(ScenarioCoreInfo):
             "trad_401k_tax": self.savings_retirement_account_list[13],
             "brokerage_interest": self.savings_retirement_account_list[14],
             "brokerage_income_tax": self.savings_retirement_account_list[15],
+            "brokerage_tax": self.savings_retirement_account_list[16],
         }
         for ret_account in self.retirement_list:
             data_3[f"{ret_account.name}_contribution"] = (
