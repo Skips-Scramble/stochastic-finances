@@ -203,8 +203,6 @@ class RandomScenario:
         # Track Roth IRA contributions separately from growth
         roth_ira_contributions = 0.0
         brokerage_cost_basis = 0.0
-        brokerage_current_year_interest = 0.0
-        brokerage_prior_year_interest = 0.0
 
         # Get Roth IRA account if it exists. Assume only one Roth IRA for simplicity.
         roth_ira = None
@@ -727,24 +725,6 @@ class RandomScenario:
             trad_401k_tax_list.append(trad_401k_tax)
             brokerage_tax_list.append(brokerage_tax)
             brokerage_interest_list.append(round(brokerage_interest, 6))
-
-            # At the start of each January, roll current year interest into prior year
-            current_month = self.base_scenario.month_list[i]
-            if current_month.month == 1:
-                brokerage_prior_year_interest = brokerage_current_year_interest
-                brokerage_current_year_interest = 0.0
-
-            # Accumulate this month's interest into the current calendar year
-            brokerage_current_year_interest += brokerage_interest
-
-            # In April, tax the prior calendar year's brokerage interest
-            if current_month.month == 4 and brokerage_prior_year_interest > 0:
-                brokerage_income_tax = round(
-                    brokerage_prior_year_interest * BROKERAGE_TAX_RATE, 6
-                )
-                savings -= brokerage_income_tax
-                brokerage_prior_year_interest = 0.0
-
             brokerage_income_tax_list.append(brokerage_income_tax)
 
         return (
