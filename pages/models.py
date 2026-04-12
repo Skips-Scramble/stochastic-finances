@@ -59,6 +59,13 @@ class GeneralInputsModel(models.Model):
         default="standard",
     )
 
+    private_insurance_per_mo = models.FloatField(
+        null=True,
+        blank=True,
+        default=None,
+        validators=[decimal_validator],
+    )
+
     retirement_extra_expenses = models.FloatField(
         validators=[validate_retirement_extra_expenses, decimal_validator],
         default=0,

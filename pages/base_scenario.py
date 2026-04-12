@@ -16,6 +16,8 @@ TRAD_401K_TAX_RATE = 0.20
 BROKERAGE_TAX_RATE = 0.15
 HEALTHCARE_BINS = [0, 19, 45, 65, 85, float("inf")]
 HEALTHCARE_LABELS = ["0-18", "19-44", "45-64", "65-84", "85+"]
+MEDICARE_ELIGIBILITY_AGE_YRS = 65
+PRIVATE_INSURANCE_HEALTHCARE_RATE = 0.035  # Annual healthcare inflation for 45-64 age band
 uniform_lifetime_table = {
     72: 27.4,
     73: 26.5,
@@ -929,9 +931,13 @@ class BaseScenario(ScenarioCoreInfo):
         Returns $0 for every month before age 65 regardless of coverage type.
         The medicare_inputs.csv only contains rows for the 65-84 and 85+ age bands, so
         months outside those bands produce NaN on merge and are filled with 0.0.
-        Medicare costs are only applied when add_healthcare is enabled.
+        Medicare costs are only applied when add_healthcare is enabled and
+        medicare_coverage_type is 'standard'.
         """
         if not self.assumptions.get("add_healthcare", False):
+            return [0.0] * self.total_months
+
+        if self.assumptions.get("medicare_coverage_type", "standard") != "standard":
             return [0.0] * self.total_months
 
         starting_df = pd.DataFrame(
@@ -985,6 +991,43 @@ class BaseScenario(ScenarioCoreInfo):
                 self.medicare_part_d_premium_costs,
             )
         ]
+
+    @cached_property
+    def private_insurance_costs(self) -> list:
+        """Monthly private insurance costs for retirees before Medicare eligibility at 65.
+
+        Applies from retirement date until age 65 when the user has opted into
+        healthcare costs, is retiring before age 65, and has provided a monthly
+        private insurance premium. The premium is inflated forward from today's
+        value using the 45-64 age band healthcare annual inflation rate.
+        """
+        if not self.assumptions.get("add_healthcare", False):
+            return [0.0] * self.total_months
+
+        private_ins_per_mo = self.assumptions.get("private_insurance_per_mo") or 0.0
+        if private_ins_per_mo <= 0:
+            return [0.0] * self.total_months
+
+        if int(self.assumptions["retirement_age_yrs"]) >= MEDICARE_ELIGIBILITY_AGE_YRS:
+            return [0.0] * self.total_months
+
+        medicare_date = calc_date_on_age(self.birthdate, MEDICARE_ELIGIBILITY_AGE_YRS, 0)
+
+        result: list[float] = []
+        for i, month in enumerate(self.month_list):
+            if month < self.retirement_date or month >= medicare_date:
+                result.append(0.0)
+            else:
+                inflated = float(
+                    round(
+                        private_ins_per_mo
+                        * (1 + PRIVATE_INSURANCE_HEALTHCARE_RATE) ** (i / 12),
+                        2,
+                    )
+                )
+                result.append(inflated)
+
+        return result
 
     @cached_property
     def savings_retirement_account_list(
@@ -1145,6 +1188,7 @@ class BaseScenario(ScenarioCoreInfo):
                             - total_non_base_bills_list[i]
                             - self.healthcare_costs[i]
                             - self.medicare_total_costs[i]
+                            - self.private_insurance_costs[i]
                         )
                         * (1 + self.monthly_rf_interest),
                         6,
@@ -1360,6 +1404,7 @@ class BaseScenario(ScenarioCoreInfo):
                                 + total_non_base_bills_list[i]
                                 + self.healthcare_costs[i]
                                 + self.medicare_total_costs[i]
+                                + self.private_insurance_costs[i]
                             )
                         )
                         * (1 + self.monthly_rf_interest),
@@ -1638,6 +1683,7 @@ class BaseScenario(ScenarioCoreInfo):
             "healthcare_cost": self.healthcare_costs,
             "medicare_part_b_premium": self.medicare_part_b_premium_costs,
             "medicare_part_d_premium": self.medicare_part_d_premium_costs,
+            "private_insurance_cost": self.private_insurance_costs,
             "savings_account": self.savings_retirement_account_list[0],
             "yearly_mkt_interest": self.yearly_mkt_interest,
             "monthly_mkt_interest": self.monthly_mkt_interest,
