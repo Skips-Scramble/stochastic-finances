@@ -56,12 +56,22 @@
         $('[data-toggle="tooltip"]').tooltip()
       })
 
-    // Toggle Medicare info blurb when add_healthcare checkbox changes
+    // Toggle Medicare info blurb and pre-Medicare insurance checkbox when add_healthcare changes
     const healthcareCheckbox = document.getElementById('id_add_healthcare');
     const medicareInfo = document.getElementById('medicare-info');
-    if (healthcareCheckbox && medicareInfo) {
+    const preMedicareField = document.getElementById('id_include_pre_medicare_insurance')?.closest('.mb-3');
+    function syncHealthcareFields(checked) {
+        if (medicareInfo) medicareInfo.classList.toggle('d-none', !checked);
+        if (preMedicareField) preMedicareField.classList.toggle('d-none', !checked);
+        if (!checked && document.getElementById('id_include_pre_medicare_insurance')) {
+            document.getElementById('id_include_pre_medicare_insurance').checked = false;
+        }
+    }
+    if (healthcareCheckbox) {
+        // Set initial state
+        syncHealthcareFields(healthcareCheckbox.checked);
         healthcareCheckbox.addEventListener('change', function () {
-            medicareInfo.classList.toggle('d-none', !this.checked);
+            syncHealthcareFields(this.checked);
         });
     }
 </script>

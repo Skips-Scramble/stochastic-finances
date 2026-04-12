@@ -26,10 +26,6 @@ from .model_validators import (
 )
 
 
-MEDICARE_CHOICES = [
-    ("none", "None"),
-    ("standard", "Standard Medicare (Parts A, B, D)"),
-]
 
 
 class GeneralInputsModel(models.Model):
@@ -53,17 +49,8 @@ class GeneralInputsModel(models.Model):
         default=False,
     )
 
-    medicare_coverage_type = models.CharField(
-        max_length=20,
-        choices=MEDICARE_CHOICES,
-        default="standard",
-    )
-
-    private_insurance_per_mo = models.FloatField(
-        null=True,
-        blank=True,
-        default=None,
-        validators=[decimal_validator],
+    include_pre_medicare_insurance = models.BooleanField(
+        default=False,
     )
 
     retirement_extra_expenses = models.FloatField(

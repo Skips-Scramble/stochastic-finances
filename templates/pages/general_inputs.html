@@ -26,7 +26,7 @@
             <p class="card-text">Retirement Age in Months: {{ item.retirement_age_mos }}</p>
             <p class="card-text">Add Healthcare Costs: {{ item.add_healthcare }}</p>
             {% if item.add_healthcare %}
-            <p class="card-text">Medicare Coverage: {{ item.get_medicare_coverage_type_display }}</p>
+            <p class="card-text">Include ACA Insurance (pre-65): {{ item.include_pre_medicare_insurance|yesno:"Yes,No" }}</p>
             {% endif %}
             <p class="card-text">Extra Expenses in Retirement: ${{ item.retirement_extra_expenses|floatformat:"0g" }}</p>
             <a href="{% url 'general_inputs_edit' item.id %}" class="btn btn-primary">Edit</a>

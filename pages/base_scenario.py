@@ -17,7 +17,8 @@ BROKERAGE_TAX_RATE = 0.15
 HEALTHCARE_BINS = [0, 19, 45, 65, 85, float("inf")]
 HEALTHCARE_LABELS = ["0-18", "19-44", "45-64", "65-84", "85+"]
 MEDICARE_ELIGIBILITY_AGE_YRS = 65
-PRIVATE_INSURANCE_HEALTHCARE_RATE = 0.035  # Annual healthcare inflation for 45-64 age band
+# Hardcoded ACA monthly premium (per month, in today's dollars) for pre-Medicare retirement coverage
+ACA_MONTHLY_PREMIUM = 450.0
 uniform_lifetime_table = {
     72: 27.4,
     73: 26.5,
@@ -931,13 +932,10 @@ class BaseScenario(ScenarioCoreInfo):
         Returns $0 for every month before age 65 regardless of coverage type.
         The medicare_inputs.csv only contains rows for the 65-84 and 85+ age bands, so
         months outside those bands produce NaN on merge and are filled with 0.0.
-        Medicare costs are only applied when add_healthcare is enabled and
-        medicare_coverage_type is 'standard'.
+        Medicare costs are only applied when add_healthcare is enabled.
+        Standard Medicare (Parts A, B, D) is always used.
         """
         if not self.assumptions.get("add_healthcare", False):
-            return [0.0] * self.total_months
-
-        if self.assumptions.get("medicare_coverage_type", "standard") != "standard":
             return [0.0] * self.total_months
 
         starting_df = pd.DataFrame(
@@ -994,34 +992,36 @@ class BaseScenario(ScenarioCoreInfo):
 
     @cached_property
     def private_insurance_costs(self) -> list:
-        """Monthly private insurance costs for retirees before Medicare eligibility at 65.
+        """Monthly ACA insurance costs for retirees before Medicare eligibility at 65.
 
         Applies from retirement date until age 65 when the user has opted into
-        healthcare costs, is retiring before age 65, and has provided a monthly
-        private insurance premium. The premium is inflated forward from today's
-        value using the 45-64 age band healthcare annual inflation rate.
+        healthcare costs, is retiring before age 65, and has opted to include
+        pre-Medicare insurance. The base premium (ACA_MONTHLY_PREMIUM) is
+        inflation-adjusted using the user's annual inflation rate, stepping up
+        once per year each January.
         """
         if not self.assumptions.get("add_healthcare", False):
             return [0.0] * self.total_months
 
-        private_ins_per_mo = self.assumptions.get("private_insurance_per_mo") or 0.0
-        if private_ins_per_mo <= 0:
+        if not self.assumptions.get("include_pre_medicare_insurance", False):
             return [0.0] * self.total_months
 
         if int(self.assumptions["retirement_age_yrs"]) >= MEDICARE_ELIGIBILITY_AGE_YRS:
             return [0.0] * self.total_months
 
         medicare_date = calc_date_on_age(self.birthdate, MEDICARE_ELIGIBILITY_AGE_YRS, 0)
+        annual_inflation = self.assumptions["base_inflation_per_yr"] / 100
+        base_year = self.start_date.year
 
         result: list[float] = []
-        for i, month in enumerate(self.month_list):
+        for month in self.month_list:
             if month < self.retirement_date or month >= medicare_date:
                 result.append(0.0)
             else:
+                years_elapsed = month.year - base_year
                 inflated = float(
                     round(
-                        private_ins_per_mo
-                        * (1 + PRIVATE_INSURANCE_HEALTHCARE_RATE) ** (i / 12),
+                        ACA_MONTHLY_PREMIUM * (1 + annual_inflation) ** years_elapsed,
                         2,
                     )
                 )
