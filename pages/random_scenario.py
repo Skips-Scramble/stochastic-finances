@@ -295,6 +295,7 @@ class RandomScenario:
                             - total_non_base_bills_list[i]
                             - self.base_scenario.healthcare_costs[i]
                             - self.base_scenario.medicare_total_costs[i]
+                            - self.base_scenario.private_insurance_costs[i]
                         )
                         * (1 + self.var_monthly_rf_interest[i]),
                         6,
@@ -505,6 +506,7 @@ class RandomScenario:
                                 + total_non_base_bills_list[i]
                                 + self.base_scenario.healthcare_costs[i]
                                 + self.base_scenario.medicare_total_costs[i]
+                                + self.base_scenario.private_insurance_costs[i]
                             )
                         )
                         * (1 + self.var_monthly_rf_interest[i]),
