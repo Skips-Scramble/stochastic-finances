@@ -37,6 +37,11 @@
                                     {{ field }}
                                 {% endif %}
                             </div>
+                            {% if field.name == "add_healthcare" %}
+                            <div id="medicare-info" class="mb-3 ms-2{% if not field.value %} d-none{% endif %}">
+                                <small class="text-muted">Medicare coverage: <strong>Standard Medicare (Parts A, B, D)</strong> premiums will be automatically included for months at age 65+.</small>
+                            </div>
+                            {% endif %}
                     {% endfor %}
                 </div>
             </div>
@@ -50,6 +55,15 @@
     $(function () {
         $('[data-toggle="tooltip"]').tooltip()
       })
+
+    // Toggle Medicare info blurb when add_healthcare checkbox changes
+    const healthcareCheckbox = document.getElementById('id_add_healthcare');
+    const medicareInfo = document.getElementById('medicare-info');
+    if (healthcareCheckbox && medicareInfo) {
+        healthcareCheckbox.addEventListener('change', function () {
+            medicareInfo.classList.toggle('d-none', !this.checked);
+        });
+    }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@floating-ui/dom@1.6.1"></script>
 

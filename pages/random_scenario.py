@@ -294,6 +294,7 @@ class RandomScenario:
                             + self.var_savings_increase_list[i]
                             - total_non_base_bills_list[i]
                             - self.base_scenario.healthcare_costs[i]
+                            - self.base_scenario.medicare_total_costs[i]
                         )
                         * (1 + self.var_monthly_rf_interest[i]),
                         6,
@@ -503,6 +504,7 @@ class RandomScenario:
                                 + self.var_post_retire_extra_bills_list[i]
                                 + total_non_base_bills_list[i]
                                 + self.base_scenario.healthcare_costs[i]
+                                + self.base_scenario.medicare_total_costs[i]
                             )
                         )
                         * (1 + self.var_monthly_rf_interest[i]),

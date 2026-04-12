@@ -26,6 +26,12 @@ from .model_validators import (
 )
 
 
+MEDICARE_CHOICES = [
+    ("none", "None"),
+    ("standard", "Standard Medicare (Parts A, B, D)"),
+]
+
+
 class GeneralInputsModel(models.Model):
     """General inputs to the model"""
 
@@ -45,6 +51,12 @@ class GeneralInputsModel(models.Model):
 
     add_healthcare = models.BooleanField(
         default=False,
+    )
+
+    medicare_coverage_type = models.CharField(
+        max_length=20,
+        choices=MEDICARE_CHOICES,
+        default="standard",
     )
 
     retirement_extra_expenses = models.FloatField(

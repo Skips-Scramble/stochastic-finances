@@ -923,6 +923,69 @@ class BaseScenario(ScenarioCoreInfo):
 
         return [0.0] * self.total_months
 
+    def _medicare_cost_list(self, cost_type: str) -> list:
+        """
+        Return a monthly cost list for a single Medicare cost_type (e.g. 'part_b_premium').
+        Returns $0 for every month before age 65 regardless of coverage type.
+        The medicare_inputs.csv only contains rows for the 65-84 and 85+ age bands, so
+        months outside those bands produce NaN on merge and are filled with 0.0.
+        Medicare costs are only applied when add_healthcare is enabled.
+        """
+        if not self.assumptions.get("add_healthcare", False):
+            return [0.0] * self.total_months
+
+        starting_df = pd.DataFrame(
+            {"age_yrs": self.age_by_year_list, "month": self.month_list}
+        ).assign(
+            age_band=lambda df: pd.cut(
+                df["age_yrs"],
+                bins=HEALTHCARE_BINS,
+                labels=HEALTHCARE_LABELS,
+                right=False,
+            ).astype("string")
+        )
+
+        medicare_inputs_df = pd.read_csv(
+            r"./research/medicare/medicare_inputs.csv"
+        ).assign(
+            month=lambda df: pd.to_datetime(df["month"]).dt.date,
+            age_band=lambda df: df["age_band"].astype("string"),
+            cost_type=lambda df: df["cost_type"].astype("string"),
+        )
+
+        medicare_type_df = medicare_inputs_df[
+            medicare_inputs_df["cost_type"] == cost_type
+        ]
+
+        merged_df = starting_df.merge(
+            medicare_type_df[["age_band", "month", "medicare_cost"]],
+            on=["age_band", "month"],
+            how="left",
+        ).fillna({"medicare_cost": 0.0})
+
+        return [float(round(v, 2)) for v in merged_df["medicare_cost"]]
+
+    @cached_property
+    def medicare_part_b_premium_costs(self) -> list:
+        """Monthly Medicare Part B premium costs by simulation month."""
+        return self._medicare_cost_list("part_b_premium")
+
+    @cached_property
+    def medicare_part_d_premium_costs(self) -> list:
+        """Monthly Medicare Part D premium costs by simulation month."""
+        return self._medicare_cost_list("part_d_premium")
+
+    @cached_property
+    def medicare_total_costs(self) -> list:
+        """Element-wise sum of Part B and Part D premium costs."""
+        return [
+            round(b + d, 2)
+            for b, d in zip(
+                self.medicare_part_b_premium_costs,
+                self.medicare_part_d_premium_costs,
+            )
+        ]
+
     @cached_property
     def savings_retirement_account_list(
         self,
@@ -1081,6 +1144,7 @@ class BaseScenario(ScenarioCoreInfo):
                             + self.savings_increase_list[i]
                             - total_non_base_bills_list[i]
                             - self.healthcare_costs[i]
+                            - self.medicare_total_costs[i]
                         )
                         * (1 + self.monthly_rf_interest),
                         6,
@@ -1295,6 +1359,7 @@ class BaseScenario(ScenarioCoreInfo):
                                 + self.post_retire_extra_bills_list[i]
                                 + total_non_base_bills_list[i]
                                 + self.healthcare_costs[i]
+                                + self.medicare_total_costs[i]
                             )
                         )
                         * (1 + self.monthly_rf_interest),
@@ -1571,6 +1636,8 @@ class BaseScenario(ScenarioCoreInfo):
         }
         data_3 = {
             "healthcare_cost": self.healthcare_costs,
+            "medicare_part_b_premium": self.medicare_part_b_premium_costs,
+            "medicare_part_d_premium": self.medicare_part_d_premium_costs,
             "savings_account": self.savings_retirement_account_list[0],
             "yearly_mkt_interest": self.yearly_mkt_interest,
             "monthly_mkt_interest": self.monthly_mkt_interest,
