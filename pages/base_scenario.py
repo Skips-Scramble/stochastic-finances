@@ -689,7 +689,7 @@ class BaseScenario(ScenarioCoreInfo):
 
     @cached_property
     def monthly_mkt_interest(self) -> float:
-        """Caclulate the monthly market interest rate"""
+        """Calculate the monthly market interest rate"""
         return round((1 + self.yearly_mkt_interest) ** (1 / 12) - 1, 6)
 
     @cached_property
