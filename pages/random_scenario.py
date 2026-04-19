@@ -18,6 +18,7 @@ from .base_scenario import (
     HSA_WITHDRAWAL_AGE_YRS,
     TRAD_401K_TAX_RATE,
     BROKERAGE_TAX_RATE,
+    MIN_CONSERVATIVE_RETIREMENT_RATE_PCT,
     uniform_lifetime_table,
 )
 
@@ -114,17 +115,18 @@ class RandomScenario:
     @cached_property
     def var_yearly_mkt_interest(self) -> list:
         """Docstring"""
-        return [
-            round(
-                np.random.normal(
-                    self.base_scenario.assumptions["base_mkt_interest_per_yr"],
-                    self.base_scenario.assumptions["base_mkt_interest_per_yr"] * 1.5,
-                )
-                / 100,
-                4,
+        variable_mkt_list = []
+        for conservative_rate in self.base_scenario.conservative_yearly_mkt_interest:
+            conservative_rate_pct = conservative_rate * 100
+            sampled_rate_pct = np.random.normal(
+                conservative_rate_pct,
+                conservative_rate_pct * 1.5,
             )
-            for _ in range(self.base_scenario.total_months)
-        ]
+            if conservative_rate_pct > MIN_CONSERVATIVE_RETIREMENT_RATE_PCT:
+                sampled_rate_pct = min(sampled_rate_pct, conservative_rate_pct)
+            variable_mkt_list.append(round(sampled_rate_pct / 100, 4))
+
+        return variable_mkt_list
 
     @cached_property
     def var_monthly_mkt_interest(self) -> list:
