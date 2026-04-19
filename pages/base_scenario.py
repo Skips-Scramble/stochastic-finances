@@ -138,7 +138,8 @@ class ScenarioCoreInfo:
     @cached_property
     def yearly_mkt_interest(self) -> float:
         """Calculate yearly market interest as a percent"""
-        return round(self.assumptions["base_mkt_interest_per_yr"] / 100, 6)
+        rate_to_use = self.interest_rate_override if self.interest_rate_override is not None else self.assumptions["base_mkt_interest_per_yr"]
+        return round(rate_to_use / 100, 6)
 
     @cached_property
     def monthly_mkt_interest(self) -> float:
@@ -304,6 +305,7 @@ class RetirementTrad401k(ScenarioCoreInfo):
     base_retirement: float = 0.0
     base_retirement_per_mo: float = 0.0
     base_retirement_per_yr_increase: float = 0.0
+    interest_rate_override: float = None  # Optional per-account rate override (as percent)
     rmd_age_mos = 0
 
     @cached_property
@@ -370,6 +372,7 @@ class RetirementRoth401k(ScenarioCoreInfo):
     base_retirement: float = 0.0
     base_retirement_per_mo: float = 0.0
     base_retirement_per_yr_increase: float = 0.0
+    interest_rate_override: float = None  # Optional per-account rate override (as percent)
 
     @cached_property
     def retirement_increase_list(self) -> list:
@@ -426,6 +429,7 @@ class RetirementTradIRA(ScenarioCoreInfo):
     base_retirement: float = 0.0
     base_retirement_per_mo: float = 0.0
     base_retirement_per_yr_increase: float = 0.0
+    interest_rate_override: float = None  # Optional per-account rate override (as percent)
 
     @cached_property
     def retirement_increase_list(self) -> list:
@@ -482,6 +486,7 @@ class RetirementRothIRA(ScenarioCoreInfo):
     base_retirement: float = 0.0
     base_retirement_per_mo: float = 0.0
     base_retirement_per_yr_increase: float = 0.0
+    interest_rate_override: float = None  # Optional per-account rate override (as percent)
 
     @cached_property
     def retirement_increase_list(self) -> list:
@@ -544,6 +549,7 @@ class RetirementHSA(ScenarioCoreInfo):
     base_retirement: float = 0.0
     base_retirement_per_mo: float = 0.0
     base_retirement_per_yr_increase: float = 0.0
+    interest_rate_override: float = None  # Optional per-account rate override (as percent)
 
     @cached_property
     def retirement_increase_list(self) -> list:
@@ -605,6 +611,7 @@ class RetirementBrokerage(ScenarioCoreInfo):
     base_retirement: float = 0.0
     base_retirement_per_mo: float = 0.0
     base_retirement_per_yr_increase: float = 0.0
+    interest_rate_override: float = None  # Optional per-account rate override (as percent)
 
     @cached_property
     def retirement_increase_list(self) -> list:
@@ -819,6 +826,9 @@ class BaseScenario(ScenarioCoreInfo):
             | RetirementBrokerage
         ] = []
         for item in self.assumptions["retirement_accounts"]:
+            # Get the account's specific interest rate if provided, otherwise None
+            account_rate_override = item.get("interest_rate_per_yr", None)
+            
             if item["retirement_type"] == "traditional_401k":
                 retirement_list.append(
                     RetirementTrad401k(
@@ -828,6 +838,7 @@ class BaseScenario(ScenarioCoreInfo):
                         base_retirement_per_yr_increase=item[
                             "base_retirement_per_yr_increase"
                         ],
+                        interest_rate_override=account_rate_override,
                     )
                 )
             elif item["retirement_type"] == "roth_401k":
@@ -839,6 +850,7 @@ class BaseScenario(ScenarioCoreInfo):
                         base_retirement_per_yr_increase=item[
                             "base_retirement_per_yr_increase"
                         ],
+                        interest_rate_override=account_rate_override,
                     )
                 )
             elif item["retirement_type"] == "traditional_ira":
@@ -850,6 +862,7 @@ class BaseScenario(ScenarioCoreInfo):
                         base_retirement_per_yr_increase=item[
                             "base_retirement_per_yr_increase"
                         ],
+                        interest_rate_override=account_rate_override,
                     )
                 )
             elif item["retirement_type"] == "roth_ira":
@@ -861,6 +874,7 @@ class BaseScenario(ScenarioCoreInfo):
                         base_retirement_per_yr_increase=item[
                             "base_retirement_per_yr_increase"
                         ],
+                        interest_rate_override=account_rate_override,
                     )
                 )
             elif item["retirement_type"] == "hsa":
@@ -872,6 +886,7 @@ class BaseScenario(ScenarioCoreInfo):
                         base_retirement_per_yr_increase=item[
                             "base_retirement_per_yr_increase"
                         ],
+                        interest_rate_override=account_rate_override,
                     )
                 )
             elif item["retirement_type"] == "brokerage":
@@ -883,6 +898,7 @@ class BaseScenario(ScenarioCoreInfo):
                         base_retirement_per_yr_increase=item[
                             "base_retirement_per_yr_increase"
                         ],
+                        interest_rate_override=account_rate_override,
                     )
                 )
         return retirement_list

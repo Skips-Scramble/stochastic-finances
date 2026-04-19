@@ -65,6 +65,7 @@ class SavingsInputsForm(forms.ModelForm):
             "base_savings_per_yr_increase",
             "savings_lower_limit",
             "base_monthly_bills",
+            "interest_rate_per_yr",
         ]
         labels = {
             "is_active": "Use this for calculations",
@@ -73,6 +74,7 @@ class SavingsInputsForm(forms.ModelForm):
             "base_savings_per_yr_increase": "Yearly savings contribution increase (%)",
             "savings_lower_limit": "The lowest amount of savings before you fully use retirement",
             "base_monthly_bills": "Usual monthly expenses (excluding rent, car, other terminal payments)",
+            "interest_rate_per_yr": "Interest rate (%) - Leave blank to use Rates form default",
         }
         widgets = {
             "is_active": forms.CheckboxInput(),
@@ -83,6 +85,7 @@ class SavingsInputsForm(forms.ModelForm):
             ),
             "savings_lower_limit": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
             "base_monthly_bills": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
+            "interest_rate_per_yr": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
         }
 
 
@@ -146,6 +149,7 @@ class RetirementInputsForm(forms.ModelForm):
             "base_retirement",
             "base_retirement_per_mo",
             "base_retirement_per_yr_increase",
+            "interest_rate_per_yr",
         ]
         labels = {
             "is_active": "Use this for calculations",
@@ -153,6 +157,7 @@ class RetirementInputsForm(forms.ModelForm):
             "base_retirement": "Current retirement amount",
             "base_retirement_per_mo": "Monthly retirement contributions",
             "base_retirement_per_yr_increase": "Yearly retirement contribution increase ($)",
+            "interest_rate_per_yr": "Interest rate (%) - Leave blank to use Rates form default",
         }
         widgets = {
             "is_active": forms.CheckboxInput(),
@@ -162,6 +167,7 @@ class RetirementInputsForm(forms.ModelForm):
             "base_retirement_per_yr_increase": forms.NumberInput(
                 attrs={"class": INPUT_CLASSES}
             ),
+            "interest_rate_per_yr": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
         }
 
 

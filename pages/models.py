@@ -90,6 +90,12 @@ class SavingsInputsModel(models.Model):
     base_monthly_bills = models.FloatField(
         validators=[validate_base_monthly_bills, decimal_validator]
     )
+    interest_rate_per_yr = models.FloatField(
+        validators=[validate_rates_per_yr, decimal_validator],
+        null=True,
+        blank=True,
+        help_text="Optional: Leave blank to use default rate from Rates form",
+    )
     created_by = models.ForeignKey(
         CustomUser,
         related_name="savings_inputs",
@@ -170,6 +176,12 @@ class RetirementInputsModel(models.Model):
     )
     base_retirement_per_yr_increase = models.FloatField(
         validators=[validate_base_retirement_per_yr_increase, decimal_validator]
+    )
+    interest_rate_per_yr = models.FloatField(
+        validators=[validate_rates_per_yr, decimal_validator],
+        null=True,
+        blank=True,
+        help_text="Optional: Leave blank to use default rate from Rates form",
     )
     created_by = models.ForeignKey(
         CustomUser,
