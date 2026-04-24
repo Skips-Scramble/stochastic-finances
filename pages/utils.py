@@ -35,7 +35,8 @@ inputs_by_model_dict = {
         "base_retirement",
         "base_retirement_per_mo",
         "base_retirement_per_yr_increase",
-        "inflation_adj",
+        "pension_start_age_yrs",
+        "pension_start_age_mos",
     ],
     "rates": [
         "base_rf_interest_per_yr",

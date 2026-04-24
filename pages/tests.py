@@ -24,15 +24,15 @@ def _base_assumptions(base_mkt_interest_per_yr: float) -> dict:
 
 
 def _pension_assumptions(
-    retirement_age_yrs: int = 65,
+    pension_start_age_yrs: int = 65,
+    pension_start_age_mos: int = 0,
     monthly_pension: float = 1000.0,
-    inflation_adj: bool = True,
 ) -> dict:
     """Return a minimal assumptions dict that includes a pension retirement account."""
     return {
         "birthdate": date(2000, 1, 1),
-        "retirement_age_yrs": retirement_age_yrs,
-        "retirement_age_mos": 0,
+        "retirement_age_yrs": pension_start_age_yrs,
+        "retirement_age_mos": pension_start_age_mos,
         "add_healthcare": False,
         "medicare_coverage_type": "standard",
         "private_insurance_per_mo": None,
@@ -49,7 +49,8 @@ def _pension_assumptions(
                 "base_retirement": 0,
                 "base_retirement_per_mo": monthly_pension,
                 "base_retirement_per_yr_increase": 0,
-                "inflation_adj": inflation_adj,
+                "pension_start_age_yrs": pension_start_age_yrs,
+                "pension_start_age_mos": pension_start_age_mos,
             }
         ],
         "ss_incl": False,
@@ -101,72 +102,49 @@ class RetirementPensionTests(SimpleTestCase):
         self.assertEqual(len(scenario.retirement_list), 1)
         self.assertIsInstance(scenario.retirement_list[0], RetirementPension)
 
-    def test_pension_has_zero_payments_before_retirement(self):
-        """Pension payments are 0 for all pre-retirement months."""
+    def test_pension_has_zero_payments_before_start_date(self):
+        """Pension payments are 0 for all months before the pension start date."""
         scenario = FixedStartBaseScenario(
-            assumptions=_pension_assumptions(retirement_age_yrs=65)
+            assumptions=_pension_assumptions(pension_start_age_yrs=65)
         )
         pension = scenario.retirement_list[0]
-        # Use the pension's own month_list for comparison since the pension
-        # calculates payments relative to its own start_date
-        pre_retire_payments = [
+        pre_pension_payments = [
             payment
             for month, payment in zip(pension.month_list, pension.pension_payment_list)
-            if month < pension.retirement_date
+            if month < pension.pension_start_date
         ]
-        self.assertTrue(len(pre_retire_payments) > 0, "Expected some pre-retirement months")
-        self.assertTrue(all(p == 0.0 for p in pre_retire_payments))
+        self.assertTrue(len(pre_pension_payments) > 0, "Expected some pre-pension months")
+        self.assertTrue(all(p == 0.0 for p in pre_pension_payments))
 
-    def test_pension_payments_start_at_retirement(self):
-        """Pension payments are non-zero starting at the retirement month."""
+    def test_pension_payments_start_at_pension_start_date(self):
+        """Pension payments are non-zero starting at the pension start date."""
         scenario = FixedStartBaseScenario(
-            assumptions=_pension_assumptions(retirement_age_yrs=65, monthly_pension=1500.0)
+            assumptions=_pension_assumptions(pension_start_age_yrs=65, monthly_pension=1500.0)
         )
         pension = scenario.retirement_list[0]
-        # Use the pension's own month_list for comparison
-        post_retire_payments = [
+        post_pension_payments = [
             payment
             for month, payment in zip(pension.month_list, pension.pension_payment_list)
-            if month >= pension.retirement_date
+            if month >= pension.pension_start_date
         ]
-        self.assertTrue(len(post_retire_payments) > 0, "Expected some post-retirement months")
-        self.assertTrue(all(p > 0.0 for p in post_retire_payments))
+        self.assertTrue(len(post_pension_payments) > 0, "Expected some post-pension months")
+        self.assertTrue(all(p > 0.0 for p in post_pension_payments))
 
-    def test_pension_fixed_payment_when_not_inflation_adjusted(self):
-        """A non-inflation-adjusted pension pays the same amount every month."""
-        monthly_pension = 2000.0
+    def test_pension_payment_increases_over_time(self):
+        """Pension payments grow over time due to inflation adjustment (COLA)."""
         scenario = FixedStartBaseScenario(
             assumptions=_pension_assumptions(
-                retirement_age_yrs=65,
-                monthly_pension=monthly_pension,
-                inflation_adj=False,
-            )
-        )
-        pension = scenario.retirement_list[0]
-        post_retire_payments = [
-            payment
-            for month, payment in zip(pension.month_list, pension.pension_payment_list)
-            if month >= pension.retirement_date
-        ]
-        self.assertTrue(all(p == monthly_pension for p in post_retire_payments))
-
-    def test_pension_inflation_adjusted_payment_increases_over_time(self):
-        """An inflation-adjusted pension's payment grows over time."""
-        scenario = FixedStartBaseScenario(
-            assumptions=_pension_assumptions(
-                retirement_age_yrs=65,
+                pension_start_age_yrs=65,
                 monthly_pension=1000.0,
-                inflation_adj=True,
             )
         )
         pension = scenario.retirement_list[0]
-        post_retire_payments = [
+        post_pension_payments = [
             payment
             for month, payment in zip(pension.month_list, pension.pension_payment_list)
-            if month >= pension.retirement_date
+            if month >= pension.pension_start_date
         ]
-        # With positive inflation, payments should grow (not stay flat)
-        self.assertGreater(post_retire_payments[-1], post_retire_payments[0])
+        self.assertGreater(post_pension_payments[-1], post_pension_payments[0])
 
     def test_pension_has_no_pre_retirement_contributions(self):
         """Pension retirement_increase_list is all zeros (no contributions)."""
@@ -174,12 +152,22 @@ class RetirementPensionTests(SimpleTestCase):
         pension = scenario.retirement_list[0]
         self.assertTrue(all(x == 0.0 for x in pension.retirement_increase_list))
 
+    def test_pension_start_age_is_independent_of_retirement_age(self):
+        """Pension can have a different start age from the main retirement age."""
+        assumptions = _pension_assumptions(
+            pension_start_age_yrs=67, pension_start_age_mos=0, monthly_pension=1200.0
+        )
+        # Override retirement age to be different from pension start age
+        assumptions = {**assumptions, "retirement_age_yrs": 62, "retirement_age_mos": 0}
+        scenario = BaseScenario(assumptions=assumptions)
+        pension = scenario.retirement_list[0]
+        self.assertEqual(pension.pension_start_age_yrs, 67)
+        self.assertEqual(pension.pension_start_age_mos, 0)
+
     def test_pension_income_added_to_savings_at_retirement(self):
         """Pension income increases savings relative to a scenario without a pension."""
-        # Use BaseScenario (not FixedStartBaseScenario) so that pension and scenario
-        # share the same start_date (date.today()), ensuring aligned month indices.
         pension_assumptions = _pension_assumptions(
-            retirement_age_yrs=65, monthly_pension=1000.0
+            pension_start_age_yrs=65, monthly_pension=1000.0
         )
         no_pension_assumptions = {
             **pension_assumptions,
@@ -191,8 +179,6 @@ class RetirementPensionTests(SimpleTestCase):
         savings_with = with_pension.savings_retirement_account_list[0]
         savings_without = without_pension.savings_retirement_account_list[0]
 
-        # Savings with pension should be higher after retirement starts;
-        # pension income supplements savings
         months_until_retirement = with_pension.months_until_retirement
         post_retire_with = savings_with[months_until_retirement:]
         post_retire_without = savings_without[months_until_retirement:]

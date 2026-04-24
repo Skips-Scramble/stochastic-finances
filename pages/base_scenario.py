@@ -666,14 +666,22 @@ class RetirementPension(ScenarioCoreInfo):
     """Pension retirement income stream.
 
     A defined-benefit plan that provides a fixed monthly income starting at
-    retirement. The payment can be inflation-adjusted (COLA) each year.
+    pension_start_date. The payment is always inflation-adjusted (COLA).
     Unlike investment accounts, a pension has no market exposure and no
     pre-retirement contributions.
     """
 
     name: str = "pension"
     base_retirement_per_mo: float = 0.0
-    inflation_adj: bool = True
+    pension_start_age_yrs: int = 65
+    pension_start_age_mos: int = 0
+
+    @cached_property
+    def pension_start_date(self) -> date:
+        """Calculate the date when pension payments begin."""
+        return calc_date_on_age(
+            self.birthdate, self.pension_start_age_yrs, self.pension_start_age_mos
+        )
 
     @cached_property
     def retirement_increase_list(self) -> list:
@@ -682,12 +690,12 @@ class RetirementPension(ScenarioCoreInfo):
 
     @cached_property
     def pension_payment_list(self) -> list:
-        """Monthly pension payment starting at retirement, optionally inflation-adjusted."""
+        """Monthly pension payment starting at pension_start_date, always inflation-adjusted."""
         payments = []
         for i, month in enumerate(self.month_list):
-            if month < self.retirement_date:
+            if month < self.pension_start_date:
                 payments.append(0.0)
-            elif self.inflation_adj:
+            else:
                 payments.append(
                     float(
                         round(
@@ -697,8 +705,6 @@ class RetirementPension(ScenarioCoreInfo):
                         )
                     )
                 )
-            else:
-                payments.append(float(self.base_retirement_per_mo))
         return payments
 
     @cached_property
@@ -986,7 +992,8 @@ class BaseScenario(ScenarioCoreInfo):
                     RetirementPension(
                         assumptions=self.assumptions,
                         base_retirement_per_mo=item["base_retirement_per_mo"],
-                        inflation_adj=item.get("inflation_adj", True),
+                        pension_start_age_yrs=item["pension_start_age_yrs"],
+                        pension_start_age_mos=item["pension_start_age_mos"],
                     )
                 )
         return retirement_list
