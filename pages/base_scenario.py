@@ -662,6 +662,52 @@ class RetirementBrokerage(ScenarioCoreInfo):
 
 
 @dataclass
+class RetirementPension(ScenarioCoreInfo):
+    """Pension retirement income stream.
+
+    A defined-benefit plan that provides a fixed monthly income starting at
+    retirement. The payment can be inflation-adjusted (COLA) each year.
+    Unlike investment accounts, a pension has no market exposure and no
+    pre-retirement contributions.
+    """
+
+    name: str = "pension"
+    base_retirement_per_mo: float = 0.0
+    inflation_adj: bool = True
+
+    @cached_property
+    def retirement_increase_list(self) -> list:
+        """No pre-retirement contributions for a pension."""
+        return [0.0] * self.total_months
+
+    @cached_property
+    def pension_payment_list(self) -> list:
+        """Monthly pension payment starting at retirement, optionally inflation-adjusted."""
+        payments = []
+        for i, month in enumerate(self.month_list):
+            if month < self.retirement_date:
+                payments.append(0.0)
+            elif self.inflation_adj:
+                payments.append(
+                    float(
+                        round(
+                            self.base_retirement_per_mo
+                            * (1 + self.monthly_inflation) ** i,
+                            6,
+                        )
+                    )
+                )
+            else:
+                payments.append(float(self.base_retirement_per_mo))
+        return payments
+
+    @cached_property
+    def retirement_account_list(self) -> list:
+        """Monthly pension payment amount (income received per month)."""
+        return self.pension_payment_list
+
+
+@dataclass
 class BaseScenario(ScenarioCoreInfo):
     """Calculate a base scenario"""
 
@@ -846,6 +892,7 @@ class BaseScenario(ScenarioCoreInfo):
         | RetirementRothIRA
         | RetirementHSA
         | RetirementBrokerage
+        | RetirementPension
     ]:
         # Don't know if this will be used
         """List of Retirement objects"""
@@ -856,6 +903,7 @@ class BaseScenario(ScenarioCoreInfo):
             | RetirementRothIRA
             | RetirementHSA
             | RetirementBrokerage
+            | RetirementPension
         ] = []
         for item in self.assumptions["retirement_accounts"]:
             # Get the account's specific interest rate if provided, otherwise None
@@ -931,6 +979,14 @@ class BaseScenario(ScenarioCoreInfo):
                             "base_retirement_per_yr_increase"
                         ],
                         interest_rate_override=account_rate_override,
+                    )
+                )
+            elif item["retirement_type"] == "pension":
+                retirement_list.append(
+                    RetirementPension(
+                        assumptions=self.assumptions,
+                        base_retirement_per_mo=item["base_retirement_per_mo"],
+                        inflation_adj=item.get("inflation_adj", True),
                     )
                 )
         return retirement_list
@@ -1098,6 +1154,7 @@ class BaseScenario(ScenarioCoreInfo):
         list,
         list,
         list,
+        list,
     ]:
         """Calculate the amount of money in your savings and retirement accounts over time,
         stopping Roth IRA contributions and withdrawing contributions (not interest) when
@@ -1108,6 +1165,7 @@ class BaseScenario(ScenarioCoreInfo):
         HSA funds can be withdrawn for general expenses at age 65+ (no RMDs ever).
         Brokerage funds can be withdrawn at any age (no RMDs, no penalties).
         Brokerage withdrawals are subject to capital gains tax on the gains portion.
+        Pension income is added to savings unconditionally each month during retirement.
 
         Returns:
             tuple of (savings_list, roth_ira_balance_list,
@@ -1118,11 +1176,14 @@ class BaseScenario(ScenarioCoreInfo):
                       hsa_balance_list, hsa_transfer_list,
                       brokerage_balance_list, brokerage_transfer_list,
                       trad_401k_tax_list, brokerage_interest_list,
-                      brokerage_income_tax_list, brokerage_tax_list)
+                      brokerage_income_tax_list, brokerage_tax_list,
+                      pension_payment_list)
         """
-        total_non_base_bills_list = [
-            sum(sublist) for sublist in zip(*self.non_base_bills_lists)
-        ]
+        total_non_base_bills_list = (
+            [sum(sublist) for sublist in zip(*self.non_base_bills_lists)]
+            if self.non_base_bills_lists
+            else [0.0] * self.total_months
+        )
 
         # Initialize account lists
         savings_list = []
@@ -1143,6 +1204,7 @@ class BaseScenario(ScenarioCoreInfo):
         brokerage_interest_list = []
         brokerage_income_tax_list = []
         brokerage_tax_list = []
+        pension_payment_list = []
 
         # Track Roth IRA contributions separately from growth
         roth_ira_contributions = 0.0
@@ -1190,6 +1252,13 @@ class BaseScenario(ScenarioCoreInfo):
             if isinstance(ret_account, RetirementBrokerage):
                 brokerage = ret_account
                 break
+
+        # Get Pension accounts (multiple pensions allowed).
+        pension_accounts = [
+            ret_account
+            for ret_account in self.retirement_list
+            if isinstance(ret_account, RetirementPension)
+        ]
 
         for i in range(self.total_months):
             roth_ira_transfer = 0.0
@@ -1444,11 +1513,17 @@ class BaseScenario(ScenarioCoreInfo):
             else:  # If you are retired
                 # Calculate total expenses for the month
 
+                # Add pension income to savings before paying expenses
+                pension_income = sum(
+                    p.pension_payment_list[i] for p in pension_accounts
+                )
+
                 # Pay expenses from savings
                 savings = float(
                     round(
                         (
                             savings
+                            + pension_income
                             - (
                                 self.base_bills_list[i]
                                 + self.post_retire_extra_bills_list[i]
@@ -1662,6 +1737,9 @@ class BaseScenario(ScenarioCoreInfo):
             brokerage_tax_list.append(brokerage_tax)
             brokerage_interest_list.append(round(brokerage_interest, 6))
             brokerage_income_tax_list.append(brokerage_income_tax)
+            pension_payment_list.append(
+                sum(p.pension_payment_list[i] for p in pension_accounts)
+            )
 
             # Log every 12 months and critical events
             # if i % 12 == 0 or savings < 0 or (roth_ira_contributions > 0 and i > 0):
@@ -1687,6 +1765,7 @@ class BaseScenario(ScenarioCoreInfo):
             brokerage_interest_list,
             brokerage_income_tax_list,
             brokerage_tax_list,
+            pension_payment_list,
         )
 
     @cached_property
@@ -1771,6 +1850,8 @@ class BaseScenario(ScenarioCoreInfo):
                 data_3[ret_account.name] = self.savings_retirement_account_list[9]
             elif isinstance(ret_account, RetirementBrokerage):
                 data_3[ret_account.name] = self.savings_retirement_account_list[11]
+            elif isinstance(ret_account, RetirementPension):
+                data_3[ret_account.name] = self.savings_retirement_account_list[17]
 
         data = {**data_1, **non_base_items_lists, **data_3}
 

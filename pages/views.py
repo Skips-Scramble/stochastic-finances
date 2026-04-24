@@ -691,6 +691,11 @@ def calculations(request):
             chart_df["avg_brokerage"].round().to_list()
         )
 
+    if "avg_pension" in chart_df.columns:
+        retirement_chart_data["pension_by_age"] = (
+            chart_df["avg_pension"].round().to_list()
+        )
+
     ####
     # Get data for table
     ####

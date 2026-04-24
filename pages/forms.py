@@ -149,14 +149,16 @@ class RetirementInputsForm(forms.ModelForm):
             "base_retirement",
             "base_retirement_per_mo",
             "base_retirement_per_yr_increase",
+            "inflation_adj",
             "interest_rate_per_yr",
         ]
         labels = {
             "is_active": "Use this for calculations",
             "retirement_type": "Retirement Type",
             "base_retirement": "Current retirement amount",
-            "base_retirement_per_mo": "Monthly retirement contributions",
+            "base_retirement_per_mo": "Monthly retirement contributions (or monthly pension payment)",
             "base_retirement_per_yr_increase": "Yearly retirement contribution increase ($)",
+            "inflation_adj": "Inflation-adjusted (pensions: adjust monthly payment for inflation each year)",
             "interest_rate_per_yr": "Interest rate (%) - Leave blank to use Rates form default",
         }
         widgets = {
@@ -167,6 +169,7 @@ class RetirementInputsForm(forms.ModelForm):
             "base_retirement_per_yr_increase": forms.NumberInput(
                 attrs={"class": INPUT_CLASSES}
             ),
+            "inflation_adj": forms.CheckboxInput(),
             "interest_rate_per_yr": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
         }
 

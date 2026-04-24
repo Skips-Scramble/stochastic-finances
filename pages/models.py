@@ -160,6 +160,7 @@ class RetirementInputsModel(models.Model):
         ("roth_ira", "Roth IRA"),
         ("hsa", "HSA"),
         ("brokerage", "Brokerage"),
+        ("pension", "Pension"),
     ]
 
     is_active = models.BooleanField(default=False)
@@ -176,6 +177,10 @@ class RetirementInputsModel(models.Model):
     )
     base_retirement_per_yr_increase = models.FloatField(
         validators=[validate_base_retirement_per_yr_increase, decimal_validator]
+    )
+    inflation_adj = models.BooleanField(
+        default=True,
+        help_text="For pensions: whether the monthly payment is inflation-adjusted (COLA)",
     )
     interest_rate_per_yr = models.FloatField(
         validators=[validate_rates_per_yr, decimal_validator],
