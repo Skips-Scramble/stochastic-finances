@@ -74,6 +74,35 @@
             syncHealthcareFields(this.checked);
         });
     }
+
+    // Show only relevant fields based on retirement type (pension vs. other)
+    const retirementTypeSelect = document.getElementById('id_retirement_type');
+    if (retirementTypeSelect) {
+        const pensionOnlyIds = ['id_pension_start_age_yrs', 'id_pension_start_age_mos'];
+        const nonPensionIds = ['id_base_retirement', 'id_base_retirement_per_yr_increase', 'id_interest_rate_per_yr'];
+        const perMoLabel = document.querySelector('label[for="id_base_retirement_per_mo"]');
+
+        function togglePensionFields(isPension) {
+            pensionOnlyIds.forEach(function(id) {
+                const el = document.getElementById(id)?.closest('.mb-3');
+                if (el) el.classList.toggle('d-none', !isPension);
+            });
+            nonPensionIds.forEach(function(id) {
+                const el = document.getElementById(id)?.closest('.mb-3');
+                if (el) el.classList.toggle('d-none', isPension);
+            });
+            if (perMoLabel) {
+                perMoLabel.textContent = isPension
+                    ? 'Monthly pension amount (in today\'s dollars)'
+                    : 'Monthly retirement contributions';
+            }
+        }
+
+        togglePensionFields(retirementTypeSelect.value === 'pension');
+        retirementTypeSelect.addEventListener('change', function () {
+            togglePensionFields(this.value === 'pension');
+        });
+    }
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@floating-ui/dom@1.6.1"></script>
 

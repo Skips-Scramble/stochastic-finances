@@ -215,3 +215,8 @@ ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
+
+# Allow running tests with debug toolbar installed
+DEBUG_TOOLBAR_CONFIG = {
+    "IS_RUNNING_TESTS": False,
+}
