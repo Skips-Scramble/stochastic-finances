@@ -26,7 +26,7 @@
                     <p class="card-text">Pension start age: {{ item.pension_start_age_yrs }} yrs {{ item.pension_start_age_mos }} mos</p>
                     <p class="card-text">Monthly pension amount (today's dollars): ${{ item.base_retirement_per_mo|floatformat:"0g" }}</p>
                     {% else %}
-                    <p class="card-text">Current retriement account: ${{ item.base_retirement|floatformat:"0g" }}</p>
+                    <p class="card-text">Current retirement account: ${{ item.base_retirement|floatformat:"0g" }}</p>
                     <p class="card-text">Monthly retirement contributions: ${{ item.base_retirement_per_mo|floatformat:"0g" }}</p>
                     <p class="card-text">Annual retirement increase: ${{ item.base_retirement_per_yr_increase|floatformat:"0g" }}</p>
                     {% endif %}

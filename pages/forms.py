@@ -143,8 +143,9 @@ class RetirementInputsForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Non-pension fields are hidden and skipped for pension type; mark them
-        # optional at the form level so the hidden inputs don't block submission.
+        # Non-pension fields are hidden for pension type; mark them optional at
+        # the form level so the hidden inputs don't block submission.
+        # clean() enforces them for non-pension types.
         self.fields["base_retirement"].required = False
         self.fields["base_retirement_per_yr_increase"].required = False
 
@@ -153,10 +154,18 @@ class RetirementInputsForm(forms.ModelForm):
         retirement_type = cleaned_data.get("retirement_type")
         if retirement_type == "pension":
             # Supply 0 defaults for unused non-nullable columns
-            if not cleaned_data.get("base_retirement"):
+            if cleaned_data.get("base_retirement") is None:
                 cleaned_data["base_retirement"] = 0.0
-            if not cleaned_data.get("base_retirement_per_yr_increase"):
+            if cleaned_data.get("base_retirement_per_yr_increase") is None:
                 cleaned_data["base_retirement_per_yr_increase"] = 0.0
+        else:
+            # Enforce required fields for non-pension types
+            if cleaned_data.get("base_retirement") is None:
+                self.add_error("base_retirement", "This field is required.")
+            if cleaned_data.get("base_retirement_per_yr_increase") is None:
+                self.add_error(
+                    "base_retirement_per_yr_increase", "This field is required."
+                )
         return cleaned_data
 
     class Meta:
