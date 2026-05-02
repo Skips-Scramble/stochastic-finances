@@ -20,9 +20,6 @@ HEALTHCARE_BINS = [0, 19, 45, 65, 85, float("inf")]
 HEALTHCARE_LABELS = ["0-18", "19-44", "45-64", "65-84", "85+"]
 
 
-def _pick_rate(account, conservative_rate: float, flat_rate: float) -> float:
-    """Return conservative_rate when account.use_conservative_rates is True, else flat_rate."""
-    return conservative_rate if (account and account.use_conservative_rates) else flat_rate
 MEDICARE_ELIGIBILITY_AGE_YRS = 65
 # Hardcoded ACA monthly premium (per month, in today's dollars) for pre-Medicare retirement coverage
 ACA_MONTHLY_PREMIUM = 450.0
@@ -772,15 +769,15 @@ class BaseScenario(ScenarioCoreInfo):
         """Calculate the monthly market interest rate"""
         return round((1 + self.yearly_mkt_interest) ** (1 / 12) - 1, 6)
 
-    @cached_property
-    def conservative_yearly_mkt_interest(self) -> list:
-        """Annualized market rate by month, stepping down each Jan 1 toward a floor.
+    def _build_conservative_yearly_rate_list(self, start_rate_pct: float) -> list:
+        """Build a conservative yearly rate list stepping from *start_rate_pct* to the
+        MIN_CONSERVATIVE_RETIREMENT_RATE_PCT floor by age CONSERVATIVE_RATE_FLOOR_AGE_YRS.
 
-        The rate steps down linearly from the starting rate to
-        MIN_CONSERVATIVE_RETIREMENT_RATE_PCT by age CONSERVATIVE_RATE_FLOOR_AGE_YRS
-        (90), then remains flat at the floor.
+        Args:
+            start_rate_pct: Starting annual rate *as a percentage* (e.g. 9.0 for 9 %).
+        Returns:
+            List of decimal rates, one per month in self.month_list.
         """
-        start_rate_pct = self.assumptions["base_mkt_interest_per_yr"]
         if start_rate_pct <= MIN_CONSERVATIVE_RETIREMENT_RATE_PCT:
             return [round(start_rate_pct / 100, 6) for _ in self.month_list]
 
@@ -802,12 +799,42 @@ class BaseScenario(ScenarioCoreInfo):
         return conservative_rates
 
     @cached_property
+    def conservative_yearly_mkt_interest(self) -> list:
+        """Annualized market rate by month using the global base rate as start."""
+        return self._build_conservative_yearly_rate_list(
+            self.assumptions["base_mkt_interest_per_yr"]
+        )
+
+    @cached_property
     def conservative_monthly_mkt_interest(self) -> list:
         """Monthly market rate by month from the conservative annualized list."""
         return [
             round((1 + yearly_rate) ** (1 / 12) - 1, 6)
             for yearly_rate in self.conservative_yearly_mkt_interest
         ]
+
+    def _account_monthly_rate_list(self, account) -> list:
+        """Return a per-month list of monthly rates for *account*.
+
+        Respects both ``interest_rate_override`` (sets the glide-path starting
+        point or flat rate) and ``use_conservative_rates`` (glide-path vs flat).
+        When *account* is ``None`` the global conservative rate list is returned.
+        """
+        if account is None:
+            return list(self.conservative_monthly_mkt_interest)
+
+        start_pct = (
+            account.interest_rate_override
+            if account.interest_rate_override is not None
+            else self.assumptions["base_mkt_interest_per_yr"]
+        )
+        if account.use_conservative_rates:
+            yearly = self._build_conservative_yearly_rate_list(start_pct)
+            return [round((1 + yr) ** (1 / 12) - 1, 6) for yr in yearly]
+        else:
+            flat_yearly = round(start_pct / 100, 6)
+            flat_monthly = round((1 + flat_yearly) ** (1 / 12) - 1, 6)
+            return [flat_monthly] * self.total_months
 
     @cached_property
     def yearly_rf_interest(self) -> float:
@@ -1325,6 +1352,15 @@ class BaseScenario(ScenarioCoreInfo):
             if isinstance(ret_account, RetirementPension)
         ]
 
+        # Precompute per-account monthly rate lists (each starts from the account's own
+        # override rate when set, then steps down to the floor if use_conservative_rates=True).
+        roth_ira_monthly_rates = self._account_monthly_rate_list(roth_ira)
+        roth_401k_monthly_rates = self._account_monthly_rate_list(roth_401k)
+        trad_401k_monthly_rates = self._account_monthly_rate_list(trad_401k)
+        trad_ira_monthly_rates = self._account_monthly_rate_list(trad_ira)
+        hsa_monthly_rates = self._account_monthly_rate_list(hsa)
+        brokerage_monthly_rates = self._account_monthly_rate_list(brokerage)
+
         for i in range(self.total_months):
             roth_ira_transfer = 0.0
             roth_401k_transfer = 0.0
@@ -1336,15 +1372,13 @@ class BaseScenario(ScenarioCoreInfo):
             brokerage_interest = 0.0
             brokerage_income_tax = 0.0
 
-            # Per-account monthly rate: conservative glide-path or flat, based on account toggle
-            _conservative = self.conservative_monthly_mkt_interest[i]
-            _flat = self.monthly_mkt_interest
-            roth_ira_rate = _pick_rate(roth_ira, _conservative, _flat)
-            roth_401k_rate = _pick_rate(roth_401k, _conservative, _flat)
-            trad_401k_rate = _pick_rate(trad_401k, _conservative, _flat)
-            trad_ira_rate = _pick_rate(trad_ira, _conservative, _flat)
-            hsa_rate = _pick_rate(hsa, _conservative, _flat)
-            brokerage_rate = _pick_rate(brokerage, _conservative, _flat)
+            # Per-account monthly rate from precomputed lists (start rate + conservative toggle)
+            roth_ira_rate = roth_ira_monthly_rates[i]
+            roth_401k_rate = roth_401k_monthly_rates[i]
+            trad_401k_rate = trad_401k_monthly_rates[i]
+            trad_ira_rate = trad_ira_monthly_rates[i]
+            hsa_rate = hsa_monthly_rates[i]
+            brokerage_rate = brokerage_monthly_rates[i]
 
             if i == 0:
                 # Initialize accounts
@@ -1930,17 +1964,22 @@ class BaseScenario(ScenarioCoreInfo):
                 data_3[ret_account.name] = self.savings_retirement_account_list[11]
             elif isinstance(ret_account, RetirementPension):
                 data_3[ret_account.name] = self.savings_retirement_account_list[17]
-            # Emit per-account interest rates when the account has its own override
+            # Emit per-account interest rates when the account has its own override.
+            # Output time-varying lists so the glide-path decrease is visible in the CSV.
             if (
                 not isinstance(ret_account, RetirementPension)
                 and ret_account.interest_rate_override is not None
             ):
-                data_3[f"{ret_account.name}_yearly_mkt_interest"] = (
-                    ret_account.yearly_mkt_interest
-                )
-                data_3[f"{ret_account.name}_monthly_mkt_interest"] = (
-                    ret_account.monthly_mkt_interest
-                )
+                yearly_list = self._build_conservative_yearly_rate_list(
+                    ret_account.interest_rate_override
+                ) if ret_account.use_conservative_rates else [
+                    round(ret_account.interest_rate_override / 100, 6)
+                ] * self.total_months
+                monthly_list = [
+                    round((1 + yr) ** (1 / 12) - 1, 6) for yr in yearly_list
+                ]
+                data_3[f"{ret_account.name}_yearly_mkt_interest"] = yearly_list
+                data_3[f"{ret_account.name}_monthly_mkt_interest"] = monthly_list
 
         data = {**data_1, **non_base_items_lists, **data_3}
 

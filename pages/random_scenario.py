@@ -21,7 +21,6 @@ from .base_scenario import (
     BROKERAGE_TAX_RATE,
     MIN_CONSERVATIVE_RETIREMENT_RATE_PCT,
     uniform_lifetime_table,
-    _pick_rate,
 )
 
 RF_INTEREST_CHANGE_MOS = 6
@@ -221,6 +220,47 @@ class RandomScenario:
             for x in self.var_yearly_mkt_interest_flat
         ]
 
+    def _account_var_monthly_rate_list(self, account) -> list:
+        """Return a per-month list of stochastic monthly rates for *account*.
+
+        Mirrors :meth:`BaseScenario._account_monthly_rate_list` but with the
+        same random sampling used by :attr:`var_monthly_mkt_interest` /
+        :attr:`var_monthly_mkt_interest_flat`.  When *account* is ``None`` the
+        global conservative sampled list is returned.
+        """
+        if account is None:
+            return list(self.var_monthly_mkt_interest)
+
+        start_pct = (
+            account.interest_rate_override
+            if account.interest_rate_override is not None
+            else self.base_scenario.assumptions["base_mkt_interest_per_yr"]
+        )
+        if account.use_conservative_rates:
+            yearly_conservative = self.base_scenario._build_conservative_yearly_rate_list(
+                start_pct
+            )
+            monthly_rates = []
+            for yearly_rate in yearly_conservative:
+                conservative_rate_pct = yearly_rate * 100
+                sampled_rate_pct = np.random.normal(
+                    conservative_rate_pct,
+                    conservative_rate_pct * 1.5,
+                )
+                if conservative_rate_pct > MIN_CONSERVATIVE_RETIREMENT_RATE_PCT:
+                    sampled_rate_pct = min(sampled_rate_pct, conservative_rate_pct)
+                yearly = round(sampled_rate_pct / 100, 4)
+                monthly_rates.append(round(((1 + yearly) ** (1 / 12) - 1), 4))
+            return monthly_rates
+        else:
+            monthly_rates = []
+            for _ in self.base_scenario.month_list:
+                sampled_rate_pct = np.random.normal(start_pct, start_pct * 1.5)
+                yearly = round(sampled_rate_pct / 100, 4)
+                monthly_rates.append(round(((1 + yearly) ** (1 / 12) - 1), 4))
+            return monthly_rates
+
+
     @cached_property
     def var_savings_retirement_account_list(
         self,
@@ -347,6 +387,16 @@ class RandomScenario:
             if isinstance(ret_account, RetirementPension)
         ]
 
+        # Precompute per-account variable monthly rate lists (each starts from the
+        # account's own override rate when set, using the conservative glide-path or
+        # flat rate based on use_conservative_rates).
+        roth_ira_monthly_rates = self._account_var_monthly_rate_list(roth_ira)
+        roth_401k_monthly_rates = self._account_var_monthly_rate_list(roth_401k)
+        trad_401k_monthly_rates = self._account_var_monthly_rate_list(trad_401k)
+        trad_ira_monthly_rates = self._account_var_monthly_rate_list(trad_ira)
+        hsa_monthly_rates = self._account_var_monthly_rate_list(hsa)
+        brokerage_monthly_rates = self._account_var_monthly_rate_list(brokerage)
+
         for i in range(self.base_scenario.total_months):
             roth_ira_transfer = 0.0
             roth_401k_transfer = 0.0
@@ -358,15 +408,13 @@ class RandomScenario:
             brokerage_interest = 0.0
             brokerage_income_tax = 0.0
 
-            # Per-account monthly rate: conservative glide-path or flat, based on account toggle
-            _conservative = self.var_monthly_mkt_interest[i]
-            _flat = self.var_monthly_mkt_interest_flat[i]
-            roth_ira_rate = _pick_rate(roth_ira, _conservative, _flat)
-            roth_401k_rate = _pick_rate(roth_401k, _conservative, _flat)
-            trad_401k_rate = _pick_rate(trad_401k, _conservative, _flat)
-            trad_ira_rate = _pick_rate(trad_ira, _conservative, _flat)
-            hsa_rate = _pick_rate(hsa, _conservative, _flat)
-            brokerage_rate = _pick_rate(brokerage, _conservative, _flat)
+            # Per-account monthly rate from precomputed lists (start rate + conservative toggle)
+            roth_ira_rate = roth_ira_monthly_rates[i]
+            roth_401k_rate = roth_401k_monthly_rates[i]
+            trad_401k_rate = trad_401k_monthly_rates[i]
+            trad_ira_rate = trad_ira_monthly_rates[i]
+            hsa_rate = hsa_monthly_rates[i]
+            brokerage_rate = brokerage_monthly_rates[i]
 
             if i == 0:
                 # Initialize accounts
