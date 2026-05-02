@@ -21,6 +21,7 @@ from .base_scenario import (
     BROKERAGE_TAX_RATE,
     MIN_CONSERVATIVE_RETIREMENT_RATE_PCT,
     uniform_lifetime_table,
+    _pick_rate,
 )
 
 RF_INTEREST_CHANGE_MOS = 6
@@ -203,7 +204,8 @@ class RandomScenario:
 
     @cached_property
     def var_yearly_mkt_interest_flat(self) -> list:
-        """Per-month varying yearly rates sampled around the flat starting rate (no glide-path step-down)."""
+        """Sampled yearly rates for the full simulation timeline, centered on the flat
+        starting rate (no glide-path step-down). One entry per month of the simulation."""
         flat_rate_pct = self.base_scenario.yearly_mkt_interest * 100
         variable_mkt_list = []
         for _ in self.base_scenario.month_list:
@@ -359,12 +361,12 @@ class RandomScenario:
             # Per-account monthly rate: conservative glide-path or flat, based on account toggle
             _conservative = self.var_monthly_mkt_interest[i]
             _flat = self.var_monthly_mkt_interest_flat[i]
-            roth_ira_rate = _conservative if (roth_ira and roth_ira.use_conservative_rates) else _flat
-            roth_401k_rate = _conservative if (roth_401k and roth_401k.use_conservative_rates) else _flat
-            trad_401k_rate = _conservative if (trad_401k and trad_401k.use_conservative_rates) else _flat
-            trad_ira_rate = _conservative if (trad_ira and trad_ira.use_conservative_rates) else _flat
-            hsa_rate = _conservative if (hsa and hsa.use_conservative_rates) else _flat
-            brokerage_rate = _conservative if (brokerage and brokerage.use_conservative_rates) else _flat
+            roth_ira_rate = _pick_rate(roth_ira, _conservative, _flat)
+            roth_401k_rate = _pick_rate(roth_401k, _conservative, _flat)
+            trad_401k_rate = _pick_rate(trad_401k, _conservative, _flat)
+            trad_ira_rate = _pick_rate(trad_ira, _conservative, _flat)
+            hsa_rate = _pick_rate(hsa, _conservative, _flat)
+            brokerage_rate = _pick_rate(brokerage, _conservative, _flat)
 
             if i == 0:
                 # Initialize accounts

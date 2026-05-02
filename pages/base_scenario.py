@@ -18,6 +18,11 @@ TRAD_401K_TAX_RATE = 0.20
 BROKERAGE_TAX_RATE = 0.15
 HEALTHCARE_BINS = [0, 19, 45, 65, 85, float("inf")]
 HEALTHCARE_LABELS = ["0-18", "19-44", "45-64", "65-84", "85+"]
+
+
+def _pick_rate(account, conservative_rate: float, flat_rate: float) -> float:
+    """Return conservative_rate when account.use_conservative_rates is True, else flat_rate."""
+    return conservative_rate if (account and account.use_conservative_rates) else flat_rate
 MEDICARE_ELIGIBILITY_AGE_YRS = 65
 # Hardcoded ACA monthly premium (per month, in today's dollars) for pre-Medicare retirement coverage
 ACA_MONTHLY_PREMIUM = 450.0
@@ -1334,12 +1339,12 @@ class BaseScenario(ScenarioCoreInfo):
             # Per-account monthly rate: conservative glide-path or flat, based on account toggle
             _conservative = self.conservative_monthly_mkt_interest[i]
             _flat = self.monthly_mkt_interest
-            roth_ira_rate = _conservative if (roth_ira and roth_ira.use_conservative_rates) else _flat
-            roth_401k_rate = _conservative if (roth_401k and roth_401k.use_conservative_rates) else _flat
-            trad_401k_rate = _conservative if (trad_401k and trad_401k.use_conservative_rates) else _flat
-            trad_ira_rate = _conservative if (trad_ira and trad_ira.use_conservative_rates) else _flat
-            hsa_rate = _conservative if (hsa and hsa.use_conservative_rates) else _flat
-            brokerage_rate = _conservative if (brokerage and brokerage.use_conservative_rates) else _flat
+            roth_ira_rate = _pick_rate(roth_ira, _conservative, _flat)
+            roth_401k_rate = _pick_rate(roth_401k, _conservative, _flat)
+            trad_401k_rate = _pick_rate(trad_401k, _conservative, _flat)
+            trad_ira_rate = _pick_rate(trad_ira, _conservative, _flat)
+            hsa_rate = _pick_rate(hsa, _conservative, _flat)
+            brokerage_rate = _pick_rate(brokerage, _conservative, _flat)
 
             if i == 0:
                 # Initialize accounts
