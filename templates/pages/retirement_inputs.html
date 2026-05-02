@@ -29,6 +29,7 @@
                     <p class="card-text">Current retirement account: ${{ item.base_retirement|floatformat:"0g" }}</p>
                     <p class="card-text">Monthly retirement contributions: ${{ item.base_retirement_per_mo|floatformat:"0g" }}</p>
                     <p class="card-text">Annual retirement increase: ${{ item.base_retirement_per_yr_increase|floatformat:"0g" }}</p>
+                    <p class="card-text">Decrease interest rate as I get older: {{ item.use_conservative_rates|yesno|title }}</p>
                     {% endif %}
 
                     <a href="{% url 'retirement_inputs_edit' item.id %}" class="btn btn-primary">Edit</a>

@@ -204,6 +204,10 @@ class RetirementInputsModel(models.Model):
         blank=True,
         help_text="Optional: Leave blank to use default rate from Rates form",
     )
+    use_conservative_rates = models.BooleanField(
+        default=True,
+        help_text="Gradually reduce this account's interest rate toward 5% by age 90",
+    )
     created_by = models.ForeignKey(
         CustomUser,
         related_name="retirement_inputs",

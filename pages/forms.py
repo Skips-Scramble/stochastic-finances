@@ -185,6 +185,7 @@ class RetirementInputsForm(forms.ModelForm):
             "pension_start_age_yrs",
             "pension_start_age_mos",
             "interest_rate_per_yr",
+            "use_conservative_rates",
         ]
         labels = {
             "is_active": "Use this for calculations",
@@ -195,6 +196,7 @@ class RetirementInputsForm(forms.ModelForm):
             "pension_start_age_yrs": "Pension start age (years)",
             "pension_start_age_mos": "Pension start age (months)",
             "interest_rate_per_yr": "Interest rate (%) - Leave blank to use Rates form default",
+            "use_conservative_rates": "Decrease interest rate as I get older",
         }
         widgets = {
             "is_active": forms.CheckboxInput(),
@@ -207,6 +209,7 @@ class RetirementInputsForm(forms.ModelForm):
             "pension_start_age_yrs": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
             "pension_start_age_mos": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
             "interest_rate_per_yr": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
+            "use_conservative_rates": forms.CheckboxInput(),
         }
 
 

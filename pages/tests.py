@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 from django.test import SimpleTestCase
 
-from .base_scenario import BaseScenario, RetirementPension
+from .base_scenario import BaseScenario, RetirementPension, RetirementRothIRA
 from .random_scenario import RandomScenario
 
 
@@ -61,15 +61,20 @@ def _pension_assumptions(
 
 
 class ConservativeRetirementRateTests(SimpleTestCase):
-    def test_base_scenario_steps_down_annually_to_five_percent_floor(self):
+    def test_base_scenario_steps_down_to_five_percent_at_age_ninety(self):
+        # birthdate 2000-01-01, start_date 2026-01-01 (age 26), age-90 = 2090-01-01
+        # years_to_floor = 64, annual_step = (8 - 5) / 64 = 0.046875 pct/yr
         scenario = FixedStartBaseScenario(assumptions=_base_assumptions(8.0))
         yearly_rates = scenario.conservative_yearly_mkt_interest
 
+        # At start (Jan 2026): 8%
         self.assertEqual(yearly_rates[0], 0.08)
-        self.assertEqual(yearly_rates[12], 0.07)
-        self.assertEqual(yearly_rates[24], 0.06)
-        self.assertEqual(yearly_rates[36], 0.05)
-        self.assertEqual(yearly_rates[48], 0.05)
+        # At Jan 2058 (index 384, 32 years in): 8 - 32*(3/64) = 6.5%
+        self.assertEqual(yearly_rates[384], 0.065)
+        # At Jan 2090 (index 768, 64 years in, age 90): floor = 5%
+        self.assertEqual(yearly_rates[768], 0.05)
+        # After age 90 (index 780, Jan 2091): still at floor
+        self.assertEqual(yearly_rates[780], 0.05)
 
     def test_base_scenario_does_not_adjust_when_start_rate_is_below_floor(self):
         scenario = FixedStartBaseScenario(assumptions=_base_assumptions(4.0))
@@ -80,6 +85,8 @@ class ConservativeRetirementRateTests(SimpleTestCase):
         self.assertEqual(yearly_rates[24], 0.04)
 
     def test_random_scenario_uses_conservative_annual_schedule(self):
+        # With mean = conservative_rate, the random scenario should mirror the
+        # same age-90 glide path as the base scenario.
         scenario = FixedStartBaseScenario(assumptions=_base_assumptions(8.0))
         random_scenario = RandomScenario(base_scenario=scenario)
 
@@ -89,10 +96,136 @@ class ConservativeRetirementRateTests(SimpleTestCase):
         ):
             yearly_rates = random_scenario.var_yearly_mkt_interest
 
+        # At start: 8%
         self.assertEqual(yearly_rates[0], 0.08)
-        self.assertEqual(yearly_rates[12], 0.07)
-        self.assertEqual(yearly_rates[24], 0.06)
-        self.assertEqual(yearly_rates[36], 0.05)
+        # At Jan 2058 (index 384, 32 years in): 6.5%
+        self.assertEqual(yearly_rates[384], 0.065)
+        # At age 90 (index 768): floor 5%
+        self.assertEqual(yearly_rates[768], 0.05)
+
+
+def _full_assumptions_with_roth_ira(use_conservative_rates: bool) -> dict:
+    """Minimal full assumptions dict with one Roth IRA account."""
+    return {
+        "birthdate": date(2000, 1, 1),
+        "retirement_age_yrs": 65,
+        "retirement_age_mos": 0,
+        "add_healthcare": False,
+        "medicare_coverage_type": "standard",
+        "private_insurance_per_mo": None,
+        "retirement_extra_expenses": 0,
+        "base_savings": 50000,
+        "base_saved_per_mo": 500,
+        "base_savings_per_yr_increase": 0,
+        "savings_lower_limit": 10000,
+        "base_monthly_bills": 2000,
+        "payment_items": [],
+        "retirement_accounts": [
+            {
+                "retirement_type": "roth_ira",
+                "base_retirement": 10000,
+                "base_retirement_per_mo": 200,
+                "base_retirement_per_yr_increase": 0,
+                "use_conservative_rates": use_conservative_rates,
+            }
+        ],
+        "ss_incl": False,
+        "base_rf_interest_per_yr": 1.0,
+        "base_mkt_interest_per_yr": 8.0,
+        "base_inflation_per_yr": 3.0,
+        "add_medical_bills": False,
+        "monthly_medical_bills": 0,
+    }
+
+
+class PerAccountConservativeRateToggleTests(SimpleTestCase):
+    def test_conservative_toggle_on_uses_glide_path_rate(self):
+        """When use_conservative_rates=True the account is built with use_conservative_rates=True."""
+        scenario = FixedStartBaseScenario(
+            assumptions=_full_assumptions_with_roth_ira(use_conservative_rates=True)
+        )
+        roth_ira = next(
+            a for a in scenario.retirement_list if isinstance(a, RetirementRothIRA)
+        )
+        self.assertTrue(roth_ira.use_conservative_rates)
+
+    def test_conservative_toggle_off_uses_flat_rate(self):
+        """When use_conservative_rates=False the account is built with use_conservative_rates=False."""
+        scenario = FixedStartBaseScenario(
+            assumptions=_full_assumptions_with_roth_ira(use_conservative_rates=False)
+        )
+        roth_ira = next(
+            a for a in scenario.retirement_list if isinstance(a, RetirementRothIRA)
+        )
+        self.assertFalse(roth_ira.use_conservative_rates)
+
+    def test_conservative_toggle_defaults_to_true_when_not_provided(self):
+        """When use_conservative_rates is absent from the item dict it defaults to True."""
+        assumptions = _full_assumptions_with_roth_ira(use_conservative_rates=True)
+        # Remove the key to simulate an old record without the field
+        del assumptions["retirement_accounts"][0]["use_conservative_rates"]
+        scenario = FixedStartBaseScenario(assumptions=assumptions)
+        roth_ira = next(
+            a for a in scenario.retirement_list if isinstance(a, RetirementRothIRA)
+        )
+        self.assertTrue(roth_ira.use_conservative_rates)
+
+
+def _full_assumptions_with_roth_ira_override(interest_rate_per_yr: float) -> dict:
+    """Minimal full assumptions with a Roth IRA that has its own interest rate override."""
+    assumptions = _full_assumptions_with_roth_ira(use_conservative_rates=True)
+    assumptions["retirement_accounts"][0]["interest_rate_per_yr"] = interest_rate_per_yr
+    return assumptions
+
+
+class PerAccountInterestRateCsvTests(SimpleTestCase):
+    """Tests for per-account interest-rate columns in the CSV export (create_base_df).
+
+    Uses BaseScenario directly (not FixedStartBaseScenario) so that the main scenario
+    and the individual account objects share the same start_date (both default to today).
+    This ensures list lengths are consistent and pd.DataFrame construction succeeds.
+    """
+
+    def test_per_account_rate_columns_absent_without_override(self):
+        """Accounts without an override should not add per-account rate columns."""
+        scenario = BaseScenario(
+            assumptions=_full_assumptions_with_roth_ira(use_conservative_rates=True)
+        )
+        df = scenario.create_base_df()
+        self.assertNotIn("roth_ira_yearly_mkt_interest", df.columns)
+        self.assertNotIn("roth_ira_monthly_mkt_interest", df.columns)
+
+    def test_per_account_rate_columns_present_with_override(self):
+        """Accounts with an override should add per-account rate columns to the CSV."""
+        scenario = BaseScenario(
+            assumptions=_full_assumptions_with_roth_ira_override(interest_rate_per_yr=6.0)
+        )
+        df = scenario.create_base_df()
+        self.assertIn("roth_ira_yearly_mkt_interest", df.columns)
+        self.assertIn("roth_ira_monthly_mkt_interest", df.columns)
+
+    def test_per_account_yearly_rate_matches_override(self):
+        """The yearly rate column value equals the configured override rate as a decimal."""
+        override_pct = 6.0
+        scenario = BaseScenario(
+            assumptions=_full_assumptions_with_roth_ira_override(interest_rate_per_yr=override_pct)
+        )
+        df = scenario.create_base_df()
+        expected_yearly = round(override_pct / 100, 6)
+        self.assertEqual(df["roth_ira_yearly_mkt_interest"].iloc[0], expected_yearly)
+
+    def test_per_account_monthly_rate_derived_from_yearly(self):
+        """The monthly rate column is derived correctly from the yearly override rate."""
+        override_pct = 6.0
+        scenario = BaseScenario(
+            assumptions=_full_assumptions_with_roth_ira_override(interest_rate_per_yr=override_pct)
+        )
+        df = scenario.create_base_df()
+        yearly = round(override_pct / 100, 6)
+        expected_monthly = round((1 + yearly) ** (1 / 12) - 1, 6)
+        self.assertAlmostEqual(
+            df["roth_ira_monthly_mkt_interest"].iloc[0], expected_monthly, places=6
+        )
 
 
 class RetirementPensionTests(SimpleTestCase):
