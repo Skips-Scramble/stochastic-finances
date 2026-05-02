@@ -171,6 +171,63 @@ class PerAccountConservativeRateToggleTests(SimpleTestCase):
         self.assertTrue(roth_ira.use_conservative_rates)
 
 
+def _full_assumptions_with_roth_ira_override(interest_rate_per_yr: float) -> dict:
+    """Minimal full assumptions with a Roth IRA that has its own interest rate override."""
+    assumptions = _full_assumptions_with_roth_ira(use_conservative_rates=True)
+    assumptions["retirement_accounts"][0]["interest_rate_per_yr"] = interest_rate_per_yr
+    return assumptions
+
+
+class PerAccountInterestRateCsvTests(SimpleTestCase):
+    """Tests for per-account interest-rate columns in the CSV export (create_base_df).
+
+    Uses BaseScenario directly (not FixedStartBaseScenario) so that the main scenario
+    and the individual account objects share the same start_date (both default to today).
+    This ensures list lengths are consistent and pd.DataFrame construction succeeds.
+    """
+
+    def test_per_account_rate_columns_absent_without_override(self):
+        """Accounts without an override should not add per-account rate columns."""
+        scenario = BaseScenario(
+            assumptions=_full_assumptions_with_roth_ira(use_conservative_rates=True)
+        )
+        df = scenario.create_base_df()
+        self.assertNotIn("roth_ira_yearly_mkt_interest", df.columns)
+        self.assertNotIn("roth_ira_monthly_mkt_interest", df.columns)
+
+    def test_per_account_rate_columns_present_with_override(self):
+        """Accounts with an override should add per-account rate columns to the CSV."""
+        scenario = BaseScenario(
+            assumptions=_full_assumptions_with_roth_ira_override(interest_rate_per_yr=6.0)
+        )
+        df = scenario.create_base_df()
+        self.assertIn("roth_ira_yearly_mkt_interest", df.columns)
+        self.assertIn("roth_ira_monthly_mkt_interest", df.columns)
+
+    def test_per_account_yearly_rate_matches_override(self):
+        """The yearly rate column value equals the configured override rate as a decimal."""
+        override_pct = 6.0
+        scenario = BaseScenario(
+            assumptions=_full_assumptions_with_roth_ira_override(interest_rate_per_yr=override_pct)
+        )
+        df = scenario.create_base_df()
+        expected_yearly = round(override_pct / 100, 6)
+        self.assertEqual(df["roth_ira_yearly_mkt_interest"].iloc[0], expected_yearly)
+
+    def test_per_account_monthly_rate_derived_from_yearly(self):
+        """The monthly rate column is derived correctly from the yearly override rate."""
+        override_pct = 6.0
+        scenario = BaseScenario(
+            assumptions=_full_assumptions_with_roth_ira_override(interest_rate_per_yr=override_pct)
+        )
+        df = scenario.create_base_df()
+        yearly = round(override_pct / 100, 6)
+        expected_monthly = round((1 + yearly) ** (1 / 12) - 1, 6)
+        self.assertAlmostEqual(
+            df["roth_ira_monthly_mkt_interest"].iloc[0], expected_monthly, places=6
+        )
+
+
 class RetirementPensionTests(SimpleTestCase):
     def test_pension_is_in_retirement_list(self):
         """A pension retirement account appears in the scenario's retirement_list."""

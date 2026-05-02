@@ -1930,6 +1930,17 @@ class BaseScenario(ScenarioCoreInfo):
                 data_3[ret_account.name] = self.savings_retirement_account_list[11]
             elif isinstance(ret_account, RetirementPension):
                 data_3[ret_account.name] = self.savings_retirement_account_list[17]
+            # Emit per-account interest rates when the account has its own override
+            if (
+                not isinstance(ret_account, RetirementPension)
+                and ret_account.interest_rate_override is not None
+            ):
+                data_3[f"{ret_account.name}_yearly_mkt_interest"] = (
+                    ret_account.yearly_mkt_interest
+                )
+                data_3[f"{ret_account.name}_monthly_mkt_interest"] = (
+                    ret_account.monthly_mkt_interest
+                )
 
         data = {**data_1, **non_base_items_lists, **data_3}
 
