@@ -4,15 +4,21 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('pages', '0016_alter_retirementinputsmodel_retirement_type'),
+        ("pages", "0016_alter_retirementinputsmodel_retirement_type"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='generalinputsmodel',
-            name='medicare_coverage_type',
-            field=models.CharField(choices=[('none', 'None'), ('standard', 'Standard Medicare (Parts A, B, D)')], default='none', max_length=20),
+            model_name="generalinputsmodel",
+            name="medicare_coverage_type",
+            field=models.CharField(
+                choices=[
+                    ("none", "None"),
+                    ("standard", "Standard Medicare (Parts A, B, D)"),
+                ],
+                default="none",
+                max_length=20,
+            ),
         ),
     ]

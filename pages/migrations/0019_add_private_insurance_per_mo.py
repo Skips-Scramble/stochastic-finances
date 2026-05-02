@@ -5,15 +5,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('pages', '0018_set_medicare_coverage_type_default_standard'),
+        ("pages", "0018_set_medicare_coverage_type_default_standard"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='generalinputsmodel',
-            name='private_insurance_per_mo',
-            field=models.FloatField(blank=True, default=None, null=True, validators=[pages.model_validators.decimal_validator]),
+            model_name="generalinputsmodel",
+            name="private_insurance_per_mo",
+            field=models.FloatField(
+                blank=True,
+                default=None,
+                null=True,
+                validators=[pages.model_validators.decimal_validator],
+            ),
         ),
     ]

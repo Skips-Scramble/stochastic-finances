@@ -113,13 +113,17 @@ class RetirementPensionTests(SimpleTestCase):
             for month, payment in zip(pension.month_list, pension.pension_payment_list)
             if month < pension.pension_start_date
         ]
-        self.assertTrue(len(pre_pension_payments) > 0, "Expected some pre-pension months")
+        self.assertTrue(
+            len(pre_pension_payments) > 0, "Expected some pre-pension months"
+        )
         self.assertTrue(all(p == 0.0 for p in pre_pension_payments))
 
     def test_pension_payments_start_at_pension_start_date(self):
         """Pension payments are non-zero starting at the pension start date."""
         scenario = FixedStartBaseScenario(
-            assumptions=_pension_assumptions(pension_start_age_yrs=65, monthly_pension=1500.0)
+            assumptions=_pension_assumptions(
+                pension_start_age_yrs=65, monthly_pension=1500.0
+            )
         )
         pension = scenario.retirement_list[0]
         post_pension_payments = [
@@ -127,7 +131,9 @@ class RetirementPensionTests(SimpleTestCase):
             for month, payment in zip(pension.month_list, pension.pension_payment_list)
             if month >= pension.pension_start_date
         ]
-        self.assertTrue(len(post_pension_payments) > 0, "Expected some post-pension months")
+        self.assertTrue(
+            len(post_pension_payments) > 0, "Expected some post-pension months"
+        )
         self.assertTrue(all(p > 0.0 for p in post_pension_payments))
 
     def test_pension_payment_increases_over_time(self):
@@ -277,9 +283,7 @@ class MedicalBillsRandomScenarioTests(SimpleTestCase):
             )
         )
         random_scenario = RandomScenario(base_scenario=base)
-        self.assertTrue(
-            all(x >= 0.0 for x in random_scenario.var_medical_bills_list)
-        )
+        self.assertTrue(all(x >= 0.0 for x in random_scenario.var_medical_bills_list))
 
     def test_var_medical_bills_near_base_when_randomness_zeroed(self):
         """With zeroed randomness, var_medical_bills_list matches base medical_bills_list."""
@@ -342,14 +346,18 @@ class VariableHealthcareCostTests(SimpleTestCase):
         """var_healthcare_costs_list contains no negative values."""
         base = FixedStartBaseScenario(assumptions=_healthcare_assumptions())
         random_scenario = RandomScenario(base_scenario=base)
-        self.assertTrue(all(x >= 0.0 for x in random_scenario.var_healthcare_costs_list))
+        self.assertTrue(
+            all(x >= 0.0 for x in random_scenario.var_healthcare_costs_list)
+        )
 
     def test_var_medicare_part_b_premium_never_negative(self):
         """var_medicare_part_b_premium_costs_list contains no negative values."""
         base = FixedStartBaseScenario(assumptions=_healthcare_assumptions())
         random_scenario = RandomScenario(base_scenario=base)
         self.assertTrue(
-            all(x >= 0.0 for x in random_scenario.var_medicare_part_b_premium_costs_list)
+            all(
+                x >= 0.0 for x in random_scenario.var_medicare_part_b_premium_costs_list
+            )
         )
 
     def test_var_medicare_part_d_premium_never_negative(self):
@@ -357,7 +365,9 @@ class VariableHealthcareCostTests(SimpleTestCase):
         base = FixedStartBaseScenario(assumptions=_healthcare_assumptions())
         random_scenario = RandomScenario(base_scenario=base)
         self.assertTrue(
-            all(x >= 0.0 for x in random_scenario.var_medicare_part_d_premium_costs_list)
+            all(
+                x >= 0.0 for x in random_scenario.var_medicare_part_d_premium_costs_list
+            )
         )
 
     def test_var_private_insurance_costs_never_negative(self):

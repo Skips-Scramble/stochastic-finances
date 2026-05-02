@@ -11,16 +11,22 @@ def set_standard_for_existing(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('pages', '0017_generalinputsmodel_medicare_coverage_type'),
+        ("pages", "0017_generalinputsmodel_medicare_coverage_type"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='generalinputsmodel',
-            name='medicare_coverage_type',
-            field=models.CharField(choices=[('none', 'None'), ('standard', 'Standard Medicare (Parts A, B, D)')], default='standard', max_length=20),
+            model_name="generalinputsmodel",
+            name="medicare_coverage_type",
+            field=models.CharField(
+                choices=[
+                    ("none", "None"),
+                    ("standard", "Standard Medicare (Parts A, B, D)"),
+                ],
+                default="standard",
+                max_length=20,
+            ),
         ),
         migrations.RunPython(set_standard_for_existing, migrations.RunPython.noop),
     ]

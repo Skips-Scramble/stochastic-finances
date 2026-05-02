@@ -5,20 +5,35 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('pages', '0020_refactor_healthcare_fields'),
+        ("pages", "0020_refactor_healthcare_fields"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='retirementinputsmodel',
-            name='interest_rate_per_yr',
-            field=models.FloatField(blank=True, help_text='Optional: Leave blank to use default rate from Rates form', null=True, validators=[pages.model_validators.validate_rates_per_yr, pages.model_validators.decimal_validator]),
+            model_name="retirementinputsmodel",
+            name="interest_rate_per_yr",
+            field=models.FloatField(
+                blank=True,
+                help_text="Optional: Leave blank to use default rate from Rates form",
+                null=True,
+                validators=[
+                    pages.model_validators.validate_rates_per_yr,
+                    pages.model_validators.decimal_validator,
+                ],
+            ),
         ),
         migrations.AddField(
-            model_name='savingsinputsmodel',
-            name='interest_rate_per_yr',
-            field=models.FloatField(blank=True, help_text='Optional: Leave blank to use default rate from Rates form', null=True, validators=[pages.model_validators.validate_rates_per_yr, pages.model_validators.decimal_validator]),
+            model_name="savingsinputsmodel",
+            name="interest_rate_per_yr",
+            field=models.FloatField(
+                blank=True,
+                help_text="Optional: Leave blank to use default rate from Rates form",
+                null=True,
+                validators=[
+                    pages.model_validators.validate_rates_per_yr,
+                    pages.model_validators.decimal_validator,
+                ],
+            ),
         ),
     ]

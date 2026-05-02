@@ -4,7 +4,6 @@ import pages.model_validators
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("pages", "0023_retirementinputsmodel_pension_start_age"),
     ]

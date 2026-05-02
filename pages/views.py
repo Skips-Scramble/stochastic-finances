@@ -528,12 +528,16 @@ def calculations(request):
         # Apply per-account rate overrides
         # Override savings rate if account has a specific rate set
         if savings_inputs_model[0].interest_rate_per_yr is not None:
-            rates_inputs_dict["base_rf_interest_per_yr"] = savings_inputs_model[0].interest_rate_per_yr
+            rates_inputs_dict["base_rf_interest_per_yr"] = savings_inputs_model[
+                0
+            ].interest_rate_per_yr
 
         # Override retirement rates for each account that has a specific rate set
         for i, retirement_acct in enumerate(retirement_inputs_model):
             if retirement_acct.interest_rate_per_yr is not None:
-                retirement_accts_list[i]["interest_rate_per_yr"] = retirement_acct.interest_rate_per_yr
+                retirement_accts_list[i]["interest_rate_per_yr"] = (
+                    retirement_acct.interest_rate_per_yr
+                )
 
     full_dict = {
         **{"name": "Test Scenario"},

@@ -27,8 +27,6 @@ from .model_validators import (
 )
 
 
-
-
 class GeneralInputsModel(models.Model):
     """General inputs to the model"""
 
