@@ -141,6 +141,24 @@ class PaymentsInputsForm(forms.ModelForm):
 class RetirementInputsForm(forms.ModelForm):
     """Class to contain all pertinent financial information"""
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Non-pension fields are hidden and skipped for pension type; mark them
+        # optional at the form level so the hidden inputs don't block submission.
+        self.fields["base_retirement"].required = False
+        self.fields["base_retirement_per_yr_increase"].required = False
+
+    def clean(self):
+        cleaned_data = super().clean()
+        retirement_type = cleaned_data.get("retirement_type")
+        if retirement_type == "pension":
+            # Supply 0 defaults for unused non-nullable columns
+            if not cleaned_data.get("base_retirement"):
+                cleaned_data["base_retirement"] = 0.0
+            if not cleaned_data.get("base_retirement_per_yr_increase"):
+                cleaned_data["base_retirement_per_yr_increase"] = 0.0
+        return cleaned_data
+
     class Meta:
         model = RetirementInputsModel
         fields = [
@@ -157,7 +175,7 @@ class RetirementInputsForm(forms.ModelForm):
             "is_active": "Use this for calculations",
             "retirement_type": "Retirement Type",
             "base_retirement": "Current retirement amount",
-            "base_retirement_per_mo": "Monthly retirement contributions (or monthly pension payment)",
+            "base_retirement_per_mo": "Monthly retirement contributions",
             "base_retirement_per_yr_increase": "Yearly retirement contribution increase ($)",
             "pension_start_age_yrs": "Pension start age (years)",
             "pension_start_age_mos": "Pension start age (months)",
