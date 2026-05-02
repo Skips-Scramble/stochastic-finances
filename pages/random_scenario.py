@@ -245,7 +245,7 @@ class RandomScenario:
                 conservative_rate_pct = yearly_rate * 100
                 sampled_rate_pct = np.random.normal(
                     conservative_rate_pct,
-                    conservative_rate_pct * 1.5,
+                    abs(conservative_rate_pct) * 1.5,
                 )
                 if conservative_rate_pct > MIN_CONSERVATIVE_RETIREMENT_RATE_PCT:
                     sampled_rate_pct = min(sampled_rate_pct, conservative_rate_pct)
@@ -255,7 +255,7 @@ class RandomScenario:
         else:
             monthly_rates = []
             for _ in self.base_scenario.month_list:
-                sampled_rate_pct = np.random.normal(start_pct, start_pct * 1.5)
+                sampled_rate_pct = np.random.normal(start_pct, abs(start_pct) * 1.5)
                 yearly = round(sampled_rate_pct / 100, 4)
                 monthly_rates.append(round(((1 + yearly) ** (1 / 12) - 1), 4))
             return monthly_rates

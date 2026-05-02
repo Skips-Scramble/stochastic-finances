@@ -813,15 +813,15 @@ class BaseScenario(ScenarioCoreInfo):
             for yearly_rate in self.conservative_yearly_mkt_interest
         ]
 
-    def _account_monthly_rate_list(self, account) -> list:
-        """Return a per-month list of monthly rates for *account*.
+    def _account_yearly_rate_list(self, account) -> list:
+        """Return a per-month list of *annualised* rates for *account*.
 
         Respects both ``interest_rate_override`` (sets the glide-path starting
         point or flat rate) and ``use_conservative_rates`` (glide-path vs flat).
         When *account* is ``None`` the global conservative rate list is returned.
         """
         if account is None:
-            return list(self.conservative_monthly_mkt_interest)
+            return list(self.conservative_yearly_mkt_interest)
 
         start_pct = (
             account.interest_rate_override
@@ -829,12 +829,20 @@ class BaseScenario(ScenarioCoreInfo):
             else self.assumptions["base_mkt_interest_per_yr"]
         )
         if account.use_conservative_rates:
-            yearly = self._build_conservative_yearly_rate_list(start_pct)
-            return [round((1 + yr) ** (1 / 12) - 1, 6) for yr in yearly]
+            return self._build_conservative_yearly_rate_list(start_pct)
         else:
             flat_yearly = round(start_pct / 100, 6)
-            flat_monthly = round((1 + flat_yearly) ** (1 / 12) - 1, 6)
-            return [flat_monthly] * self.total_months
+            return [flat_yearly] * self.total_months
+
+    def _account_monthly_rate_list(self, account) -> list:
+        """Return a per-month list of monthly rates for *account*.
+
+        Delegates to :meth:`_account_yearly_rate_list` and converts to monthly.
+        """
+        return [
+            round((1 + yr) ** (1 / 12) - 1, 6)
+            for yr in self._account_yearly_rate_list(account)
+        ]
 
     @cached_property
     def yearly_rf_interest(self) -> float:
@@ -1970,16 +1978,11 @@ class BaseScenario(ScenarioCoreInfo):
                 not isinstance(ret_account, RetirementPension)
                 and ret_account.interest_rate_override is not None
             ):
-                yearly_list = self._build_conservative_yearly_rate_list(
-                    ret_account.interest_rate_override
-                ) if ret_account.use_conservative_rates else [
-                    round(ret_account.interest_rate_override / 100, 6)
-                ] * self.total_months
-                monthly_list = [
+                yearly_list = self._account_yearly_rate_list(ret_account)
+                data_3[f"{ret_account.name}_yearly_mkt_interest"] = yearly_list
+                data_3[f"{ret_account.name}_monthly_mkt_interest"] = [
                     round((1 + yr) ** (1 / 12) - 1, 6) for yr in yearly_list
                 ]
-                data_3[f"{ret_account.name}_yearly_mkt_interest"] = yearly_list
-                data_3[f"{ret_account.name}_monthly_mkt_interest"] = monthly_list
 
         data = {**data_1, **non_base_items_lists, **data_3}
 
