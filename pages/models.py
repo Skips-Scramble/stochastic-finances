@@ -12,6 +12,7 @@ from .model_validators import (
     validate_base_saved_per_mo,
     validate_base_savings,
     validate_down_pmt,
+    validate_monthly_medical_bills,
     validate_pmt_length_yrs,
     validate_pmt_start_age_yrs,
     validate_range_age_mos,
@@ -51,6 +52,15 @@ class GeneralInputsModel(models.Model):
 
     include_pre_medicare_insurance = models.BooleanField(
         default=False,
+    )
+
+    add_medical_bills = models.BooleanField(
+        default=False,
+    )
+
+    monthly_medical_bills = models.FloatField(
+        validators=[validate_monthly_medical_bills, decimal_validator],
+        default=0,
     )
 
     retirement_extra_expenses = models.FloatField(

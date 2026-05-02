@@ -847,6 +847,21 @@ class BaseScenario(ScenarioCoreInfo):
         ]
 
     @cached_property
+    def medical_bills_list(self) -> list:
+        """Monthly out-of-pocket medical bills (inflation-adjusted).
+        Returns zeros for every month if the toggle is off."""
+        if not self.assumptions.get("add_medical_bills", False):
+            return [0.0] * self.total_months
+        base_amount = self.assumptions.get("monthly_medical_bills", 0) or 0
+        return [
+            round(
+                base_amount * (1 + self.monthly_inflation) ** count,
+                6,
+            )
+            for count in self.count_list
+        ]
+
+    @cached_property
     def retirement_increase_list(self) -> list:
         """Aggregate retirement increases from all retirement accounts"""
         # Sum up all retirement contributions across all accounts
@@ -1313,6 +1328,7 @@ class BaseScenario(ScenarioCoreInfo):
                             - self.healthcare_costs[i]
                             - self.medicare_total_costs[i]
                             - self.private_insurance_costs[i]
+                            - self.medical_bills_list[i]
                         )
                         * (1 + self.monthly_rf_interest),
                         6,
@@ -1538,6 +1554,7 @@ class BaseScenario(ScenarioCoreInfo):
                                 + self.healthcare_costs[i]
                                 + self.medicare_total_costs[i]
                                 + self.private_insurance_costs[i]
+                                + self.medical_bills_list[i]
                             )
                         )
                         * (1 + self.monthly_rf_interest),
@@ -1827,6 +1844,7 @@ class BaseScenario(ScenarioCoreInfo):
             "medicare_part_b_premium": self.medicare_part_b_premium_costs,
             "medicare_part_d_premium": self.medicare_part_d_premium_costs,
             "private_insurance_cost": self.private_insurance_costs,
+            "medical_bills_cost": self.medical_bills_list,
             "savings_account": self.savings_retirement_account_list[0],
             "yearly_mkt_interest": self.yearly_mkt_interest,
             "monthly_mkt_interest": self.monthly_mkt_interest,

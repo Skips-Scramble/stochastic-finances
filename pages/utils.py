@@ -7,6 +7,8 @@ inputs_by_model_dict = {
         "retirement_age_mos",
         "add_healthcare",
         "include_pre_medicare_insurance",
+        "add_medical_bills",
+        "monthly_medical_bills",
         "retirement_extra_expenses",
     ],
     "savings": [

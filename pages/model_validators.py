@@ -144,6 +144,14 @@ def validate_retirement_extra_expenses(value: float):
         raise ValidationError(f"Please keep values within ${limit}, plus or minus")
 
 
+def validate_monthly_medical_bills(value: float):
+    """Validate monthly medical bills amount"""
+    if value < 0:
+        raise ValidationError("Monthly medical bills must be 0 or greater.")
+    if value > 1_000_000:
+        raise ValidationError("Please keep monthly medical bills under $1,000,000.")
+
+
 def validate_rates_per_yr(value: float):
     """Validate interest rates (percent per year)"""
     if value < -100 or value > 100:
