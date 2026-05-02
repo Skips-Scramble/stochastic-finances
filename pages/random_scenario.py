@@ -99,6 +99,71 @@ class RandomScenario:
         ]
 
     @cached_property
+    def var_medical_bills_list(self) -> list:
+        """Calculate variable monthly medical bills.
+        Uses low volatility (std = 10% of mean) and clamps to non-negative
+        so the value never decreases savings below zero from this line item.
+        Returns zeros when the toggle is off.
+        """
+        return [
+            max(
+                0.0,
+                round(
+                    np.random.normal(
+                        x,
+                        x * 0.1,
+                    ),
+                    2,
+                ),
+            )
+            for x in self.base_scenario.medical_bills_list
+        ]
+
+    @cached_property
+    def var_healthcare_costs_list(self) -> list:
+        """Variable out-of-pocket healthcare costs.
+        Uses low volatility (std = 10% of mean) and clamps to non-negative.
+        Returns zeros when the toggle is off.
+        """
+        return [
+            max(0.0, round(np.random.normal(x, x * 0.1), 2))
+            for x in self.base_scenario.healthcare_costs
+        ]
+
+    @cached_property
+    def var_medicare_part_b_premium_costs_list(self) -> list:
+        """Variable Medicare Part B premium costs.
+        Uses low volatility (std = 10% of mean) and clamps to non-negative.
+        Returns zeros for months before Medicare eligibility or when toggle is off.
+        """
+        return [
+            max(0.0, round(np.random.normal(x, x * 0.1), 2))
+            for x in self.base_scenario.medicare_part_b_premium_costs
+        ]
+
+    @cached_property
+    def var_medicare_part_d_premium_costs_list(self) -> list:
+        """Variable Medicare Part D premium costs.
+        Uses low volatility (std = 10% of mean) and clamps to non-negative.
+        Returns zeros for months before Medicare eligibility or when toggle is off.
+        """
+        return [
+            max(0.0, round(np.random.normal(x, x * 0.1), 2))
+            for x in self.base_scenario.medicare_part_d_premium_costs
+        ]
+
+    @cached_property
+    def var_private_insurance_costs_list(self) -> list:
+        """Variable pre-Medicare private insurance (ACA) costs.
+        Uses low volatility (std = 10% of mean) and clamps to non-negative.
+        Returns zeros when not applicable or when toggle is off.
+        """
+        return [
+            max(0.0, round(np.random.normal(x, x * 0.1), 2))
+            for x in self.base_scenario.private_insurance_costs
+        ]
+
+    @cached_property
     def var_savings_increase_list(self) -> list:
         """Calculate the amount you save per month on random basis based on
         a normal distribution"""
@@ -309,9 +374,11 @@ class RandomScenario:
                             savings
                             + self.var_savings_increase_list[i]
                             - total_non_base_bills_list[i]
-                            - self.base_scenario.healthcare_costs[i]
-                            - self.base_scenario.medicare_total_costs[i]
-                            - self.base_scenario.private_insurance_costs[i]
+                            - self.var_healthcare_costs_list[i]
+                            - self.var_medicare_part_b_premium_costs_list[i]
+                            - self.var_medicare_part_d_premium_costs_list[i]
+                            - self.var_private_insurance_costs_list[i]
+                            - self.var_medical_bills_list[i]
                         )
                         * (1 + self.var_monthly_rf_interest[i]),
                         6,
@@ -526,9 +593,11 @@ class RandomScenario:
                                 self.var_base_bills_list[i]
                                 + self.var_post_retire_extra_bills_list[i]
                                 + total_non_base_bills_list[i]
-                                + self.base_scenario.healthcare_costs[i]
-                                + self.base_scenario.medicare_total_costs[i]
-                                + self.base_scenario.private_insurance_costs[i]
+                                + self.var_healthcare_costs_list[i]
+                                + self.var_medicare_part_b_premium_costs_list[i]
+                                + self.var_medicare_part_d_premium_costs_list[i]
+                                + self.var_private_insurance_costs_list[i]
+                                + self.var_medical_bills_list[i]
                             )
                         )
                         * (1 + self.var_monthly_rf_interest[i]),
@@ -786,6 +855,11 @@ class RandomScenario:
             "var_base_bills": self.var_base_bills_list,
             "var_retire_extra": self.var_post_retire_extra_bills_list,
             "var_savings_increase": self.var_savings_increase_list,
+            "var_medical_bills_cost": self.var_medical_bills_list,
+            "var_healthcare_cost": self.var_healthcare_costs_list,
+            "var_medicare_part_b_premium": self.var_medicare_part_b_premium_costs_list,
+            "var_medicare_part_d_premium": self.var_medicare_part_d_premium_costs_list,
+            "var_private_insurance_cost": self.var_private_insurance_costs_list,
             "var_savings_account": self.var_savings_retirement_account_list[0],
             "var_trad_401k_rmd": self.var_savings_retirement_account_list[4],
             "var_roth_ira_transfer": self.var_savings_retirement_account_list[5],

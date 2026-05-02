@@ -27,6 +27,8 @@ class GeneralInputsForm(forms.ModelForm):
             "retirement_age_mos",
             "add_healthcare",
             "include_pre_medicare_insurance",
+            "add_medical_bills",
+            "monthly_medical_bills",
             "retirement_extra_expenses",
         ]
         labels = {
@@ -36,6 +38,8 @@ class GeneralInputsForm(forms.ModelForm):
             "retirement_age_mos": "Retirement age (months)",
             "add_healthcare": "Please automatically include healthcare costs for me",
             "include_pre_medicare_insurance": "Include ACA insurance cost when retired and under 65",
+            "add_medical_bills": "Include a monthly medical bills estimate",
+            "monthly_medical_bills": "Monthly medical bills amount ($)",
             "retirement_extra_expenses": "Extra expenses in retirement (vacations, etc.)",
         }
         widgets = {
@@ -47,6 +51,8 @@ class GeneralInputsForm(forms.ModelForm):
             "retirement_age_mos": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
             "add_healthcare": forms.CheckboxInput(),
             "include_pre_medicare_insurance": forms.CheckboxInput(),
+            "add_medical_bills": forms.CheckboxInput(),
+            "monthly_medical_bills": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
             "retirement_extra_expenses": forms.NumberInput(
                 attrs={"class": INPUT_CLASSES}
             ),
