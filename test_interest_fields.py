@@ -4,7 +4,7 @@ import django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 django.setup()
 
-from pages.models import SavingsInputsModel, RetirementInputsModel
+from pages.models import SavingsInputsModel, RetirementInputsModel  # noqa: E402
 
 print("=" * 60)
 print("TEST 1: Import models successfully")
