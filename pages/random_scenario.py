@@ -809,7 +809,7 @@ class RandomScenario:
             "var_base_bills": self.var_base_bills_list,
             "var_retire_extra": self.var_post_retire_extra_bills_list,
             "var_savings_increase": self.var_savings_increase_list,
-            "var_medical_bills": self.var_medical_bills_list,
+            "var_medical_bills_cost": self.var_medical_bills_list,
             "var_savings_account": self.var_savings_retirement_account_list[0],
             "var_trad_401k_rmd": self.var_savings_retirement_account_list[4],
             "var_roth_ira_transfer": self.var_savings_retirement_account_list[5],

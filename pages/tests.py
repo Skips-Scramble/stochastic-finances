@@ -298,3 +298,15 @@ class MedicalBillsRandomScenarioTests(SimpleTestCase):
 
         for var_val, base_val in zip(var_bills, base.medical_bills_list):
             self.assertAlmostEqual(var_val, base_val, places=1)
+
+    def test_var_medical_bills_cost_column_in_full_df(self):
+        """create_full_df includes var_medical_bills_cost matching the base medical_bills_cost."""
+        base = FixedStartBaseScenario(
+            assumptions=_medical_bills_assumptions(
+                add_medical_bills=True, monthly_medical_bills=200.0
+            )
+        )
+        random_scenario = RandomScenario(base_scenario=base)
+        full_df = random_scenario.create_full_df()
+        self.assertIn("medical_bills_cost", full_df.columns)
+        self.assertIn("var_medical_bills_cost", full_df.columns)
