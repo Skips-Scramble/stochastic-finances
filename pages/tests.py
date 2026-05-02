@@ -310,3 +310,77 @@ class MedicalBillsRandomScenarioTests(SimpleTestCase):
         full_df = random_scenario.create_full_df()
         self.assertIn("medical_bills_cost", full_df.columns)
         self.assertIn("var_medical_bills_cost", full_df.columns)
+
+
+def _healthcare_assumptions() -> dict:
+    """Return a minimal assumptions dict with healthcare costs enabled."""
+    return {
+        "birthdate": date(2000, 1, 1),
+        "retirement_age_yrs": 65,
+        "retirement_age_mos": 0,
+        "add_healthcare": True,
+        "include_pre_medicare_insurance": True,
+        "add_medical_bills": False,
+        "monthly_medical_bills": 0.0,
+        "retirement_extra_expenses": 0,
+        "base_savings": 50000,
+        "base_saved_per_mo": 500,
+        "base_savings_per_yr_increase": 0,
+        "savings_lower_limit": 10000,
+        "base_monthly_bills": 2000,
+        "payment_items": [],
+        "retirement_accounts": [],
+        "ss_incl": False,
+        "base_rf_interest_per_yr": 1.0,
+        "base_mkt_interest_per_yr": 4.0,
+        "base_inflation_per_yr": 3.0,
+    }
+
+
+class VariableHealthcareCostTests(SimpleTestCase):
+    def test_var_healthcare_costs_never_negative(self):
+        """var_healthcare_costs_list contains no negative values."""
+        base = FixedStartBaseScenario(assumptions=_healthcare_assumptions())
+        random_scenario = RandomScenario(base_scenario=base)
+        self.assertTrue(all(x >= 0.0 for x in random_scenario.var_healthcare_costs_list))
+
+    def test_var_medicare_part_b_premium_never_negative(self):
+        """var_medicare_part_b_premium_costs_list contains no negative values."""
+        base = FixedStartBaseScenario(assumptions=_healthcare_assumptions())
+        random_scenario = RandomScenario(base_scenario=base)
+        self.assertTrue(
+            all(x >= 0.0 for x in random_scenario.var_medicare_part_b_premium_costs_list)
+        )
+
+    def test_var_medicare_part_d_premium_never_negative(self):
+        """var_medicare_part_d_premium_costs_list contains no negative values."""
+        base = FixedStartBaseScenario(assumptions=_healthcare_assumptions())
+        random_scenario = RandomScenario(base_scenario=base)
+        self.assertTrue(
+            all(x >= 0.0 for x in random_scenario.var_medicare_part_d_premium_costs_list)
+        )
+
+    def test_var_private_insurance_costs_never_negative(self):
+        """var_private_insurance_costs_list contains no negative values."""
+        base = FixedStartBaseScenario(assumptions=_healthcare_assumptions())
+        random_scenario = RandomScenario(base_scenario=base)
+        self.assertTrue(
+            all(x >= 0.0 for x in random_scenario.var_private_insurance_costs_list)
+        )
+
+    def test_var_healthcare_cost_columns_in_full_df(self):
+        """create_full_df includes var_ columns for all four healthcare cost types."""
+        base = FixedStartBaseScenario(assumptions=_healthcare_assumptions())
+        random_scenario = RandomScenario(base_scenario=base)
+        full_df = random_scenario.create_full_df()
+        for col in (
+            "healthcare_cost",
+            "var_healthcare_cost",
+            "medicare_part_b_premium",
+            "var_medicare_part_b_premium",
+            "medicare_part_d_premium",
+            "var_medicare_part_d_premium",
+            "private_insurance_cost",
+            "var_private_insurance_cost",
+        ):
+            self.assertIn(col, full_df.columns)
