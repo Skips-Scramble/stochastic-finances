@@ -281,7 +281,7 @@ class VarPerAccountInterestRateCsvTests(SimpleTestCase):
         self.assertEqual(rates_first, rates_second)
 
 
-
+class RetirementPensionTests(SimpleTestCase):
     def test_pension_is_in_retirement_list(self):
         """A pension retirement account appears in the scenario's retirement_list."""
         scenario = FixedStartBaseScenario(assumptions=_pension_assumptions())

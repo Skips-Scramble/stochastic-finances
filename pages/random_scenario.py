@@ -1012,11 +1012,12 @@ class RandomScenario:
                 not isinstance(ret_account, RetirementPension)
                 and ret_account.interest_rate_override is not None
             ):
-                yearly_list = self._account_var_yearly_rate_list(ret_account)
-                var_data[f"var_{ret_account.name}_yearly_mkt_interest"] = yearly_list
-                var_data[f"var_{ret_account.name}_monthly_mkt_interest"] = [
-                    round(((1 + yr) ** (1 / 12) - 1), 4) for yr in yearly_list
-                ]
+                var_data[f"var_{ret_account.name}_yearly_mkt_interest"] = (
+                    self._account_var_yearly_rate_list(ret_account)
+                )
+                var_data[f"var_{ret_account.name}_monthly_mkt_interest"] = (
+                    self._account_var_monthly_rate_list(ret_account)
+                )
 
         var_df = pd.DataFrame(var_data)
         return self.base_scenario.create_base_df().merge(var_df, on="count", how="left")
