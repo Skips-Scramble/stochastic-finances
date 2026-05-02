@@ -28,4 +28,5 @@ var_descriptions = {
     "base_rf_interest_per_yr": "This is the average interest rate you assume for your savings account(s). If you have more than one, take a weighted average.",
     "base_mkt_interest_per_yr": "This is the average interest rate you assume for your retirement account(s). If you have more than one, take a weighted average.",
     "base_inflation_per_yr": "This is the average inflation per year that you assume. 3.0% is pretty common.",
+    "use_conservative_rates": "If selected, this account's interest rate will gradually step down from your starting rate to 5% by age 90, simulating a more conservative investment strategy as you age. Uncheck to keep a flat rate throughout.",
 }

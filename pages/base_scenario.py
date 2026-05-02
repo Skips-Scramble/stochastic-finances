@@ -314,6 +314,7 @@ class RetirementTrad401k(ScenarioCoreInfo):
     interest_rate_override: float = (
         None  # Optional per-account rate override (as percent)
     )
+    use_conservative_rates: bool = True
     rmd_age_mos = 0
 
     @cached_property
@@ -383,6 +384,7 @@ class RetirementRoth401k(ScenarioCoreInfo):
     interest_rate_override: float = (
         None  # Optional per-account rate override (as percent)
     )
+    use_conservative_rates: bool = True
 
     @cached_property
     def retirement_increase_list(self) -> list:
@@ -442,6 +444,7 @@ class RetirementTradIRA(ScenarioCoreInfo):
     interest_rate_override: float = (
         None  # Optional per-account rate override (as percent)
     )
+    use_conservative_rates: bool = True
 
     @cached_property
     def retirement_increase_list(self) -> list:
@@ -501,6 +504,7 @@ class RetirementRothIRA(ScenarioCoreInfo):
     interest_rate_override: float = (
         None  # Optional per-account rate override (as percent)
     )
+    use_conservative_rates: bool = True
 
     @cached_property
     def retirement_increase_list(self) -> list:
@@ -566,6 +570,7 @@ class RetirementHSA(ScenarioCoreInfo):
     interest_rate_override: float = (
         None  # Optional per-account rate override (as percent)
     )
+    use_conservative_rates: bool = True
 
     @cached_property
     def retirement_increase_list(self) -> list:
@@ -630,6 +635,7 @@ class RetirementBrokerage(ScenarioCoreInfo):
     interest_rate_override: float = (
         None  # Optional per-account rate override (as percent)
     )
+    use_conservative_rates: bool = True
 
     @cached_property
     def retirement_increase_list(self) -> list:
@@ -952,6 +958,7 @@ class BaseScenario(ScenarioCoreInfo):
         for item in self.assumptions["retirement_accounts"]:
             # Get the account's specific interest rate if provided, otherwise None
             account_rate_override = item.get("interest_rate_per_yr", None)
+            account_use_conservative = item.get("use_conservative_rates", True)
 
             if item["retirement_type"] == "traditional_401k":
                 retirement_list.append(
@@ -963,6 +970,7 @@ class BaseScenario(ScenarioCoreInfo):
                             "base_retirement_per_yr_increase"
                         ],
                         interest_rate_override=account_rate_override,
+                        use_conservative_rates=account_use_conservative,
                     )
                 )
             elif item["retirement_type"] == "roth_401k":
@@ -975,6 +983,7 @@ class BaseScenario(ScenarioCoreInfo):
                             "base_retirement_per_yr_increase"
                         ],
                         interest_rate_override=account_rate_override,
+                        use_conservative_rates=account_use_conservative,
                     )
                 )
             elif item["retirement_type"] == "traditional_ira":
@@ -987,6 +996,7 @@ class BaseScenario(ScenarioCoreInfo):
                             "base_retirement_per_yr_increase"
                         ],
                         interest_rate_override=account_rate_override,
+                        use_conservative_rates=account_use_conservative,
                     )
                 )
             elif item["retirement_type"] == "roth_ira":
@@ -999,6 +1009,7 @@ class BaseScenario(ScenarioCoreInfo):
                             "base_retirement_per_yr_increase"
                         ],
                         interest_rate_override=account_rate_override,
+                        use_conservative_rates=account_use_conservative,
                     )
                 )
             elif item["retirement_type"] == "hsa":
@@ -1011,6 +1022,7 @@ class BaseScenario(ScenarioCoreInfo):
                             "base_retirement_per_yr_increase"
                         ],
                         interest_rate_override=account_rate_override,
+                        use_conservative_rates=account_use_conservative,
                     )
                 )
             elif item["retirement_type"] == "brokerage":
@@ -1023,6 +1035,7 @@ class BaseScenario(ScenarioCoreInfo):
                             "base_retirement_per_yr_increase"
                         ],
                         interest_rate_override=account_rate_override,
+                        use_conservative_rates=account_use_conservative,
                     )
                 )
             elif item["retirement_type"] == "pension":
@@ -1318,6 +1331,16 @@ class BaseScenario(ScenarioCoreInfo):
             brokerage_interest = 0.0
             brokerage_income_tax = 0.0
 
+            # Per-account monthly rate: conservative glide-path or flat, based on account toggle
+            _conservative = self.conservative_monthly_mkt_interest[i]
+            _flat = self.monthly_mkt_interest
+            roth_ira_rate = _conservative if (roth_ira and roth_ira.use_conservative_rates) else _flat
+            roth_401k_rate = _conservative if (roth_401k and roth_401k.use_conservative_rates) else _flat
+            trad_401k_rate = _conservative if (trad_401k and trad_401k.use_conservative_rates) else _flat
+            trad_ira_rate = _conservative if (trad_ira and trad_ira.use_conservative_rates) else _flat
+            hsa_rate = _conservative if (hsa and hsa.use_conservative_rates) else _flat
+            brokerage_rate = _conservative if (brokerage and brokerage.use_conservative_rates) else _flat
+
             if i == 0:
                 # Initialize accounts
                 savings = float(round(self.assumptions["base_savings"], 6))
@@ -1474,7 +1497,7 @@ class BaseScenario(ScenarioCoreInfo):
                         roth_ira_bal = float(
                             round(
                                 roth_ira_bal
-                                * (1 + self.conservative_monthly_mkt_interest[i]),
+                                * (1 + roth_ira_rate),
                                 6,
                             )
                         )
@@ -1490,7 +1513,7 @@ class BaseScenario(ScenarioCoreInfo):
                         roth_ira_bal = float(
                             round(
                                 (roth_ira_bal + contribution)
-                                * (1 + self.conservative_monthly_mkt_interest[i]),
+                                * (1 + roth_ira_rate),
                                 6,
                             )
                         )
@@ -1504,7 +1527,7 @@ class BaseScenario(ScenarioCoreInfo):
                     roth_401k_bal = float(
                         round(
                             (roth_401k_bal + contribution_401k)
-                            * (1 + self.conservative_monthly_mkt_interest[i]),
+                            * (1 + roth_401k_rate),
                             6,
                         )
                     )
@@ -1515,7 +1538,7 @@ class BaseScenario(ScenarioCoreInfo):
                     trad_401k_bal = float(
                         round(
                             (trad_401k_bal + contribution_trad_401k)
-                            * (1 + self.conservative_monthly_mkt_interest[i]),
+                            * (1 + trad_401k_rate),
                             6,
                         )
                     )
@@ -1526,7 +1549,7 @@ class BaseScenario(ScenarioCoreInfo):
                     trad_ira_bal = float(
                         round(
                             (trad_ira_bal + contribution_trad_ira)
-                            * (1 + self.conservative_monthly_mkt_interest[i]),
+                            * (1 + trad_ira_rate),
                             6,
                         )
                     )
@@ -1537,7 +1560,7 @@ class BaseScenario(ScenarioCoreInfo):
                     hsa_bal = float(
                         round(
                             (hsa_bal + contribution_hsa)
-                            * (1 + self.conservative_monthly_mkt_interest[i]),
+                            * (1 + hsa_rate),
                             6,
                         )
                     )
@@ -1548,7 +1571,7 @@ class BaseScenario(ScenarioCoreInfo):
                     brokerage_cost_basis += contribution_brokerage
                     pre_growth_bal = brokerage_bal + contribution_brokerage
                     interest_earned = (
-                        pre_growth_bal * self.conservative_monthly_mkt_interest[i]
+                        pre_growth_bal * brokerage_rate
                     )
                     brokerage_interest = interest_earned
                     brokerage_bal = float(
@@ -1689,7 +1712,7 @@ class BaseScenario(ScenarioCoreInfo):
                     roth_ira_bal = float(
                         round(
                             roth_ira_bal
-                            * (1 + self.conservative_monthly_mkt_interest[i]),
+                            * (1 + roth_ira_rate),
                             6,
                         )
                     )
@@ -1699,7 +1722,7 @@ class BaseScenario(ScenarioCoreInfo):
                     roth_401k_bal = float(
                         round(
                             roth_401k_bal
-                            * (1 + self.conservative_monthly_mkt_interest[i]),
+                            * (1 + roth_401k_rate),
                             6,
                         )
                     )
@@ -1709,7 +1732,7 @@ class BaseScenario(ScenarioCoreInfo):
                     trad_401k_bal = float(
                         round(
                             trad_401k_bal
-                            * (1 + self.conservative_monthly_mkt_interest[i]),
+                            * (1 + trad_401k_rate),
                             6,
                         )
                     )
@@ -1719,7 +1742,7 @@ class BaseScenario(ScenarioCoreInfo):
                     trad_ira_bal = float(
                         round(
                             trad_ira_bal
-                            * (1 + self.conservative_monthly_mkt_interest[i]),
+                            * (1 + trad_ira_rate),
                             6,
                         )
                     )
@@ -1728,7 +1751,7 @@ class BaseScenario(ScenarioCoreInfo):
                 if hsa:
                     hsa_bal = float(
                         round(
-                            hsa_bal * (1 + self.conservative_monthly_mkt_interest[i]),
+                            hsa_bal * (1 + hsa_rate),
                             6,
                         )
                     )
@@ -1736,7 +1759,7 @@ class BaseScenario(ScenarioCoreInfo):
                 # Grow Brokerage (no contributions in retirement)
                 if brokerage:
                     interest_earned = (
-                        brokerage_bal * self.conservative_monthly_mkt_interest[i]
+                        brokerage_bal * brokerage_rate
                     )
                     brokerage_interest = interest_earned
                     brokerage_bal = float(

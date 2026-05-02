@@ -4,7 +4,7 @@ from unittest.mock import patch
 
 from django.test import SimpleTestCase
 
-from .base_scenario import BaseScenario, RetirementPension
+from .base_scenario import BaseScenario, RetirementPension, RetirementRothIRA
 from .random_scenario import RandomScenario
 
 
@@ -102,6 +102,73 @@ class ConservativeRetirementRateTests(SimpleTestCase):
         self.assertEqual(yearly_rates[384], 0.065)
         # At age 90 (index 768): floor 5%
         self.assertEqual(yearly_rates[768], 0.05)
+
+
+def _full_assumptions_with_roth_ira(use_conservative_rates: bool) -> dict:
+    """Minimal full assumptions dict with one Roth IRA account."""
+    return {
+        "birthdate": date(2000, 1, 1),
+        "retirement_age_yrs": 65,
+        "retirement_age_mos": 0,
+        "add_healthcare": False,
+        "medicare_coverage_type": "standard",
+        "private_insurance_per_mo": None,
+        "retirement_extra_expenses": 0,
+        "base_savings": 50000,
+        "base_saved_per_mo": 500,
+        "base_savings_per_yr_increase": 0,
+        "savings_lower_limit": 10000,
+        "base_monthly_bills": 2000,
+        "payment_items": [],
+        "retirement_accounts": [
+            {
+                "retirement_type": "roth_ira",
+                "base_retirement": 10000,
+                "base_retirement_per_mo": 200,
+                "base_retirement_per_yr_increase": 0,
+                "use_conservative_rates": use_conservative_rates,
+            }
+        ],
+        "ss_incl": False,
+        "base_rf_interest_per_yr": 1.0,
+        "base_mkt_interest_per_yr": 8.0,
+        "base_inflation_per_yr": 3.0,
+        "add_medical_bills": False,
+        "monthly_medical_bills": 0,
+    }
+
+
+class PerAccountConservativeRateToggleTests(SimpleTestCase):
+    def test_conservative_toggle_on_uses_glide_path_rate(self):
+        """When use_conservative_rates=True the account is built with use_conservative_rates=True."""
+        scenario = FixedStartBaseScenario(
+            assumptions=_full_assumptions_with_roth_ira(use_conservative_rates=True)
+        )
+        roth_ira = next(
+            a for a in scenario.retirement_list if isinstance(a, RetirementRothIRA)
+        )
+        self.assertTrue(roth_ira.use_conservative_rates)
+
+    def test_conservative_toggle_off_uses_flat_rate(self):
+        """When use_conservative_rates=False the account is built with use_conservative_rates=False."""
+        scenario = FixedStartBaseScenario(
+            assumptions=_full_assumptions_with_roth_ira(use_conservative_rates=False)
+        )
+        roth_ira = next(
+            a for a in scenario.retirement_list if isinstance(a, RetirementRothIRA)
+        )
+        self.assertFalse(roth_ira.use_conservative_rates)
+
+    def test_conservative_toggle_defaults_to_true_when_not_provided(self):
+        """When use_conservative_rates is absent from the item dict it defaults to True."""
+        assumptions = _full_assumptions_with_roth_ira(use_conservative_rates=True)
+        # Remove the key to simulate an old record without the field
+        del assumptions["retirement_accounts"][0]["use_conservative_rates"]
+        scenario = FixedStartBaseScenario(assumptions=assumptions)
+        roth_ira = next(
+            a for a in scenario.retirement_list if isinstance(a, RetirementRothIRA)
+        )
+        self.assertTrue(roth_ira.use_conservative_rates)
 
 
 class RetirementPensionTests(SimpleTestCase):

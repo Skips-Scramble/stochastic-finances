@@ -202,6 +202,24 @@ class RandomScenario:
         ]
 
     @cached_property
+    def var_yearly_mkt_interest_flat(self) -> list:
+        """Per-month varying yearly rates sampled around the flat starting rate (no glide-path step-down)."""
+        flat_rate_pct = self.base_scenario.yearly_mkt_interest * 100
+        variable_mkt_list = []
+        for _ in self.base_scenario.month_list:
+            sampled_rate_pct = np.random.normal(flat_rate_pct, flat_rate_pct * 1.5)
+            variable_mkt_list.append(round(sampled_rate_pct / 100, 4))
+        return variable_mkt_list
+
+    @cached_property
+    def var_monthly_mkt_interest_flat(self) -> list:
+        """Per-month varying monthly rates derived from the flat yearly rates."""
+        return [
+            round(((1 + x) ** (1 / 12) - 1), 4)
+            for x in self.var_yearly_mkt_interest_flat
+        ]
+
+    @cached_property
     def var_savings_retirement_account_list(
         self,
     ) -> tuple[
@@ -337,6 +355,16 @@ class RandomScenario:
             brokerage_tax = 0.0
             brokerage_interest = 0.0
             brokerage_income_tax = 0.0
+
+            # Per-account monthly rate: conservative glide-path or flat, based on account toggle
+            _conservative = self.var_monthly_mkt_interest[i]
+            _flat = self.var_monthly_mkt_interest_flat[i]
+            roth_ira_rate = _conservative if (roth_ira and roth_ira.use_conservative_rates) else _flat
+            roth_401k_rate = _conservative if (roth_401k and roth_401k.use_conservative_rates) else _flat
+            trad_401k_rate = _conservative if (trad_401k and trad_401k.use_conservative_rates) else _flat
+            trad_ira_rate = _conservative if (trad_ira and trad_ira.use_conservative_rates) else _flat
+            hsa_rate = _conservative if (hsa and hsa.use_conservative_rates) else _flat
+            brokerage_rate = _conservative if (brokerage and brokerage.use_conservative_rates) else _flat
 
             if i == 0:
                 # Initialize accounts
@@ -502,7 +530,7 @@ class RandomScenario:
                         # Below threshold: no new contributions, just grow existing balance
                         roth_ira_bal = float(
                             round(
-                                roth_ira_bal * (1 + self.var_monthly_mkt_interest[i]),
+                                roth_ira_bal * (1 + roth_ira_rate),
                                 6,
                             )
                         )
@@ -512,7 +540,7 @@ class RandomScenario:
                         roth_ira_bal = float(
                             round(
                                 (roth_ira_bal + contribution)
-                                * (1 + self.var_monthly_mkt_interest[i]),
+                                * (1 + roth_ira_rate),
                                 6,
                             )
                         )
@@ -525,7 +553,7 @@ class RandomScenario:
                     roth_401k_bal = float(
                         round(
                             (roth_401k_bal + contribution_401k)
-                            * (1 + self.var_monthly_mkt_interest[i]),
+                            * (1 + roth_401k_rate),
                             6,
                         )
                     )
@@ -536,7 +564,7 @@ class RandomScenario:
                     trad_401k_bal = float(
                         round(
                             (trad_401k_bal + contribution_trad_401k)
-                            * (1 + self.var_monthly_mkt_interest[i]),
+                            * (1 + trad_401k_rate),
                             6,
                         )
                     )
@@ -547,7 +575,7 @@ class RandomScenario:
                     trad_ira_bal = float(
                         round(
                             (trad_ira_bal + contribution_trad_ira)
-                            * (1 + self.var_monthly_mkt_interest[i]),
+                            * (1 + trad_ira_rate),
                             6,
                         )
                     )
@@ -558,7 +586,7 @@ class RandomScenario:
                     hsa_bal = float(
                         round(
                             (hsa_bal + contribution_hsa)
-                            * (1 + self.var_monthly_mkt_interest[i]),
+                            * (1 + hsa_rate),
                             6,
                         )
                     )
@@ -568,7 +596,7 @@ class RandomScenario:
                     contribution_brokerage = brokerage.retirement_increase_list[i]
                     brokerage_cost_basis += contribution_brokerage
                     pre_growth_bal = brokerage_bal + contribution_brokerage
-                    interest_earned = pre_growth_bal * self.var_monthly_mkt_interest[i]
+                    interest_earned = pre_growth_bal * brokerage_rate
                     brokerage_interest = interest_earned
                     brokerage_bal = float(
                         round(
@@ -730,7 +758,7 @@ class RandomScenario:
                 if roth_ira:
                     roth_ira_bal = float(
                         round(
-                            roth_ira_bal * (1 + self.var_monthly_mkt_interest[i]),
+                            roth_ira_bal * (1 + roth_ira_rate),
                             6,
                         )
                     )
@@ -739,7 +767,7 @@ class RandomScenario:
                 if roth_401k:
                     roth_401k_bal = float(
                         round(
-                            roth_401k_bal * (1 + self.var_monthly_mkt_interest[i]),
+                            roth_401k_bal * (1 + roth_401k_rate),
                             6,
                         )
                     )
@@ -748,7 +776,7 @@ class RandomScenario:
                 if trad_401k:
                     trad_401k_bal = float(
                         round(
-                            trad_401k_bal * (1 + self.var_monthly_mkt_interest[i]),
+                            trad_401k_bal * (1 + trad_401k_rate),
                             6,
                         )
                     )
@@ -757,7 +785,7 @@ class RandomScenario:
                 if trad_ira:
                     trad_ira_bal = float(
                         round(
-                            trad_ira_bal * (1 + self.var_monthly_mkt_interest[i]),
+                            trad_ira_bal * (1 + trad_ira_rate),
                             6,
                         )
                     )
@@ -766,14 +794,14 @@ class RandomScenario:
                 if hsa:
                     hsa_bal = float(
                         round(
-                            hsa_bal * (1 + self.var_monthly_mkt_interest[i]),
+                            hsa_bal * (1 + hsa_rate),
                             6,
                         )
                     )
 
                 # Grow Brokerage (no contributions in retirement)
                 if brokerage:
-                    interest_earned = brokerage_bal * self.var_monthly_mkt_interest[i]
+                    interest_earned = brokerage_bal * brokerage_rate
                     brokerage_interest = interest_earned
                     brokerage_bal = float(
                         round(
