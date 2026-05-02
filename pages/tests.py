@@ -228,7 +228,60 @@ class PerAccountInterestRateCsvTests(SimpleTestCase):
         )
 
 
-class RetirementPensionTests(SimpleTestCase):
+class VarPerAccountInterestRateCsvTests(SimpleTestCase):
+    """Tests for per-account variable interest-rate columns in create_full_df.
+
+    Uses BaseScenario directly (not FixedStartBaseScenario) so that the main scenario
+    and the individual account objects share the same start_date (both default to today).
+    """
+
+    def test_var_per_account_rate_columns_absent_without_override(self):
+        """Accounts without an override should not add var per-account rate columns."""
+        base = BaseScenario(
+            assumptions=_full_assumptions_with_roth_ira(use_conservative_rates=True)
+        )
+        random_scenario = RandomScenario(base_scenario=base)
+        full_df = random_scenario.create_full_df()
+        self.assertNotIn("var_roth_ira_yearly_mkt_interest", full_df.columns)
+        self.assertNotIn("var_roth_ira_monthly_mkt_interest", full_df.columns)
+
+    def test_var_per_account_rate_columns_present_with_override(self):
+        """Accounts with an override should add var per-account rate columns to create_full_df."""
+        base = BaseScenario(
+            assumptions=_full_assumptions_with_roth_ira_override(interest_rate_per_yr=6.0)
+        )
+        random_scenario = RandomScenario(base_scenario=base)
+        full_df = random_scenario.create_full_df()
+        self.assertIn("var_roth_ira_yearly_mkt_interest", full_df.columns)
+        self.assertIn("var_roth_ira_monthly_mkt_interest", full_df.columns)
+
+    def test_var_per_account_monthly_rate_consistent_with_yearly(self):
+        """The var monthly rate column is derived correctly from the var yearly rate column."""
+        base = BaseScenario(
+            assumptions=_full_assumptions_with_roth_ira_override(interest_rate_per_yr=6.0)
+        )
+        random_scenario = RandomScenario(base_scenario=base)
+        full_df = random_scenario.create_full_df()
+        for _, row in full_df.iterrows():
+            yearly = row["var_roth_ira_yearly_mkt_interest"]
+            expected_monthly = round((1 + yearly) ** (1 / 12) - 1, 4)
+            self.assertAlmostEqual(
+                row["var_roth_ira_monthly_mkt_interest"], expected_monthly, places=4
+            )
+
+    def test_var_per_account_rate_cached_across_calls(self):
+        """_account_var_yearly_rate_list returns the same values on repeated calls (cache)."""
+        base = BaseScenario(
+            assumptions=_full_assumptions_with_roth_ira_override(interest_rate_per_yr=6.0)
+        )
+        random_scenario = RandomScenario(base_scenario=base)
+        roth_ira = next(a for a in base.retirement_list if isinstance(a, RetirementRothIRA))
+        rates_first = random_scenario._account_var_yearly_rate_list(roth_ira)
+        rates_second = random_scenario._account_var_yearly_rate_list(roth_ira)
+        self.assertEqual(rates_first, rates_second)
+
+
+
     def test_pension_is_in_retirement_list(self):
         """A pension retirement account appears in the scenario's retirement_list."""
         scenario = FixedStartBaseScenario(assumptions=_pension_assumptions())
