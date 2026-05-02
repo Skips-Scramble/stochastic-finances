@@ -1,10 +1,10 @@
 import os
 import django
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "stochastic_finances.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 django.setup()
 
-from financial_plan.models import SavingsInputsModel, RetirementInputsModel
+from pages.models import SavingsInputsModel, RetirementInputsModel
 
 print("=" * 60)
 print("TEST 1: Import models successfully")
