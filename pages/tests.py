@@ -61,15 +61,20 @@ def _pension_assumptions(
 
 
 class ConservativeRetirementRateTests(SimpleTestCase):
-    def test_base_scenario_steps_down_annually_to_five_percent_floor(self):
+    def test_base_scenario_steps_down_to_five_percent_at_age_ninety(self):
+        # birthdate 2000-01-01, start_date 2026-01-01 (age 26), age-90 = 2090-01-01
+        # years_to_floor = 64, annual_step = (8 - 5) / 64 = 0.046875 pct/yr
         scenario = FixedStartBaseScenario(assumptions=_base_assumptions(8.0))
         yearly_rates = scenario.conservative_yearly_mkt_interest
 
+        # At start (Jan 2026): 8%
         self.assertEqual(yearly_rates[0], 0.08)
-        self.assertEqual(yearly_rates[12], 0.07)
-        self.assertEqual(yearly_rates[24], 0.06)
-        self.assertEqual(yearly_rates[36], 0.05)
-        self.assertEqual(yearly_rates[48], 0.05)
+        # At Jan 2058 (index 384, 32 years in): 8 - 32*(3/64) = 6.5%
+        self.assertEqual(yearly_rates[384], 0.065)
+        # At Jan 2090 (index 768, 64 years in, age 90): floor = 5%
+        self.assertEqual(yearly_rates[768], 0.05)
+        # After age 90 (index 780, Jan 2091): still at floor
+        self.assertEqual(yearly_rates[780], 0.05)
 
     def test_base_scenario_does_not_adjust_when_start_rate_is_below_floor(self):
         scenario = FixedStartBaseScenario(assumptions=_base_assumptions(4.0))
@@ -80,6 +85,8 @@ class ConservativeRetirementRateTests(SimpleTestCase):
         self.assertEqual(yearly_rates[24], 0.04)
 
     def test_random_scenario_uses_conservative_annual_schedule(self):
+        # With mean = conservative_rate, the random scenario should mirror the
+        # same age-90 glide path as the base scenario.
         scenario = FixedStartBaseScenario(assumptions=_base_assumptions(8.0))
         random_scenario = RandomScenario(base_scenario=scenario)
 
@@ -89,10 +96,12 @@ class ConservativeRetirementRateTests(SimpleTestCase):
         ):
             yearly_rates = random_scenario.var_yearly_mkt_interest
 
+        # At start: 8%
         self.assertEqual(yearly_rates[0], 0.08)
-        self.assertEqual(yearly_rates[12], 0.07)
-        self.assertEqual(yearly_rates[24], 0.06)
-        self.assertEqual(yearly_rates[36], 0.05)
+        # At Jan 2058 (index 384, 32 years in): 6.5%
+        self.assertEqual(yearly_rates[384], 0.065)
+        # At age 90 (index 768): floor 5%
+        self.assertEqual(yearly_rates[768], 0.05)
 
 
 class RetirementPensionTests(SimpleTestCase):

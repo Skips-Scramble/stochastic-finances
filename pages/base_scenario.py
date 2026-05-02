@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 
 DEATH_YEARS = 115
 MIN_CONSERVATIVE_RETIREMENT_RATE_PCT = 5.0
+CONSERVATIVE_RATE_FLOOR_AGE_YRS = 90
 ROTH_IRA_WITHDRAWAL_AGE_YRS = 59
 ROTH_IRA_WITHDRAWAL_AGE_MOS = 6
 HSA_WITHDRAWAL_AGE_YRS = 65
@@ -762,12 +763,18 @@ class BaseScenario(ScenarioCoreInfo):
 
     @cached_property
     def conservative_yearly_mkt_interest(self) -> list:
-        """Annualized market rate by month, stepping down each Jan 1 toward a floor."""
+        """Annualized market rate by month, stepping down each Jan 1 toward a floor.
+
+        The rate steps down linearly from the starting rate to
+        MIN_CONSERVATIVE_RETIREMENT_RATE_PCT by age CONSERVATIVE_RATE_FLOOR_AGE_YRS
+        (90), then remains flat at the floor.
+        """
         start_rate_pct = self.assumptions["base_mkt_interest_per_yr"]
         if start_rate_pct <= MIN_CONSERVATIVE_RETIREMENT_RATE_PCT:
             return [round(start_rate_pct / 100, 6) for _ in self.month_list]
 
-        years_to_floor = max(1, self.retirement_date.year - self.start_date.year)
+        age_floor_date = calc_date_on_age(self.birthdate, CONSERVATIVE_RATE_FLOOR_AGE_YRS, 0)
+        years_to_floor = max(1, age_floor_date.year - self.start_date.year)
         annual_step_pct = (
             start_rate_pct - MIN_CONSERVATIVE_RETIREMENT_RATE_PCT
         ) / years_to_floor
