@@ -29,7 +29,7 @@ def minimal_savings_assumptions():
         "base_inflation_per_yr": 0.0,
     }
 
-
+# Todo: Delete this as it's not helpful
 def test_yearly_rf_interest_computed_from_assumption(minimal_savings_assumptions):
     """yearly_rf_interest is base_rf_interest_per_yr converted to a decimal."""
     scenario = BaseScenario(assumptions=minimal_savings_assumptions)
@@ -73,6 +73,27 @@ def test_savings_compounds_over_multiple_months(minimal_savings_assumptions):
     for month in range(1, 13):
         expected = round(base_savings * (1 + monthly_rate) ** month, 6)
         assert savings_list[month] == pytest.approx(expected, rel=1e-4)
+
+
+def test_savings_compounds_correctly_at_age_ninety_zero_months(
+    minimal_savings_assumptions,
+):
+    """Savings at age 90y 0m matches pure compounding from the start month."""
+    scenario = BaseScenario(assumptions=minimal_savings_assumptions)
+    savings_list = scenario.savings_retirement_account_list[0]
+    base_savings = minimal_savings_assumptions["base_savings"]
+    monthly_rate = scenario.monthly_rf_interest
+
+    target_month_index = next(
+        i
+        for i, (age_yrs, age_mos) in enumerate(
+            zip(scenario.age_by_year_list, scenario.age_by_month_list)
+        )
+        if age_yrs == 90 and age_mos == 0
+    )
+
+    expected = round(base_savings * (1 + monthly_rate) ** target_month_index, 6)
+    assert savings_list[target_month_index] == pytest.approx(expected, rel=1e-6)
 
 
 def test_higher_interest_rate_produces_more_savings(minimal_savings_assumptions):
