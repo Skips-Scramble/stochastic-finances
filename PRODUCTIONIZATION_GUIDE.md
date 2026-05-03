@@ -10,16 +10,18 @@ This document is a living guide for taking this project from a local development
 2. [Is This App Production-Ready Right Now?](#2-is-this-app-production-ready-right-now)
 3. [Should You Rewrite in a Different Tech Stack?](#3-should-you-rewrite-in-a-different-tech-stack)
 4. [How to Actually Host Your Website](#4-how-to-actually-host-your-website)
-5. [AWS vs Azure vs GCP vs GitHub — What Goes Where?](#5-aws-vs-azure-vs-gcp-vs-github--what-goes-where)
-6. [What Needs to Change Before Going Live](#6-what-needs-to-change-before-going-live)
-7. [Starting a Business: The Basics](#7-starting-a-business-the-basics)
-8. [Should You Form an LLC?](#8-should-you-form-an-llc)
-9. [Business Bank Accounts and Keeping Finances Separate](#9-business-bank-accounts-and-keeping-finances-separate)
-10. [Tax Deductions: What You Can and Cannot Expense](#10-tax-deductions-what-you-can-and-cannot-expense)
-11. [GitHub Copilot and Tool Costs — Can You Expense Them?](#11-github-copilot-and-tool-costs--can-you-expense-them)
-12. [Realistic Cost Estimates to Get Started](#12-realistic-cost-estimates-to-get-started)
-13. [Suggested Step-by-Step Roadmap](#13-suggested-step-by-step-roadmap)
-14. [Disclaimers and Professional Advice](#14-disclaimers-and-professional-advice)
+5. [Getting a Domain Name and Business Email Addresses](#5-getting-a-domain-name-and-business-email-addresses)
+6. [AWS vs Azure vs GCP vs GitHub — What Goes Where?](#6-aws-vs-azure-vs-gcp-vs-github--what-goes-where)
+7. [What Needs to Change Before Going Live](#7-what-needs-to-change-before-going-live)
+8. [Starting a Business: The Basics](#8-starting-a-business-the-basics)
+9. [Should You Form an LLC?](#9-should-you-form-an-llc)
+10. [Business Bank Accounts and Keeping Finances Separate](#10-business-bank-accounts-and-keeping-finances-separate)
+11. [Tax Deductions: What You Can and Cannot Expense](#11-tax-deductions-what-you-can-and-cannot-expense)
+12. [GitHub Copilot and Tool Costs — Can You Expense Them?](#12-github-copilot-and-tool-costs--can-you-expense-them)
+13. [Realistic Cost Estimates to Get Started](#13-realistic-cost-estimates-to-get-started)
+14. [Running To-Do Checklist](#14-running-to-do-checklist)
+15. [Suggested Step-by-Step Roadmap](#15-suggested-step-by-step-roadmap)
+16. [Disclaimers and Professional Advice](#16-disclaimers-and-professional-advice)
 
 ---
 
@@ -142,9 +144,84 @@ See the next section for details. The short version: these are very powerful but
 
 ---
 
-## 5. AWS vs Azure vs GCP vs GitHub — What Goes Where?
+## 5. Getting a Domain Name and Business Email Addresses
 
-This is a common source of confusion. Here is a clear breakdown:
+This is one of the most confusing parts for first-timers because **three separate services are involved**: a domain registrar, a hosting platform, and an email provider. They all need to talk to each other via a system called DNS (Domain Name System).
+
+### Step 1: Buy a Domain Name
+
+A domain name (e.g., `stochasticfinances.com`) is purchased from a **domain registrar** — a company that manages reservations of internet names. Popular options:
+
+| Registrar | Cost/year (.com) | Notes |
+|---|---|---|
+| **Cloudflare Registrar** | ~$10–11 | No markup on domains, excellent DNS management, free |
+| **Namecheap** | ~$10–13 | Very popular, clean interface, includes free privacy |
+| **Google Domains** (now via Squarespace) | ~$12 | Simple, reliable |
+| **GoDaddy** | ~$12–20 | Popular but pushes upsells aggressively |
+
+**Recommendation: Cloudflare.** It charges at-cost for domains (no markup), has the best DNS management tools, and their free tier includes DDoS protection and a CDN — all useful for your site.
+
+Domain registration includes **WHOIS privacy** (hides your personal address from public records) — make sure this is enabled. Most registrars include it free now.
+
+### Step 2: Point Your Domain at Railway/Render
+
+Once you've bought a domain, you need to tell the internet "when someone types `stochasticfinances.com`, send them to my Railway/Render server." This is done through **DNS records**.
+
+Here's what the process looks like (Railway as an example):
+
+1. In your Railway project, go to **Settings → Domains** and add your custom domain (e.g., `stochasticfinances.com` and `www.stochasticfinances.com`).
+2. Railway gives you a DNS record to add — usually a **CNAME record** that says "www → `yourapp.railway.app`".
+3. Go to your domain registrar (e.g., Cloudflare) and add those DNS records.
+4. Wait 5–30 minutes for DNS to propagate across the internet.
+5. Railway automatically provisions a free **SSL/HTTPS certificate** from Let's Encrypt.
+
+After this, users typing `https://stochasticfinances.com` reach your app. Your app still runs on Railway — the domain is just a human-readable address that points there.
+
+Render works identically. Both have step-by-step guides in their documentation.
+
+### Step 3: Get Business Email Addresses (e.g., `you@stochasticfinances.com`)
+
+**Important:** Railway, Render, and most web hosting platforms **do not provide email hosting.** Hosting your website and hosting your email are two completely separate things.
+
+To send and receive email as `you@yourdomain.com`, you need an **email hosting provider**. Options:
+
+| Service | Cost/month | Notes |
+|---|---|---|
+| **Google Workspace** | $6/user | Gmail interface, Google Drive included. The professional standard. |
+| **Zoho Mail** | Free (up to 5 users) or $1/user | Solid free tier, less well-known |
+| **Microsoft 365 Business Basic** | $6/user | Outlook interface, good if you use Microsoft tools |
+| **Proton Mail for Business** | $6.99/user | Privacy-focused, encrypted |
+| **Fastmail** | $5/user | Simple and reliable |
+
+**Recommendation: Google Workspace at $6/month** is the most practical choice. You get a `you@yourdomain.com` Gmail address, plus Google Docs, Drive, Calendar, and Meet — essentially the full Google suite under your business domain. It is also very easy to set up.
+
+### How to Connect Google Workspace to Your Domain
+
+After signing up for Google Workspace, Google gives you **MX records** (Mail Exchange records) — these are DNS entries that tell the internet "email for this domain should go to Google's servers."
+
+1. Sign up at workspace.google.com with your domain name.
+2. Google provides 5–6 MX records to add.
+3. Go to Cloudflare (or wherever your domain is registered) and add those MX records.
+4. Within an hour, your `@yourdomain.com` email is live.
+
+Google Workspace also gives you **SPF, DKIM, and DMARC** records to add (these prevent your emails from ending up in spam). Google walks you through all of this during setup.
+
+### Summary of How It All Fits Together
+
+```
+User types stochasticfinances.com
+       ↓
+Cloudflare DNS resolves the address
+       ↓
+├── Web traffic (port 443/HTTPS) → Railway/Render → Your Django app
+└── Email traffic (MX records)   → Google Workspace → your inbox
+```
+
+Your domain is the hub. Web traffic goes to your hosting platform. Email traffic goes to your email provider. They are completely independent and both controlled via DNS at your registrar.
+
+---
+
+## 6. AWS vs Azure vs GCP vs GitHub — What Goes Where? Here is a clear breakdown:
 
 ### GitHub — What It's Good For
 
@@ -185,15 +262,16 @@ Google's cloud. Strong for machine learning (if you plan to add AI features to y
 | Automated testing and deployment | GitHub Actions |
 | Running your Django app (hosting) | Railway, Render, or Fly.io (to start) |
 | PostgreSQL database | The PaaS platform's built-in DB add-on (e.g., Railway's Postgres) |
-| Domain name registration | Namecheap, Google Domains (now Squarespace), or Cloudflare |
-| Email delivery | SendGrid (free up to 100 emails/day) |
+| Domain name registration | Cloudflare Registrar (recommended) |
+| Business email (@yourdomain.com) | Google Workspace ($6/user/mo) |
+| Transactional email (password resets) | SendGrid (free up to 100 emails/day) |
 | Error monitoring | Sentry (free tier) |
 
 Migrate to AWS/GCP/Azure when you outgrow the PaaS options or need specific services they offer.
 
 ---
 
-## 6. What Needs to Change Before Going Live
+## 7. What Needs to Change Before Going Live
 
 Here is a concrete checklist of code changes needed. This is more technical, but each item links to well-documented Django resources:
 
@@ -263,7 +341,7 @@ Before deployment, run `python manage.py collectstatic` to gather all static fil
 
 ---
 
-## 7. Starting a Business: The Basics
+## 8. Starting a Business: The Basics
 
 *Note: This section provides general educational information. It is not legal or financial advice. Consult a licensed attorney and a CPA/accountant before making formal business decisions.*
 
@@ -294,7 +372,7 @@ At a minimum, to operate legally and professionally:
 
 ---
 
-## 8. Should You Form an LLC?
+## 9. Should You Form an LLC?
 
 ### What Is an LLC?
 
@@ -307,14 +385,26 @@ A single-member LLC (you are the only owner) is:
 - **Not** a separate tax-filing entity by default (though you can elect to be taxed as an S-corp if your income is high enough to make that worthwhile — ask a CPA).
 - Inexpensive to form: $50–500 depending on your state (California is expensive at $800/year minimum; many states like Wyoming and Delaware are cheap).
 
-### Should You Form One?
+### Should You Form One Early?
+
+**Yes — if monetization is your goal, form the LLC before you launch, not after.**
+
+Here's why forming early makes sense in your case:
+
+- **You intend to charge users (or accept tips via Venmo/similar).** The moment money changes hands, you have business income and business liability. An LLC protects your personal assets from day one.
+- **Deductions start immediately.** All your pre-launch expenses (hosting, tools, LLC formation fees) can be tracked as business expenses from the moment you form the entity, up to the $5,000 startup cost deduction in year one.
+- **Clean financial records.** Opening a business bank account now means every dollar in and out is documented from the start. Trying to reconstruct records later is painful.
+- **It signals seriousness.** Having an LLC with a business bank account and a domain-based email (`you@yourbusiness.com`) makes you look more credible to users and potential partners.
+- **The cost is low.** In most states, forming an LLC is $50–200 and takes one afternoon online. The ongoing cost is usually just a small annual report fee.
+
+The previous advice in this guide ("skip it for now if you're pre-revenue") was overly conservative given your goals. **Form the LLC now, get a business bank account, and start tracking expenses from day one.**
 
 | If You... | Recommendation |
 |---|---|
-| Are just experimenting / pre-revenue | Skip it for now. A sole proprietorship is fine. |
-| Are charging real users money | Strongly consider forming an LLC for liability protection. |
-| Plan to have co-founders or investors | An LLC or C-corp is important to have before these conversations. |
-| Might raise venture capital | A **Delaware C-corp** is the standard for VC-backed startups — VCs generally won't invest in LLCs. |
+| Just experimenting, definitely not charging | Sole proprietor is fine temporarily |
+| Want to accept any money (tips, subscriptions, etc.) | **Form the LLC before you launch** |
+| Plan to have co-founders or investors | An LLC or C-corp before these conversations |
+| Might raise venture capital | A **Delaware C-corp** is the standard for VC-backed startups — VCs generally won't invest in LLCs |
 
 ### How to Form an LLC
 
@@ -338,7 +428,7 @@ You can do this yourself for just the state filing fee, or use a service like **
 
 ---
 
-## 9. Business Bank Accounts and Keeping Finances Separate
+## 10. Business Bank Accounts and Keeping Finances Separate
 
 ### Why This Matters
 
@@ -363,7 +453,7 @@ Once you have a business account, update your billing information for business-r
 
 ---
 
-## 10. Tax Deductions: What You Can and Cannot Expense
+## 11. Tax Deductions: What You Can and Cannot Expense
 
 ### The Core Principle
 
@@ -414,7 +504,7 @@ Once you start making money from your business, you need to pay taxes **quarterl
 
 ---
 
-## 11. GitHub Copilot and Tool Costs — Can You Expense Them?
+## 12. GitHub Copilot and Tool Costs — Can You Expense Them?
 
 Yes, absolutely. Here is a realistic breakdown:
 
@@ -451,17 +541,18 @@ The higher your income, the more valuable deductions become. But they are never 
 
 ---
 
-## 12. Realistic Cost Estimates to Get Started
+## 13. Realistic Cost Estimates to Get Started
 
 ### Minimum Viable Production Launch
 
 | Item | Monthly Cost | Annual Cost |
 |---|---|---|
 | Railway or Render (app + DB hosting) | $7–15 | $84–180 |
-| Domain name | $1–2 | $12–20 |
-| SendGrid (free tier for <100 emails/day) | $0 | $0 |
-| Sentry (free tier) | $0 | $0 |
-| **Total** | **~$8–17/mo** | **~$96–200/yr** |
+| Domain name (via Cloudflare) | $1–2 | $12–20 |
+| Google Workspace business email | $6 | $72 |
+| SendGrid transactional email (free tier) | $0 | $0 |
+| Sentry error monitoring (free tier) | $0 | $0 |
+| **Total** | **~$14–23/mo** | **~$168–272/yr** |
 
 ### With Business Formation
 
@@ -471,8 +562,8 @@ The higher your income, the more valuable deductions become. But they are never 
 | Business bank account | $0 (Mercury, Relay) |
 | EIN from IRS | $0 |
 | Basic accounting software (Wave) | $0 |
-| Domain privacy registration | $5–10/yr |
-| **Total one-time** | **~$50–510** |
+| Domain privacy (usually included at Cloudflare) | $0 |
+| **Total one-time** | **~$50–500** |
 
 ### Optional Additions
 
@@ -485,49 +576,112 @@ The higher your income, the more valuable deductions become. But they are never 
 
 ---
 
-## 13. Suggested Step-by-Step Roadmap
+## 14. Running To-Do Checklist
 
-### Phase 1: Make It Production-Ready (2–4 weeks)
+This section is the living checklist — a single place to track what still needs to be done. Update it as items are completed. Items are organized roughly in priority order.
 
-- [ ] Move `SECRET_KEY` to an environment variable.
-- [ ] Create production settings file (`DEBUG=False`, PostgreSQL, real email).
-- [ ] Upgrade Django to 4.x or 5.x and Python to 3.11+.
-- [ ] Set up a GitHub Actions workflow to run tests automatically on every push.
-- [ ] Deploy to Railway or Render using Docker.
-- [ ] Set up a custom domain name.
-- [ ] Verify HTTPS works (usually automatic with Railway/Render).
-- [ ] Set up SendGrid or similar for email.
+### 🏢 Business Formation (Do This First)
+
+- [ ] Choose a business name and verify it is available (check your state's Secretary of State website + search the domain).
+- [ ] Register the domain name (Cloudflare Registrar recommended).
+- [ ] File LLC Articles of Organization with your state.
+- [ ] Get an EIN from IRS.gov (free, ~5 minutes online).
+- [ ] Open a business bank account (Mercury recommended — free, fully online).
+- [ ] Set up basic expense tracking (Wave — free).
+- [ ] Sign up for Google Workspace and set up `you@yourdomain.com` business email.
+- [ ] Move all business-related subscriptions to the business account.
+
+### 🔴 Critical Code Changes (Required Before Going Live)
+
+- [ ] Move `SECRET_KEY` out of `settings.py` and into an environment variable.
+- [ ] Set `DEBUG = False` for production via an environment variable.
+- [ ] Switch database from SQLite to PostgreSQL.
+- [ ] Update `ALLOWED_HOSTS` to include your real domain.
+- [ ] Configure a real transactional email backend (SendGrid).
+- [ ] Run `python manage.py collectstatic` as part of deployment.
+
+### 🟡 Important Code Changes (Do Soon After Launch)
+
+- [ ] Upgrade Django from 3.1 to 4.x or 5.x.
+- [ ] Upgrade Python from 3.8 to 3.11+.
+- [ ] Update `Dockerfile` to use updated Python base image.
 - [ ] Add Sentry for error monitoring.
+- [ ] Set up GitHub Actions CI to run tests on every push.
+- [ ] Set up automated database backups.
 
-### Phase 2: Launch a Private/Beta Version (1–2 weeks)
+### 🌐 Hosting & Infrastructure
 
-- [ ] Invite a small group of friends/testers to use the app.
-- [ ] Gather feedback and fix critical bugs.
-- [ ] Write a basic privacy policy and terms of service. (Termly.io generates these for free.)
+- [ ] Deploy to Railway or Render (connect to GitHub repo for auto-deploys).
+- [ ] Connect custom domain to hosting platform (add CNAME in Cloudflare DNS).
+- [ ] Verify HTTPS/SSL certificate is auto-provisioned (automatic on Railway/Render).
+- [ ] Add Google Workspace MX records in Cloudflare DNS.
+- [ ] Add SPF, DKIM, and DMARC records for email deliverability.
 
-### Phase 3: Formalize the Business (as needed)
+### 📋 Legal & Compliance
 
-- [ ] Decide on business structure (sole proprietor vs. LLC).
-- [ ] If LLC: File articles of organization with your state.
-- [ ] Get an EIN from IRS.gov.
-- [ ] Open a Mercury or similar business bank account.
-- [ ] Set up Wave or similar for expense tracking.
-- [ ] Start routing business expenses through the business account.
-- [ ] Consult a CPA about estimated tax payments.
+- [ ] Write a Privacy Policy (Termly.io generates one free — required if collecting any user data).
+- [ ] Write Terms of Service (Termly.io).
+- [ ] Consult a CPA about quarterly estimated tax payments once revenue begins.
+- [ ] Review whether app qualifies as "financial advice" legally (may require RIA registration — see Section 16).
 
-### Phase 4: Consider Monetization
+### 💳 Monetization Setup (When Ready)
 
-There are many models for a financial planning tool like this:
-- **Freemium**: Free tier with limited scenarios, paid tier for unlimited/advanced features.
-- **Subscription**: $5–20/month for full access.
-- **One-time purchase**: A flat fee to use the tool.
-- **B2B**: License the tool to financial advisors or employers.
-
-You do not need to decide this on day one. Launch something, see if people use it, then figure out how to charge.
+- [ ] Decide on revenue model (tips/Venmo link, freemium, subscription, etc.).
+- [ ] If accepting tips: Add a Venmo/PayPal link (simple, no code needed initially).
+- [ ] If subscription: Evaluate Stripe for payment processing.
+- [ ] Set up a separate savings account (within Mercury) to hold 25–30% of all revenue for taxes.
 
 ---
 
-## 14. Disclaimers and Professional Advice
+## 15. Suggested Step-by-Step Roadmap
+
+The roadmap below is deliberately revised to reflect that if you intend to monetize, business formation should happen **in parallel with** — not after — the technical work.
+
+### Phase 1: Foundations (Do Both at Once)
+
+**Technical:**
+- [ ] Move `SECRET_KEY` to an environment variable.
+- [ ] Create production settings (`DEBUG=False`, PostgreSQL, real email).
+- [ ] Upgrade Django to 4.x or 5.x and Python to 3.11+.
+- [ ] Set up GitHub Actions to run tests automatically.
+
+**Business:**
+- [ ] Register your domain name.
+- [ ] File for your LLC.
+- [ ] Get your EIN from IRS.gov.
+- [ ] Open a Mercury business bank account.
+- [ ] Set up Google Workspace for `@yourdomain.com` email.
+
+### Phase 2: Deploy (2–4 weeks)
+
+- [ ] Deploy to Railway or Render using Docker.
+- [ ] Connect your custom domain and verify HTTPS works.
+- [ ] Add Google Workspace MX records so email works.
+- [ ] Set up SendGrid for transactional emails (password resets, etc.).
+- [ ] Add Sentry for error monitoring.
+- [ ] Start routing all business expenses through the business bank account.
+
+### Phase 3: Launch a Beta
+
+- [ ] Invite a small group of friends/testers.
+- [ ] Gather feedback and fix critical bugs.
+- [ ] Add a Privacy Policy and Terms of Service (Termly.io).
+- [ ] Add a simple tip link (Venmo or PayPal) if you want early voluntary revenue.
+
+### Phase 4: Monetization
+
+There are many models for a financial planning tool like this:
+- **Voluntary tips**: A "buy me a coffee" or Venmo link. Zero friction, starts immediately.
+- **Freemium**: Free tier with limited scenarios, paid tier for unlimited/advanced features.
+- **Subscription**: $5–20/month for full access (requires Stripe integration).
+- **One-time purchase**: A flat fee to use the tool.
+- **B2B**: License the tool to financial advisors or employers.
+
+Start with voluntary tips — it's zero overhead, signals real demand, and you can upgrade to a full subscription model once you validate that users find it valuable.
+
+---
+
+## 16. Disclaimers and Professional Advice
 
 This guide is written for educational purposes and to help you ask the right questions. **It is not legal, tax, or financial advice.**
 
