@@ -49,7 +49,7 @@ Here is a plain-language breakdown of the issues that currently exist and what t
 |---|---|---|
 | `DEBUG = True` in `settings.py` | In debug mode, if your app crashes, it shows users a detailed error page including your code and environment. This is a serious security leak. | Set `DEBUG = False` for production, and use environment variables to control this. |
 | Hardcoded `SECRET_KEY` in `settings.py` | The secret key is literally visible in your source code on GitHub. Anyone who sees it can forge authentication tokens, session cookies, etc. | Move it to an environment variable — never commit it to git. |
-| SQLite database | SQLite is a file on your laptop. It cannot handle many users at the same time, and it's not reliable for production. | Upgrade to **PostgreSQL** (free and widely used). |
+| SQLite database (current setup) | The site currently uses Django's default SQLite database (`db.sqlite3`), which is fine for local development but not ideal for production traffic. | Upgrade to **PostgreSQL** (free and widely used). |
 | `ALLOWED_HOSTS` only set to `localhost` | Your app won't respond to requests from the internet. | Add your real domain name and server IP. |
 | No HTTPS/SSL | Without HTTPS, passwords and data sent between users and your server are unencrypted. | Use a free SSL certificate from **Let's Encrypt** (most hosting platforms automate this). |
 | Email backend set to `console` | Password reset emails get printed to your terminal instead of actually sent to users. | Configure a real email provider (e.g., SendGrid, Mailgun, or AWS SES). |
@@ -300,6 +300,18 @@ On your hosting platform, you set the `DJANGO_SECRET_KEY` environment variable i
 
 ### Step 3: Switch to PostgreSQL
 
+Right now the site is configured to use Django's default SQLite engine (`ENGINE = django.db.backends.sqlite3`) and stores data in a single local file (`db.sqlite3`).
+
+That is great for development because setup is simple, but for production PostgreSQL is a better fit:
+
+- SQLite has limited concurrent write support and can produce `database is locked` errors under real multi-user traffic.
+- SQLite is file-based, which makes scaling, replication, and operations workflows harder on cloud platforms.
+- PostgreSQL is a server-based database designed for concurrent web workloads, with stronger backup/recovery options, better observability, and broader managed-hosting support.
+
+For productionization, this usually means provisioning infrastructure first. In practice, that often means paying for at least app hosting and database hosting (plus a domain), even if you start testing on free tiers.
+
+Technical phrasing: productionization generally requires provisioned infrastructure resources (compute, database, and networking), with environment-managed credentials and network connectivity between services.
+
 Install `psycopg2` (the Python PostgreSQL driver) and update your database settings:
 
 ```python
@@ -497,6 +509,64 @@ As a sole proprietor or single-member LLC owner, you are considered **self-emplo
 - Your combined effective tax rate on business profit (before deductions) can be 30–40%+ depending on your total income.
 
 **This is why business deductions matter so much** — every dollar of deduction reduces that full stack of taxes, not just the income tax portion.
+
+### Who Files What? (You vs. The Business)
+
+The answer depends on your business structure. In the US, many small software businesses are "pass-through" entities, so business profit ultimately lands on your personal return.
+
+| Structure | Separate business tax return? | What you file personally | What tax is paid where |
+|---|---|---|---|
+| Sole proprietor | No separate federal business return | Form 1040 + Schedule C + Schedule SE (and usually state return) | You pay income tax + self-employment tax on net profit |
+| Single-member LLC (default tax treatment) | Usually no separate federal return (treated like sole proprietor) | Form 1040 + Schedule C + Schedule SE | Same as sole proprietor unless you elect S-corp/C-corp treatment |
+| Multi-member LLC / Partnership | Yes: Form 1065 (business files informational return) | Form 1040 + Schedule E using K-1 from the partnership | Profit passes through to owners; owners pay tax individually |
+| S-corp (including LLC taxed as S-corp) | Yes: Form 1120-S (business) + K-1s | Form 1040 (includes W-2 wages + K-1 pass-through income) | Business does payroll; owner pays income tax on wages and pass-through income |
+| C-corp | Yes: Form 1120 (business pays corporate tax) | Form 1040 for salary/dividends you received | Corporation pays corporate tax; you also pay personal tax on wages/dividends |
+
+Plain-English summary:
+- For sole proprietor and most single-member LLC setups, there is no separate federal "business tax return" like a corporation files. You report business activity on your personal return.
+- For S-corp, partnership, and C-corp setups, the business does file its own federal return.
+
+### Filing Examples (Simple Numbers)
+
+These are simplified illustrations, not tax advice.
+
+#### Example A: Sole Proprietor / Single-Member LLC (Default)
+
+Assume this for the year:
+- Revenue: $40,000
+- Business expenses: $10,000 (hosting, domain, software, etc.)
+- Net business profit: $30,000
+
+How filing works:
+1. You report $40,000 revenue and $10,000 expenses on Schedule C.
+2. Schedule C calculates $30,000 net profit.
+3. That profit flows into your Form 1040 and is also used to compute self-employment tax on Schedule SE.
+4. You pay federal/state income tax plus self-employment tax based on that profit.
+
+#### Example B: S-Corp (Very Simplified)
+
+Assume:
+- Business revenue: $120,000
+- Business expenses (non-owner salary): $20,000
+- Owner salary paid through payroll: $50,000
+- Remaining pass-through profit: $50,000
+
+How filing works:
+1. The business files Form 1120-S.
+2. You receive a W-2 for the $50,000 salary and a K-1 for your share of profit.
+3. You file Form 1040 reporting both W-2 wages and K-1 pass-through income.
+4. Payroll taxes apply to wages; pass-through portion is generally not subject to self-employment tax in the same way (subject to current IRS rules and proper reasonable-compensation handling).
+
+### Practical Filing Workflow for a Solo Founder
+
+1. Keep separate business records all year (bank account, receipts, bookkeeping categories).
+2. Track revenue and expenses monthly so year-end totals are ready.
+3. Save a portion of revenue for taxes (many founders use 25-30% as a planning placeholder).
+4. Make quarterly estimated payments when required.
+5. At year-end, file based on your entity type (Schedule C path vs business-return path).
+6. If income grows, ask a CPA when an S-corp election may reduce taxes after payroll/admin costs.
+
+If you are uncertain, the most accurate technical statement is: your filing obligations are entity-dependent, and the legal entity determines whether tax is filed only on the owner's return, on both business and owner returns, or at the corporate level.
 
 ### Quarterly Estimated Tax Payments
 
