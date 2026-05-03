@@ -27,9 +27,17 @@ djlint = "^1.35.2"
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.10.1"
 pytest = ">=7.4.4"
+pytest-django = ">=4.8.0"
 ruff = "^0.6.3"
 ipykernel = "^6.29.5"
 pandas-stubs = "^2.2.3.250308"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "config.settings"
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+testpaths = ["tests"]
 
 [build-system]
 requires = ["poetry-core"]
