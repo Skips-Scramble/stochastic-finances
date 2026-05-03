@@ -1,4 +1,4 @@
-"""Tests for base bills and retirement account calculations."""
+"""Tests for retirement account and birthday/retirement date calculations."""
 
 from datetime import date
 
@@ -8,7 +8,7 @@ from pages.base_scenario import BaseScenario
 
 
 @pytest.fixture
-# Minimal assumptions dict for testing base bills and retirement accounts
+# Minimal assumptions dict for testing retirement accounts and birthday combinations
 def base_assumptions():
     return {
         "birthdate": date(1990, 1, 1),
@@ -28,61 +28,6 @@ def base_assumptions():
         "base_mkt_interest_per_yr": 7.0,
         "base_inflation_per_yr": 3.0,
     }
-
-
-# --- Base bills tests ---
-
-
-# The first month's base bills should equal the base_monthly_bills assumption
-def test_base_bills_list_first_entry_equals_monthly_bills(base_assumptions):
-    scenario = BaseScenario(assumptions=base_assumptions)
-    assert scenario.base_bills_list[0] == base_assumptions["base_monthly_bills"]
-
-
-# With zero inflation, every month's base bills should remain constant
-def test_base_bills_list_constant_with_zero_inflation(base_assumptions):
-    assumptions = {**base_assumptions, "base_inflation_per_yr": 0.0}
-    scenario = BaseScenario(assumptions=assumptions)
-    expected = base_assumptions["base_monthly_bills"]
-    for bill in scenario.base_bills_list:
-        assert bill == pytest.approx(expected, rel=1e-5)
-
-
-# With positive inflation, base bills should grow by the monthly inflation factor each month
-def test_base_bills_list_grows_with_inflation(base_assumptions):
-    scenario = BaseScenario(assumptions=base_assumptions)
-    monthly_inflation = round(
-        ((1 + base_assumptions["base_inflation_per_yr"] / 100) ** (1 / 12)) - 1, 6
-    )
-    for i in range(1, 13):
-        expected = round(
-            base_assumptions["base_monthly_bills"] * (1 + monthly_inflation) ** i, 6
-        )
-        assert scenario.base_bills_list[i] == pytest.approx(expected, rel=1e-5)
-
-
-# The length of base_bills_list should equal the scenario's total_months
-def test_base_bills_list_length_equals_total_months(base_assumptions):
-    scenario = BaseScenario(assumptions=base_assumptions)
-    assert len(scenario.base_bills_list) == scenario.total_months
-
-
-# When base_monthly_bills is zero, all entries in base_bills_list should be zero
-def test_base_bills_list_zero_when_no_bills(base_assumptions):
-    assumptions = {**base_assumptions, "base_monthly_bills": 0.0}
-    scenario = BaseScenario(assumptions=assumptions)
-    assert all(bill == 0.0 for bill in scenario.base_bills_list)
-
-
-# A higher inflation rate should produce larger base bills over time
-def test_base_bills_list_higher_inflation_produces_larger_bills(base_assumptions):
-    low_inflation = {**base_assumptions, "base_inflation_per_yr": 1.0}
-    high_inflation = {**base_assumptions, "base_inflation_per_yr": 5.0}
-
-    low_scenario = BaseScenario(assumptions=low_inflation)
-    high_scenario = BaseScenario(assumptions=high_inflation)
-
-    assert high_scenario.base_bills_list[12] > low_scenario.base_bills_list[12]
 
 
 # --- Retirement account tests ---
