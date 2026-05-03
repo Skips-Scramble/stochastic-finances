@@ -24,6 +24,7 @@ var_descriptions = {
     "base_retirement": "The amount of money you have in your retirement account(s) right now.",
     "base_retirement_per_mo": "The amount of money that gets contributed to your retirement account each month. This includes all contributions, including employer contributions.",
     "base_retirement_per_yr_increase": "If you plan to invest more money in your retirement account every year, put that year-over-year increase here (as dollars). Example: In the US, allowed contributions to your 401(k), HSA, etc. generally increase every year. If you think they increase about $500 a year and you plan on maxing them out every year, put $500 here.",
+    "interest_rate_per_yr": "Optional: Override the default retirement interest rate for this account. Leave blank to use the rate from the Rates form.",
     "retirement_extra_expenses": "This is the amount you believe you will spend in retirement that you aren't already spending now. Example: You don't travel much, but when you retire, plan on doing a nice trip every year. Maybe add $2,000 here to account for that.",
     "base_rf_interest_per_yr": "This is the average interest rate you assume for your savings account(s). If you have more than one, take a weighted average.",
     "base_mkt_interest_per_yr": "This is the average interest rate you assume for your retirement account(s). If you have more than one, take a weighted average.",

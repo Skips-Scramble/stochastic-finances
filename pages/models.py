@@ -168,7 +168,6 @@ class RetirementInputsModel(models.Model):
         ("roth_ira", "Roth IRA"),
         ("hsa", "HSA"),
         ("brokerage", "Brokerage"),
-        ("pension", "Pension"),
     ]
 
     is_active = models.BooleanField(default=False)
@@ -185,18 +184,6 @@ class RetirementInputsModel(models.Model):
     )
     base_retirement_per_yr_increase = models.FloatField(
         validators=[validate_base_retirement_per_yr_increase, decimal_validator]
-    )
-    pension_start_age_yrs = models.IntegerField(
-        null=True,
-        blank=True,
-        validators=[validate_range_age_yrs],
-        help_text="For pensions: age (years) when pension payments begin",
-    )
-    pension_start_age_mos = models.IntegerField(
-        null=True,
-        blank=True,
-        validators=[validate_range_age_mos],
-        help_text="For pensions: age (months) when pension payments begin",
     )
     interest_rate_per_yr = models.FloatField(
         validators=[validate_rates_per_yr, decimal_validator],

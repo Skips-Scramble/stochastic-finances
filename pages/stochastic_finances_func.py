@@ -63,7 +63,7 @@ def main(assumptions) -> tuple[pd.DataFrame, pd.DataFrame]:
     )
 
     total_retirement_df = base_age_df.filter(
-        regex="traditional_401k|traditional_ira|roth_401k|roth_ira|hsa|brokerage|pension|^age"
+        regex="traditional_401k|traditional_ira|roth_401k|roth_ira|hsa|brokerage|^age"
     ).rename(
         columns=lambda x: (
             x.replace("retirement_", "") if x.startswith("retirement_") else x
@@ -105,11 +105,6 @@ def main(assumptions) -> tuple[pd.DataFrame, pd.DataFrame]:
             avg_brokerage=lambda df: df.filter(regex="^brokerage_").mean(axis=1)
         )
 
-    if any(col.startswith("pension_") for col in total_retirement_df.columns):
-        total_retirement_df = total_retirement_df.assign(
-            avg_pension=lambda df: df.filter(regex="^pension_").mean(axis=1)
-        )
-
     total_retirement_df = total_retirement_df.assign(account_type="retirement")
 
     # Sort columns: age columns first, then grouped by account type, then aggregates
@@ -140,9 +135,6 @@ def main(assumptions) -> tuple[pd.DataFrame, pd.DataFrame]:
     brokerage_cols = sorted(
         [col for col in total_retirement_df.columns if col.startswith("brokerage_")]
     )
-    pension_cols = sorted(
-        [col for col in total_retirement_df.columns if col.startswith("pension_")]
-    )
     # Only include avg columns that actually exist
     avg_cols = [
         col
@@ -153,7 +145,6 @@ def main(assumptions) -> tuple[pd.DataFrame, pd.DataFrame]:
             "avg_roth_ira",
             "avg_hsa",
             "avg_brokerage",
-            "avg_pension",
         ]
         if col in total_retirement_df.columns
     ]
@@ -167,7 +158,6 @@ def main(assumptions) -> tuple[pd.DataFrame, pd.DataFrame]:
         + roth_ira_cols
         + hsa_cols
         + brokerage_cols
-        + pension_cols
         + avg_cols
         + other_cols
     )

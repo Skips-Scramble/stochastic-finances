@@ -13,7 +13,6 @@ from .base_scenario import (
     RetirementTradIRA,
     RetirementHSA,
     RetirementBrokerage,
-    RetirementPension,
     ROTH_IRA_WITHDRAWAL_AGE_MOS,
     ROTH_IRA_WITHDRAWAL_AGE_YRS,
     HSA_WITHDRAWAL_AGE_YRS,
@@ -304,7 +303,6 @@ class RandomScenario:
         list,
         list,
         list,
-        list,
     ]:
         """Calculate the amount of money in your savings and retirement accounts over time,
         stopping Roth IRA contributions and withdrawing contributions (not interest) when
@@ -315,7 +313,6 @@ class RandomScenario:
         HSA funds can be withdrawn for general expenses at age 65+ (no RMDs ever).
         Brokerage funds can be withdrawn at any age (no RMDs, no penalties).
         Brokerage withdrawals are subject to capital gains tax on the gains portion.
-        Pension income is added to savings unconditionally each month during retirement.
 
         Returns:
             tuple of (savings_list, roth_ira_balance_list,
@@ -326,8 +323,7 @@ class RandomScenario:
                       hsa_balance_list, hsa_transfer_list,
                       brokerage_balance_list, brokerage_transfer_list,
                       trad_401k_tax_list, brokerage_interest_list,
-                      brokerage_income_tax_list, brokerage_tax_list,
-                      pension_payment_list)
+                      brokerage_income_tax_list, brokerage_tax_list)
         """
         total_non_base_bills_list = (
             [sum(sublist) for sublist in zip(*self.base_scenario.non_base_bills_lists)]
@@ -354,7 +350,6 @@ class RandomScenario:
         brokerage_interest_list = []
         brokerage_income_tax_list = []
         brokerage_tax_list = []
-        pension_payment_list = []
 
         # Track Roth IRA contributions separately from growth
         roth_ira_contributions = 0.0
@@ -401,13 +396,6 @@ class RandomScenario:
             if isinstance(ret_account, RetirementBrokerage):
                 brokerage = ret_account
                 break
-
-        # Get Pension accounts (multiple pensions allowed).
-        pension_accounts = [
-            ret_account
-            for ret_account in self.base_scenario.retirement_list
-            if isinstance(ret_account, RetirementPension)
-        ]
 
         # Precompute per-account variable monthly rate lists (each starts from the
         # account's own override rate when set, using the conservative glide-path or
@@ -675,17 +663,11 @@ class RandomScenario:
                     )
 
             else:  # If you are retired
-                # Add pension income to savings before paying expenses
-                pension_income = sum(
-                    p.pension_payment_list[i] for p in pension_accounts
-                )
-
                 # Pay expenses from savings
                 savings = float(
                     round(
                         (
                             savings
-                            + pension_income
                             - (
                                 self.var_base_bills_list[i]
                                 + self.var_post_retire_extra_bills_list[i]
@@ -918,9 +900,6 @@ class RandomScenario:
             brokerage_tax_list.append(brokerage_tax)
             brokerage_interest_list.append(round(brokerage_interest, 6))
             brokerage_income_tax_list.append(brokerage_income_tax)
-            pension_payment_list.append(
-                sum(p.pension_payment_list[i] for p in pension_accounts)
-            )
 
         return (
             savings_list,
@@ -940,7 +919,6 @@ class RandomScenario:
             brokerage_interest_list,
             brokerage_income_tax_list,
             brokerage_tax_list,
-            pension_payment_list,
         )
 
     def create_full_df(self) -> pd.DataFrame:
@@ -998,16 +976,9 @@ class RandomScenario:
                 var_data[f"var_{ret_account.name}"] = (
                     self.var_savings_retirement_account_list[11]
                 )
-            elif isinstance(ret_account, RetirementPension):
-                var_data[f"var_{ret_account.name}"] = (
-                    self.var_savings_retirement_account_list[17]
-                )
             # Emit per-account variable interest rates when the account has its own override.
             # _account_var_yearly_rate_list is cached so these match the computation values.
-            if (
-                not isinstance(ret_account, RetirementPension)
-                and ret_account.interest_rate_override is not None
-            ):
+            if ret_account.interest_rate_override is not None:
                 var_data[f"var_{ret_account.name}_yearly_mkt_interest"] = (
                     self._account_var_yearly_rate_list(ret_account)
                 )
