@@ -781,7 +781,9 @@ class BaseScenario(ScenarioCoreInfo):
         if start_rate_pct <= MIN_CONSERVATIVE_RETIREMENT_RATE_PCT:
             return [round(start_rate_pct / 100, 6) for _ in self.month_list]
 
-        age_floor_date = calc_date_on_age(self.birthdate, CONSERVATIVE_RATE_FLOOR_AGE_YRS, 0)
+        age_floor_date = calc_date_on_age(
+            self.birthdate, CONSERVATIVE_RATE_FLOOR_AGE_YRS, 0
+        )
         years_to_floor = max(1, age_floor_date.year - self.start_date.year)
         annual_step_pct = (
             start_rate_pct - MIN_CONSERVATIVE_RETIREMENT_RATE_PCT
@@ -1543,8 +1545,7 @@ class BaseScenario(ScenarioCoreInfo):
                         # Below threshold: no new contributions, just grow existing balance
                         roth_ira_bal = float(
                             round(
-                                roth_ira_bal
-                                * (1 + roth_ira_rate),
+                                roth_ira_bal * (1 + roth_ira_rate),
                                 6,
                             )
                         )
@@ -1559,8 +1560,7 @@ class BaseScenario(ScenarioCoreInfo):
                         contribution = roth_ira.retirement_increase_list[i]
                         roth_ira_bal = float(
                             round(
-                                (roth_ira_bal + contribution)
-                                * (1 + roth_ira_rate),
+                                (roth_ira_bal + contribution) * (1 + roth_ira_rate),
                                 6,
                             )
                         )
@@ -1573,8 +1573,7 @@ class BaseScenario(ScenarioCoreInfo):
                     contribution_401k = roth_401k.retirement_increase_list[i]
                     roth_401k_bal = float(
                         round(
-                            (roth_401k_bal + contribution_401k)
-                            * (1 + roth_401k_rate),
+                            (roth_401k_bal + contribution_401k) * (1 + roth_401k_rate),
                             6,
                         )
                     )
@@ -1606,8 +1605,7 @@ class BaseScenario(ScenarioCoreInfo):
                     contribution_hsa = hsa.retirement_increase_list[i]
                     hsa_bal = float(
                         round(
-                            (hsa_bal + contribution_hsa)
-                            * (1 + hsa_rate),
+                            (hsa_bal + contribution_hsa) * (1 + hsa_rate),
                             6,
                         )
                     )
@@ -1617,9 +1615,7 @@ class BaseScenario(ScenarioCoreInfo):
                     contribution_brokerage = brokerage.retirement_increase_list[i]
                     brokerage_cost_basis += contribution_brokerage
                     pre_growth_bal = brokerage_bal + contribution_brokerage
-                    interest_earned = (
-                        pre_growth_bal * brokerage_rate
-                    )
+                    interest_earned = pre_growth_bal * brokerage_rate
                     brokerage_interest = interest_earned
                     brokerage_bal = float(
                         round(
@@ -1758,8 +1754,7 @@ class BaseScenario(ScenarioCoreInfo):
                 if roth_ira:
                     roth_ira_bal = float(
                         round(
-                            roth_ira_bal
-                            * (1 + roth_ira_rate),
+                            roth_ira_bal * (1 + roth_ira_rate),
                             6,
                         )
                     )
@@ -1768,8 +1763,7 @@ class BaseScenario(ScenarioCoreInfo):
                 if roth_401k:
                     roth_401k_bal = float(
                         round(
-                            roth_401k_bal
-                            * (1 + roth_401k_rate),
+                            roth_401k_bal * (1 + roth_401k_rate),
                             6,
                         )
                     )
@@ -1778,8 +1772,7 @@ class BaseScenario(ScenarioCoreInfo):
                 if trad_401k:
                     trad_401k_bal = float(
                         round(
-                            trad_401k_bal
-                            * (1 + trad_401k_rate),
+                            trad_401k_bal * (1 + trad_401k_rate),
                             6,
                         )
                     )
@@ -1788,8 +1781,7 @@ class BaseScenario(ScenarioCoreInfo):
                 if trad_ira:
                     trad_ira_bal = float(
                         round(
-                            trad_ira_bal
-                            * (1 + trad_ira_rate),
+                            trad_ira_bal * (1 + trad_ira_rate),
                             6,
                         )
                     )
@@ -1805,9 +1797,7 @@ class BaseScenario(ScenarioCoreInfo):
 
                 # Grow Brokerage (no contributions in retirement)
                 if brokerage:
-                    interest_earned = (
-                        brokerage_bal * brokerage_rate
-                    )
+                    interest_earned = brokerage_bal * brokerage_rate
                     brokerage_interest = interest_earned
                     brokerage_bal = float(
                         round(

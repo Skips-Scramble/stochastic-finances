@@ -198,7 +198,9 @@ class PerAccountInterestRateCsvTests(SimpleTestCase):
     def test_per_account_rate_columns_present_with_override(self):
         """Accounts with an override should add per-account rate columns to the CSV."""
         scenario = BaseScenario(
-            assumptions=_full_assumptions_with_roth_ira_override(interest_rate_per_yr=6.0)
+            assumptions=_full_assumptions_with_roth_ira_override(
+                interest_rate_per_yr=6.0
+            )
         )
         df = scenario.create_base_df()
         self.assertIn("roth_ira_yearly_mkt_interest", df.columns)
@@ -208,7 +210,9 @@ class PerAccountInterestRateCsvTests(SimpleTestCase):
         """The yearly rate column value equals the configured override rate as a decimal."""
         override_pct = 6.0
         scenario = BaseScenario(
-            assumptions=_full_assumptions_with_roth_ira_override(interest_rate_per_yr=override_pct)
+            assumptions=_full_assumptions_with_roth_ira_override(
+                interest_rate_per_yr=override_pct
+            )
         )
         df = scenario.create_base_df()
         expected_yearly = round(override_pct / 100, 6)
@@ -218,7 +222,9 @@ class PerAccountInterestRateCsvTests(SimpleTestCase):
         """The monthly rate column is derived correctly from the yearly override rate."""
         override_pct = 6.0
         scenario = BaseScenario(
-            assumptions=_full_assumptions_with_roth_ira_override(interest_rate_per_yr=override_pct)
+            assumptions=_full_assumptions_with_roth_ira_override(
+                interest_rate_per_yr=override_pct
+            )
         )
         df = scenario.create_base_df()
         yearly = round(override_pct / 100, 6)
@@ -248,7 +254,9 @@ class VarPerAccountInterestRateCsvTests(SimpleTestCase):
     def test_var_per_account_rate_columns_present_with_override(self):
         """Accounts with an override should add var per-account rate columns to create_full_df."""
         base = BaseScenario(
-            assumptions=_full_assumptions_with_roth_ira_override(interest_rate_per_yr=6.0)
+            assumptions=_full_assumptions_with_roth_ira_override(
+                interest_rate_per_yr=6.0
+            )
         )
         random_scenario = RandomScenario(base_scenario=base)
         full_df = random_scenario.create_full_df()
@@ -258,7 +266,9 @@ class VarPerAccountInterestRateCsvTests(SimpleTestCase):
     def test_var_per_account_monthly_rate_consistent_with_yearly(self):
         """The var monthly rate column is derived correctly from the var yearly rate column."""
         base = BaseScenario(
-            assumptions=_full_assumptions_with_roth_ira_override(interest_rate_per_yr=6.0)
+            assumptions=_full_assumptions_with_roth_ira_override(
+                interest_rate_per_yr=6.0
+            )
         )
         random_scenario = RandomScenario(base_scenario=base)
         full_df = random_scenario.create_full_df()
@@ -272,10 +282,14 @@ class VarPerAccountInterestRateCsvTests(SimpleTestCase):
     def test_var_per_account_rate_cached_across_calls(self):
         """_account_var_yearly_rate_list returns the same values on repeated calls (cache)."""
         base = BaseScenario(
-            assumptions=_full_assumptions_with_roth_ira_override(interest_rate_per_yr=6.0)
+            assumptions=_full_assumptions_with_roth_ira_override(
+                interest_rate_per_yr=6.0
+            )
         )
         random_scenario = RandomScenario(base_scenario=base)
-        roth_ira = next(a for a in base.retirement_list if isinstance(a, RetirementRothIRA))
+        roth_ira = next(
+            a for a in base.retirement_list if isinstance(a, RetirementRothIRA)
+        )
         rates_first = random_scenario._account_var_yearly_rate_list(roth_ira)
         rates_second = random_scenario._account_var_yearly_rate_list(roth_ira)
         self.assertEqual(rates_first, rates_second)

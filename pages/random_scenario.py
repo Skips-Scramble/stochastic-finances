@@ -252,8 +252,8 @@ class RandomScenario:
         )
         yearly_rates = []
         if account.use_conservative_rates:
-            yearly_conservative = self.base_scenario._build_conservative_yearly_rate_list(
-                start_pct
+            yearly_conservative = (
+                self.base_scenario._build_conservative_yearly_rate_list(start_pct)
             )
             for yearly_rate in yearly_conservative:
                 conservative_rate_pct = yearly_rate * 100
@@ -282,7 +282,6 @@ class RandomScenario:
             round(((1 + yr) ** (1 / 12) - 1), 4)
             for yr in self._account_var_yearly_rate_list(account)
         ]
-
 
     @cached_property
     def var_savings_retirement_account_list(
@@ -612,8 +611,7 @@ class RandomScenario:
                         contribution = roth_ira.retirement_increase_list[i]
                         roth_ira_bal = float(
                             round(
-                                (roth_ira_bal + contribution)
-                                * (1 + roth_ira_rate),
+                                (roth_ira_bal + contribution) * (1 + roth_ira_rate),
                                 6,
                             )
                         )
@@ -625,8 +623,7 @@ class RandomScenario:
                     contribution_401k = roth_401k.retirement_increase_list[i]
                     roth_401k_bal = float(
                         round(
-                            (roth_401k_bal + contribution_401k)
-                            * (1 + roth_401k_rate),
+                            (roth_401k_bal + contribution_401k) * (1 + roth_401k_rate),
                             6,
                         )
                     )
@@ -658,8 +655,7 @@ class RandomScenario:
                     contribution_hsa = hsa.retirement_increase_list[i]
                     hsa_bal = float(
                         round(
-                            (hsa_bal + contribution_hsa)
-                            * (1 + hsa_rate),
+                            (hsa_bal + contribution_hsa) * (1 + hsa_rate),
                             6,
                         )
                     )
