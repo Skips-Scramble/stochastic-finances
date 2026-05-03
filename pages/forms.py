@@ -147,33 +147,6 @@ class PaymentsInputsForm(forms.ModelForm):
 class RetirementInputsForm(forms.ModelForm):
     """Class to contain all pertinent financial information"""
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # Non-pension fields are hidden for pension type; mark them optional at
-        # the form level so the hidden inputs don't block submission.
-        # clean() enforces them for non-pension types.
-        self.fields["base_retirement"].required = False
-        self.fields["base_retirement_per_yr_increase"].required = False
-
-    def clean(self):
-        cleaned_data = super().clean()
-        retirement_type = cleaned_data.get("retirement_type")
-        if retirement_type == "pension":
-            # Supply 0 defaults for unused non-nullable columns
-            if cleaned_data.get("base_retirement") is None:
-                cleaned_data["base_retirement"] = 0.0
-            if cleaned_data.get("base_retirement_per_yr_increase") is None:
-                cleaned_data["base_retirement_per_yr_increase"] = 0.0
-        else:
-            # Enforce required fields for non-pension types
-            if cleaned_data.get("base_retirement") is None:
-                self.add_error("base_retirement", "This field is required.")
-            if cleaned_data.get("base_retirement_per_yr_increase") is None:
-                self.add_error(
-                    "base_retirement_per_yr_increase", "This field is required."
-                )
-        return cleaned_data
-
     class Meta:
         model = RetirementInputsModel
         fields = [
@@ -182,8 +155,6 @@ class RetirementInputsForm(forms.ModelForm):
             "base_retirement",
             "base_retirement_per_mo",
             "base_retirement_per_yr_increase",
-            "pension_start_age_yrs",
-            "pension_start_age_mos",
             "interest_rate_per_yr",
             "use_conservative_rates",
         ]
@@ -193,8 +164,6 @@ class RetirementInputsForm(forms.ModelForm):
             "base_retirement": "Current retirement amount",
             "base_retirement_per_mo": "Monthly retirement contributions",
             "base_retirement_per_yr_increase": "Yearly retirement contribution increase ($)",
-            "pension_start_age_yrs": "Pension start age (years)",
-            "pension_start_age_mos": "Pension start age (months)",
             "interest_rate_per_yr": "Interest rate (%) - Leave blank to use Rates form default",
             "use_conservative_rates": "Decrease interest rate as I get older",
         }
@@ -206,8 +175,6 @@ class RetirementInputsForm(forms.ModelForm):
             "base_retirement_per_yr_increase": forms.NumberInput(
                 attrs={"class": INPUT_CLASSES}
             ),
-            "pension_start_age_yrs": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
-            "pension_start_age_mos": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
             "interest_rate_per_yr": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
             "use_conservative_rates": forms.CheckboxInput(),
         }

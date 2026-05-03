@@ -37,8 +37,6 @@ inputs_by_model_dict = {
         "base_retirement",
         "base_retirement_per_mo",
         "base_retirement_per_yr_increase",
-        "pension_start_age_yrs",
-        "pension_start_age_mos",
         "use_conservative_rates",
     ],
     "rates": [
