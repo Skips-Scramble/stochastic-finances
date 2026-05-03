@@ -196,3 +196,469 @@ def test_younger_person_retires_later(base_assumptions):
     younger_scenario = BaseScenario(assumptions=younger_person)
 
     assert younger_scenario.retirement_date > older_scenario.retirement_date
+
+
+# --- Roth 401k account tests ---
+
+
+# The initial balance of a Roth 401k should equal its base_retirement value
+def test_roth_401k_initial_balance_equals_base_retirement(base_assumptions):
+    assumptions = {
+        **base_assumptions,
+        "retirement_accounts": [
+            {
+                "retirement_type": "roth_401k",
+                "base_retirement": 30000.0,
+                "base_retirement_per_mo": 0.0,
+                "base_retirement_per_yr_increase": 0.0,
+            }
+        ],
+    }
+    scenario = BaseScenario(assumptions=assumptions)
+    roth_401k = scenario.retirement_list[0]
+    assert roth_401k.retirement_account_list[0] == pytest.approx(30000.0, rel=1e-4)
+
+
+# A Roth 401k with no contributions should grow with market interest before retirement
+def test_roth_401k_grows_before_retirement(base_assumptions):
+    assumptions = {
+        **base_assumptions,
+        "retirement_accounts": [
+            {
+                "retirement_type": "roth_401k",
+                "base_retirement": 30000.0,
+                "base_retirement_per_mo": 0.0,
+                "base_retirement_per_yr_increase": 0.0,
+            }
+        ],
+    }
+    scenario = BaseScenario(assumptions=assumptions)
+    account_list = scenario.retirement_list[0].retirement_account_list
+    assert account_list[1] > account_list[0]
+
+
+# Roth 401k contributions should increase the balance relative to an account with no contributions
+def test_roth_401k_contributions_increase_balance(base_assumptions):
+    no_contrib = {
+        **base_assumptions,
+        "retirement_accounts": [
+            {
+                "retirement_type": "roth_401k",
+                "base_retirement": 30000.0,
+                "base_retirement_per_mo": 0.0,
+                "base_retirement_per_yr_increase": 0.0,
+            }
+        ],
+    }
+    with_contrib = {
+        **base_assumptions,
+        "retirement_accounts": [
+            {
+                "retirement_type": "roth_401k",
+                "base_retirement": 30000.0,
+                "base_retirement_per_mo": 400.0,
+                "base_retirement_per_yr_increase": 0.0,
+            }
+        ],
+    }
+    no_list = BaseScenario(assumptions=no_contrib).retirement_list[0].retirement_account_list
+    with_list = BaseScenario(assumptions=with_contrib).retirement_list[0].retirement_account_list
+    assert with_list[12] > no_list[12]
+
+
+# --- Traditional IRA account tests ---
+
+
+# The initial balance of a Traditional IRA should equal its base_retirement value
+def test_trad_ira_initial_balance_equals_base_retirement(base_assumptions):
+    assumptions = {
+        **base_assumptions,
+        "retirement_accounts": [
+            {
+                "retirement_type": "traditional_ira",
+                "base_retirement": 20000.0,
+                "base_retirement_per_mo": 0.0,
+                "base_retirement_per_yr_increase": 0.0,
+            }
+        ],
+    }
+    scenario = BaseScenario(assumptions=assumptions)
+    trad_ira = scenario.retirement_list[0]
+    assert trad_ira.retirement_account_list[0] == pytest.approx(20000.0, rel=1e-4)
+
+
+# A Traditional IRA with no contributions should grow with market interest before retirement
+def test_trad_ira_grows_before_retirement(base_assumptions):
+    assumptions = {
+        **base_assumptions,
+        "retirement_accounts": [
+            {
+                "retirement_type": "traditional_ira",
+                "base_retirement": 20000.0,
+                "base_retirement_per_mo": 0.0,
+                "base_retirement_per_yr_increase": 0.0,
+            }
+        ],
+    }
+    scenario = BaseScenario(assumptions=assumptions)
+    account_list = scenario.retirement_list[0].retirement_account_list
+    assert account_list[1] > account_list[0]
+
+
+# Traditional IRA contributions should increase the balance relative to no contributions
+def test_trad_ira_contributions_increase_balance(base_assumptions):
+    no_contrib = {
+        **base_assumptions,
+        "retirement_accounts": [
+            {
+                "retirement_type": "traditional_ira",
+                "base_retirement": 20000.0,
+                "base_retirement_per_mo": 0.0,
+                "base_retirement_per_yr_increase": 0.0,
+            }
+        ],
+    }
+    with_contrib = {
+        **base_assumptions,
+        "retirement_accounts": [
+            {
+                "retirement_type": "traditional_ira",
+                "base_retirement": 20000.0,
+                "base_retirement_per_mo": 300.0,
+                "base_retirement_per_yr_increase": 0.0,
+            }
+        ],
+    }
+    no_list = BaseScenario(assumptions=no_contrib).retirement_list[0].retirement_account_list
+    with_list = BaseScenario(assumptions=with_contrib).retirement_list[0].retirement_account_list
+    assert with_list[12] > no_list[12]
+
+
+# --- Roth IRA account tests ---
+
+
+# The initial balance of a Roth IRA should equal its base_retirement value
+def test_roth_ira_initial_balance_equals_base_retirement(base_assumptions):
+    assumptions = {
+        **base_assumptions,
+        "retirement_accounts": [
+            {
+                "retirement_type": "roth_ira",
+                "base_retirement": 15000.0,
+                "base_retirement_per_mo": 0.0,
+                "base_retirement_per_yr_increase": 0.0,
+            }
+        ],
+    }
+    scenario = BaseScenario(assumptions=assumptions)
+    roth_ira = scenario.retirement_list[0]
+    assert roth_ira.retirement_account_list[0] == pytest.approx(15000.0, rel=1e-4)
+
+
+# A Roth IRA with no contributions should grow with market interest before retirement
+def test_roth_ira_grows_before_retirement(base_assumptions):
+    assumptions = {
+        **base_assumptions,
+        "retirement_accounts": [
+            {
+                "retirement_type": "roth_ira",
+                "base_retirement": 15000.0,
+                "base_retirement_per_mo": 0.0,
+                "base_retirement_per_yr_increase": 0.0,
+            }
+        ],
+    }
+    scenario = BaseScenario(assumptions=assumptions)
+    account_list = scenario.retirement_list[0].retirement_account_list
+    assert account_list[1] > account_list[0]
+
+
+# Roth IRA contributions should increase the balance relative to no contributions
+def test_roth_ira_contributions_increase_balance(base_assumptions):
+    no_contrib = {
+        **base_assumptions,
+        "retirement_accounts": [
+            {
+                "retirement_type": "roth_ira",
+                "base_retirement": 15000.0,
+                "base_retirement_per_mo": 0.0,
+                "base_retirement_per_yr_increase": 0.0,
+            }
+        ],
+    }
+    with_contrib = {
+        **base_assumptions,
+        "retirement_accounts": [
+            {
+                "retirement_type": "roth_ira",
+                "base_retirement": 15000.0,
+                "base_retirement_per_mo": 250.0,
+                "base_retirement_per_yr_increase": 0.0,
+            }
+        ],
+    }
+    no_list = BaseScenario(assumptions=no_contrib).retirement_list[0].retirement_account_list
+    with_list = BaseScenario(assumptions=with_contrib).retirement_list[0].retirement_account_list
+    assert with_list[12] > no_list[12]
+
+
+# --- HSA account tests ---
+
+
+# The initial balance of an HSA should equal its base_retirement value
+def test_hsa_initial_balance_equals_base_retirement(base_assumptions):
+    assumptions = {
+        **base_assumptions,
+        "retirement_accounts": [
+            {
+                "retirement_type": "hsa",
+                "base_retirement": 8000.0,
+                "base_retirement_per_mo": 0.0,
+                "base_retirement_per_yr_increase": 0.0,
+            }
+        ],
+    }
+    scenario = BaseScenario(assumptions=assumptions)
+    hsa = scenario.retirement_list[0]
+    assert hsa.retirement_account_list[0] == pytest.approx(8000.0, rel=1e-4)
+
+
+# An HSA with no contributions should grow with market interest before retirement
+def test_hsa_grows_before_retirement(base_assumptions):
+    assumptions = {
+        **base_assumptions,
+        "retirement_accounts": [
+            {
+                "retirement_type": "hsa",
+                "base_retirement": 8000.0,
+                "base_retirement_per_mo": 0.0,
+                "base_retirement_per_yr_increase": 0.0,
+            }
+        ],
+    }
+    scenario = BaseScenario(assumptions=assumptions)
+    account_list = scenario.retirement_list[0].retirement_account_list
+    assert account_list[1] > account_list[0]
+
+
+# HSA contributions should increase the balance relative to no contributions
+def test_hsa_contributions_increase_balance(base_assumptions):
+    no_contrib = {
+        **base_assumptions,
+        "retirement_accounts": [
+            {
+                "retirement_type": "hsa",
+                "base_retirement": 8000.0,
+                "base_retirement_per_mo": 0.0,
+                "base_retirement_per_yr_increase": 0.0,
+            }
+        ],
+    }
+    with_contrib = {
+        **base_assumptions,
+        "retirement_accounts": [
+            {
+                "retirement_type": "hsa",
+                "base_retirement": 8000.0,
+                "base_retirement_per_mo": 200.0,
+                "base_retirement_per_yr_increase": 0.0,
+            }
+        ],
+    }
+    no_list = BaseScenario(assumptions=no_contrib).retirement_list[0].retirement_account_list
+    with_list = BaseScenario(assumptions=with_contrib).retirement_list[0].retirement_account_list
+    assert with_list[12] > no_list[12]
+
+
+# --- Brokerage account tests ---
+
+
+# The initial balance of a brokerage account should equal its base_retirement value
+def test_brokerage_initial_balance_equals_base_retirement(base_assumptions):
+    assumptions = {
+        **base_assumptions,
+        "retirement_accounts": [
+            {
+                "retirement_type": "brokerage",
+                "base_retirement": 25000.0,
+                "base_retirement_per_mo": 0.0,
+                "base_retirement_per_yr_increase": 0.0,
+            }
+        ],
+    }
+    scenario = BaseScenario(assumptions=assumptions)
+    brokerage = scenario.retirement_list[0]
+    assert brokerage.retirement_account_list[0] == pytest.approx(25000.0, rel=1e-4)
+
+
+# A brokerage account with no contributions should grow with market interest before retirement
+def test_brokerage_grows_before_retirement(base_assumptions):
+    assumptions = {
+        **base_assumptions,
+        "retirement_accounts": [
+            {
+                "retirement_type": "brokerage",
+                "base_retirement": 25000.0,
+                "base_retirement_per_mo": 0.0,
+                "base_retirement_per_yr_increase": 0.0,
+            }
+        ],
+    }
+    scenario = BaseScenario(assumptions=assumptions)
+    account_list = scenario.retirement_list[0].retirement_account_list
+    assert account_list[1] > account_list[0]
+
+
+# Brokerage contributions should increase the balance relative to no contributions
+def test_brokerage_contributions_increase_balance(base_assumptions):
+    no_contrib = {
+        **base_assumptions,
+        "retirement_accounts": [
+            {
+                "retirement_type": "brokerage",
+                "base_retirement": 25000.0,
+                "base_retirement_per_mo": 0.0,
+                "base_retirement_per_yr_increase": 0.0,
+            }
+        ],
+    }
+    with_contrib = {
+        **base_assumptions,
+        "retirement_accounts": [
+            {
+                "retirement_type": "brokerage",
+                "base_retirement": 25000.0,
+                "base_retirement_per_mo": 350.0,
+                "base_retirement_per_yr_increase": 0.0,
+            }
+        ],
+    }
+    no_list = BaseScenario(assumptions=no_contrib).retirement_list[0].retirement_account_list
+    with_list = BaseScenario(assumptions=with_contrib).retirement_list[0].retirement_account_list
+    assert with_list[12] > no_list[12]
+
+
+# --- Multiple accounts and list-level tests ---
+
+
+# The retirement_list should contain one entry per account specified in assumptions
+def test_retirement_list_length_matches_number_of_accounts(base_assumptions):
+    assumptions = {
+        **base_assumptions,
+        "retirement_accounts": [
+            {
+                "retirement_type": "traditional_401k",
+                "base_retirement": 50000.0,
+                "base_retirement_per_mo": 0.0,
+                "base_retirement_per_yr_increase": 0.0,
+            },
+            {
+                "retirement_type": "roth_ira",
+                "base_retirement": 15000.0,
+                "base_retirement_per_mo": 0.0,
+                "base_retirement_per_yr_increase": 0.0,
+            },
+        ],
+    }
+    scenario = BaseScenario(assumptions=assumptions)
+    assert len(scenario.retirement_list) == 2
+
+
+# Each retirement account should be tracked independently when multiple accounts exist
+def test_multiple_retirement_accounts_each_tracked_independently(base_assumptions):
+    assumptions = {
+        **base_assumptions,
+        "retirement_accounts": [
+            {
+                "retirement_type": "traditional_401k",
+                "base_retirement": 50000.0,
+                "base_retirement_per_mo": 0.0,
+                "base_retirement_per_yr_increase": 0.0,
+            },
+            {
+                "retirement_type": "roth_ira",
+                "base_retirement": 15000.0,
+                "base_retirement_per_mo": 0.0,
+                "base_retirement_per_yr_increase": 0.0,
+            },
+        ],
+    }
+    scenario = BaseScenario(assumptions=assumptions)
+    trad_401k_list = scenario.retirement_list[0].retirement_account_list
+    roth_ira_list = scenario.retirement_list[1].retirement_account_list
+    # Initial balances should reflect each account's own base_retirement
+    assert trad_401k_list[0] == pytest.approx(50000.0, rel=1e-4)
+    assert roth_ira_list[0] == pytest.approx(15000.0, rel=1e-4)
+
+
+# A retirement account starting with zero balance should remain near zero with no contributions
+def test_zero_balance_retirement_account_grows_to_zero_with_no_contributions(base_assumptions):
+    assumptions = {
+        **base_assumptions,
+        "retirement_accounts": [
+            {
+                "retirement_type": "traditional_401k",
+                "base_retirement": 0.0,
+                "base_retirement_per_mo": 0.0,
+                "base_retirement_per_yr_increase": 0.0,
+            }
+        ],
+    }
+    scenario = BaseScenario(assumptions=assumptions)
+    account_list = scenario.retirement_list[0].retirement_account_list
+    assert account_list[0] == pytest.approx(0.0, abs=1e-6)
+    assert account_list[12] == pytest.approx(0.0, abs=1e-6)
+
+
+# The retirement_account_list length should equal the scenario's total_months
+def test_retirement_account_list_length_equals_total_months(base_assumptions):
+    assumptions = {
+        **base_assumptions,
+        "retirement_accounts": [
+            {
+                "retirement_type": "traditional_401k",
+                "base_retirement": 50000.0,
+                "base_retirement_per_mo": 0.0,
+                "base_retirement_per_yr_increase": 0.0,
+            }
+        ],
+    }
+    scenario = BaseScenario(assumptions=assumptions)
+    trad_401k = scenario.retirement_list[0]
+    assert len(trad_401k.retirement_account_list) == scenario.total_months
+
+
+# An account with an annual increase should have higher contributions in year 2 than year 1
+def test_trad_401k_annual_increase_raises_contributions_each_year(base_assumptions):
+    assumptions = {
+        **base_assumptions,
+        "retirement_accounts": [
+            {
+                "retirement_type": "traditional_401k",
+                "base_retirement": 50000.0,
+                "base_retirement_per_mo": 500.0,
+                "base_retirement_per_yr_increase": 100.0,
+            }
+        ],
+    }
+    scenario = BaseScenario(assumptions=assumptions)
+    trad_401k = scenario.retirement_list[0]
+    # Year 1 contributions should be lower than year 2
+    year_1_avg = sum(trad_401k.retirement_increase_list[0:12]) / 12
+    year_2_avg = sum(trad_401k.retirement_increase_list[12:24]) / 12
+    assert year_2_avg > year_1_avg
+
+
+# The retirement_date should exactly match the expected date based on birthdate and retirement age
+def test_retirement_date_matches_expected_from_birthdate_and_age(base_assumptions):
+    scenario = BaseScenario(assumptions=base_assumptions)
+    # birthdate = 1990-01-01, retirement_age_yrs = 65 → retirement_date = 2055-01-01
+    from dateutil.relativedelta import relativedelta
+    expected_date = (date(1990, 1, 1) + relativedelta(years=65)).replace(day=1)
+    assert scenario.retirement_date == expected_date
+
+
+# With no retirement accounts, the retirement_list should be empty
+def test_empty_retirement_accounts_produces_empty_retirement_list(base_assumptions):
+    scenario = BaseScenario(assumptions=base_assumptions)
+    assert scenario.retirement_list == []
