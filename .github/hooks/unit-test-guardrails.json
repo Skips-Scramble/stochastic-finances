@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "type": "command",
+        "command": "python scripts/copilot_hooks/unit_test_guardrail_hook.py",
+        "windows": "py -3 scripts/copilot_hooks/unit_test_guardrail_hook.py",
+        "linux": "python3 scripts/copilot_hooks/unit_test_guardrail_hook.py",
+        "osx": "python3 scripts/copilot_hooks/unit_test_guardrail_hook.py",
+        "timeout": 20
+      }
+    ]
+  }
+}
