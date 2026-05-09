@@ -34,29 +34,29 @@ def retired_assumptions():
 # --- Healthcare costs tests ---
 
 
+# healthcare_costs should be all zeros when add_healthcare is False
 def test_healthcare_costs_are_all_zeros_when_disabled(retired_assumptions):
-    # healthcare_costs should be all zeros when add_healthcare is False
     scenario = BaseScenario(assumptions=retired_assumptions)
     assert all(v == 0.0 for v in scenario.healthcare_costs)
 
 
+# healthcare_costs should have non-zero values for a person in the 65-84 age band when enabled
 def test_healthcare_costs_are_nonzero_when_enabled(retired_assumptions):
-    # healthcare_costs should have non-zero values for a person in the 65-84 age band when enabled
     assumptions = {**retired_assumptions, "add_healthcare": True}
     scenario = BaseScenario(assumptions=assumptions)
     assert sum(scenario.healthcare_costs) > 0
 
 
+# healthcare_costs list length should equal total_months whether enabled or disabled
 def test_healthcare_costs_length_equals_total_months(retired_assumptions):
-    # healthcare_costs list length should equal total_months whether enabled or disabled
     disabled = BaseScenario(assumptions=retired_assumptions)
     enabled = BaseScenario(assumptions={**retired_assumptions, "add_healthcare": True})
     assert len(disabled.healthcare_costs) == disabled.total_months
     assert len(enabled.healthcare_costs) == enabled.total_months
 
 
+# Enabling healthcare should reduce the final savings balance compared to no healthcare
 def test_enabling_healthcare_reduces_savings_balance(retired_assumptions):
-    # Enabling healthcare should reduce the final savings balance compared to no healthcare
     no_hc = BaseScenario(assumptions=retired_assumptions)
     with_hc = BaseScenario(
         assumptions={**retired_assumptions, "add_healthcare": True}
@@ -66,8 +66,8 @@ def test_enabling_healthcare_reduces_savings_balance(retired_assumptions):
     assert savings_with_hc[-1] < savings_no_hc[-1]
 
 
+# With zero bills, zero interest, and healthcare disabled, savings stay at base_savings
 def test_disabling_healthcare_leaves_savings_unchanged(retired_assumptions):
-    # With zero bills, zero interest, and healthcare disabled, savings stay at base_savings
     scenario = BaseScenario(assumptions=retired_assumptions)
     savings_list = scenario.savings_retirement_account_list[0]
     assert all(v == retired_assumptions["base_savings"] for v in savings_list)
@@ -84,17 +84,17 @@ def test_post_retire_extra_bills_are_all_zeros_when_no_extra_expenses(
     assert all(v == 0.0 for v in scenario.post_retire_extra_bills_list)
 
 
+# post_retire_extra_bills_list length should equal total_months
 def test_post_retire_extra_bills_length_equals_total_months(retired_assumptions):
-    # post_retire_extra_bills_list length should equal total_months
     assumptions = {**retired_assumptions, "retirement_extra_expenses": 1200}
     scenario = BaseScenario(assumptions=assumptions)
     assert len(scenario.post_retire_extra_bills_list) == scenario.total_months
 
 
+# At zero inflation each monthly extra bill should equal retirement_extra_expenses / 12
 def test_post_retire_extra_bills_equal_monthly_rate_at_zero_inflation(
     retired_assumptions,
 ):
-    # At zero inflation each monthly extra bill should equal retirement_extra_expenses / 12
     annual_extra = 1200.0
     assumptions = {**retired_assumptions, "retirement_extra_expenses": annual_extra}
     scenario = BaseScenario(assumptions=assumptions)
@@ -103,8 +103,8 @@ def test_post_retire_extra_bills_equal_monthly_rate_at_zero_inflation(
         assert v == pytest.approx(expected_monthly, rel=1e-5)
 
 
+# Adding extra retirement expenses should reduce the final savings balance
 def test_adding_extra_retirement_expenses_reduces_savings_balance(retired_assumptions):
-    # Adding extra retirement expenses should reduce the final savings balance
     no_extra = BaseScenario(assumptions=retired_assumptions)
     with_extra = BaseScenario(
         assumptions={**retired_assumptions, "retirement_extra_expenses": 1200}
@@ -114,10 +114,10 @@ def test_adding_extra_retirement_expenses_reduces_savings_balance(retired_assump
     assert savings_with_extra[-1] < savings_no_extra[-1]
 
 
+# At zero interest and zero inflation the savings difference equals (total_months - 1) * monthly_extra
 def test_extra_retirement_expenses_savings_difference_is_exact_at_zero_rates(
     retired_assumptions,
 ):
-    # At zero interest and zero inflation the savings difference equals (total_months - 1) * monthly_extra
     annual_extra = 1200.0
     monthly_extra = annual_extra / 12
 
