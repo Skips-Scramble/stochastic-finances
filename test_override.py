@@ -1,4 +1,5 @@
 import sys
+from typing import TypedDict
 
 sys.path.insert(0, "C:\\Users\\Sam\\Desktop\\School\\Repos\\stochastic-finances")
 import os
@@ -8,6 +9,12 @@ import django
 
 django.setup()
 
+
+class RetirementAccount(TypedDict):
+    retirement_type: str
+    interest_rate_per_yr: float | None
+
+
 # Test the override logic from views.py
 global_rates_dict = {
     "base_rf_interest_per_yr": 2.0,
@@ -15,7 +22,7 @@ global_rates_dict = {
 }
 
 # Test 1: Savings account with override
-savings_rate_override = 3.5
+savings_rate_override: float | None = 3.5
 if savings_rate_override is not None:
     global_rates_dict["base_rf_interest_per_yr"] = savings_rate_override
 
@@ -36,7 +43,7 @@ print(
 )
 
 # Test 3: Retirement account override in list
-retirement_list = [
+retirement_list: list[RetirementAccount] = [
     {"retirement_type": "traditional_401k", "interest_rate_per_yr": 6.0},
     {"retirement_type": "roth_ira", "interest_rate_per_yr": None},
 ]

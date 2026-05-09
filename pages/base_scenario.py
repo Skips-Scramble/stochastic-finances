@@ -151,9 +151,10 @@ class ScenarioCoreInfo:
     @cached_property
     def yearly_mkt_interest(self) -> float:
         """Calculate yearly market interest as a percent"""
+        interest_rate_override = getattr(self, "interest_rate_override", None)
         rate_to_use = (
-            self.interest_rate_override
-            if self.interest_rate_override is not None
+            interest_rate_override
+            if interest_rate_override is not None
             else self.assumptions["base_mkt_interest_per_yr"]
         )
         return round(rate_to_use / 100, 6)
@@ -322,7 +323,7 @@ class RetirementTrad401k(ScenarioCoreInfo):
     base_retirement: float = 0.0
     base_retirement_per_mo: float = 0.0
     base_retirement_per_yr_increase: float = 0.0
-    interest_rate_override: float = (
+    interest_rate_override: float | None = (
         None  # Optional per-account rate override (as percent)
     )
     use_conservative_rates: bool = True
@@ -392,7 +393,7 @@ class RetirementRoth401k(ScenarioCoreInfo):
     base_retirement: float = 0.0
     base_retirement_per_mo: float = 0.0
     base_retirement_per_yr_increase: float = 0.0
-    interest_rate_override: float = (
+    interest_rate_override: float | None = (
         None  # Optional per-account rate override (as percent)
     )
     use_conservative_rates: bool = True
@@ -452,7 +453,7 @@ class RetirementTradIRA(ScenarioCoreInfo):
     base_retirement: float = 0.0
     base_retirement_per_mo: float = 0.0
     base_retirement_per_yr_increase: float = 0.0
-    interest_rate_override: float = (
+    interest_rate_override: float | None = (
         None  # Optional per-account rate override (as percent)
     )
     use_conservative_rates: bool = True
@@ -512,7 +513,7 @@ class RetirementRothIRA(ScenarioCoreInfo):
     base_retirement: float = 0.0
     base_retirement_per_mo: float = 0.0
     base_retirement_per_yr_increase: float = 0.0
-    interest_rate_override: float = (
+    interest_rate_override: float | None = (
         None  # Optional per-account rate override (as percent)
     )
     use_conservative_rates: bool = True
@@ -578,7 +579,7 @@ class RetirementHSA(ScenarioCoreInfo):
     base_retirement: float = 0.0
     base_retirement_per_mo: float = 0.0
     base_retirement_per_yr_increase: float = 0.0
-    interest_rate_override: float = (
+    interest_rate_override: float | None = (
         None  # Optional per-account rate override (as percent)
     )
     use_conservative_rates: bool = True
@@ -643,7 +644,7 @@ class RetirementBrokerage(ScenarioCoreInfo):
     base_retirement: float = 0.0
     base_retirement_per_mo: float = 0.0
     base_retirement_per_yr_increase: float = 0.0
-    interest_rate_override: float = (
+    interest_rate_override: float | None = (
         None  # Optional per-account rate override (as percent)
     )
     use_conservative_rates: bool = True
