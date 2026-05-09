@@ -99,8 +99,14 @@ def test_savings_compounds_correctly_at_age_ninety_zero_months(
 
 # A higher base_rf_interest_per_yr should produce a larger savings balance
 def test_higher_interest_rate_produces_more_savings(minimal_savings_assumptions):
-    low_rate_assumptions = {**minimal_savings_assumptions, "base_rf_interest_per_yr": 1.0}
-    high_rate_assumptions = {**minimal_savings_assumptions, "base_rf_interest_per_yr": 5.0}
+    low_rate_assumptions = {
+        **minimal_savings_assumptions,
+        "base_rf_interest_per_yr": 1.0,
+    }
+    high_rate_assumptions = {
+        **minimal_savings_assumptions,
+        "base_rf_interest_per_yr": 5.0,
+    }
 
     low_scenario = BaseScenario(assumptions=low_rate_assumptions)
     high_scenario = BaseScenario(assumptions=high_rate_assumptions)
@@ -119,7 +125,9 @@ def test_savings_retirement_account_list_has_17_elements(minimal_savings_assumpt
 
 
 # Each element of savings_retirement_account_list should be a list of length total_months
-def test_savings_retirement_account_list_all_sublists_have_total_months_length(minimal_savings_assumptions):
+def test_savings_retirement_account_list_all_sublists_have_total_months_length(
+    minimal_savings_assumptions,
+):
     scenario = BaseScenario(assumptions=minimal_savings_assumptions)
     result = scenario.savings_retirement_account_list
     for sublist in result:
@@ -127,7 +135,9 @@ def test_savings_retirement_account_list_all_sublists_have_total_months_length(m
 
 
 # With no retirement accounts, all retirement balance lists should be all zeros
-def test_savings_retirement_account_list_retirement_balances_all_zero_with_no_accounts(minimal_savings_assumptions):
+def test_savings_retirement_account_list_retirement_balances_all_zero_with_no_accounts(
+    minimal_savings_assumptions,
+):
     scenario = BaseScenario(assumptions=minimal_savings_assumptions)
     result = scenario.savings_retirement_account_list
     # Indices 1-3, 8-12 are retirement account balances
@@ -136,7 +146,9 @@ def test_savings_retirement_account_list_retirement_balances_all_zero_with_no_ac
 
 
 # With no retirement accounts, all transfer lists should be all zeros
-def test_savings_retirement_account_list_transfer_lists_all_zero_with_no_accounts(minimal_savings_assumptions):
+def test_savings_retirement_account_list_transfer_lists_all_zero_with_no_accounts(
+    minimal_savings_assumptions,
+):
     scenario = BaseScenario(assumptions=minimal_savings_assumptions)
     result = scenario.savings_retirement_account_list
     # Indices 5, 6, 7, 10, 12 are transfer lists
@@ -145,7 +157,9 @@ def test_savings_retirement_account_list_transfer_lists_all_zero_with_no_account
 
 
 # With no retirement accounts, the RMD list should be all zeros
-def test_savings_retirement_account_list_rmd_list_all_zero_with_no_accounts(minimal_savings_assumptions):
+def test_savings_retirement_account_list_rmd_list_all_zero_with_no_accounts(
+    minimal_savings_assumptions,
+):
     scenario = BaseScenario(assumptions=minimal_savings_assumptions)
     rmd_list = scenario.savings_retirement_account_list[4]
     assert all(v == 0.0 for v in rmd_list)
@@ -199,7 +213,9 @@ def test_monthly_rf_interest_less_than_yearly(minimal_savings_assumptions):
 
 
 # With zero interest rate, savings should only decrease by bills (compounding factor = 1)
-def test_savings_zero_interest_rate_stays_flat_with_no_bills(minimal_savings_assumptions):
+def test_savings_zero_interest_rate_stays_flat_with_no_bills(
+    minimal_savings_assumptions,
+):
     assumptions = {**minimal_savings_assumptions, "base_rf_interest_per_yr": 0.0}
     scenario = BaseScenario(assumptions=assumptions)
     savings = scenario.savings_retirement_account_list[0]
@@ -208,7 +224,9 @@ def test_savings_zero_interest_rate_stays_flat_with_no_bills(minimal_savings_ass
 
 
 # A Roth IRA initial balance should appear in the roth_ira_balance_list (index 1)
-def test_roth_ira_balance_initialized_in_savings_account_list(minimal_savings_assumptions):
+def test_roth_ira_balance_initialized_in_savings_account_list(
+    minimal_savings_assumptions,
+):
     assumptions = {
         **minimal_savings_assumptions,
         "retirement_accounts": [
@@ -226,7 +244,9 @@ def test_roth_ira_balance_initialized_in_savings_account_list(minimal_savings_as
 
 
 # A Traditional 401k initial balance should appear in the trad_401k_balance_list (index 3)
-def test_trad_401k_balance_initialized_in_savings_account_list(minimal_savings_assumptions):
+def test_trad_401k_balance_initialized_in_savings_account_list(
+    minimal_savings_assumptions,
+):
     assumptions = {
         **minimal_savings_assumptions,
         "retirement_accounts": [
@@ -244,7 +264,9 @@ def test_trad_401k_balance_initialized_in_savings_account_list(minimal_savings_a
 
 
 # A higher starting savings balance should produce a higher savings balance at every month
-def test_higher_base_savings_produces_higher_balance_throughout(minimal_savings_assumptions):
+def test_higher_base_savings_produces_higher_balance_throughout(
+    minimal_savings_assumptions,
+):
     low_savings = {**minimal_savings_assumptions, "base_savings": 5000.0}
     high_savings = {**minimal_savings_assumptions, "base_savings": 50000.0}
 

@@ -4,23 +4,33 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('pages', '0025_retirementinputsmodel_use_conservative_rates'),
+        ("pages", "0025_retirementinputsmodel_use_conservative_rates"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='retirementinputsmodel',
-            name='pension_start_age_mos',
+            model_name="retirementinputsmodel",
+            name="pension_start_age_mos",
         ),
         migrations.RemoveField(
-            model_name='retirementinputsmodel',
-            name='pension_start_age_yrs',
+            model_name="retirementinputsmodel",
+            name="pension_start_age_yrs",
         ),
         migrations.AlterField(
-            model_name='retirementinputsmodel',
-            name='retirement_type',
-            field=models.CharField(choices=[('traditional_401k', 'Traditional 401(k)'), ('roth_401k', 'Roth 401(k)'), ('traditional_ira', 'Traditional IRA'), ('roth_ira', 'Roth IRA'), ('hsa', 'HSA'), ('brokerage', 'Brokerage')], default='traditional_401k', max_length=20),
+            model_name="retirementinputsmodel",
+            name="retirement_type",
+            field=models.CharField(
+                choices=[
+                    ("traditional_401k", "Traditional 401(k)"),
+                    ("roth_401k", "Roth 401(k)"),
+                    ("traditional_ira", "Traditional IRA"),
+                    ("roth_ira", "Roth IRA"),
+                    ("hsa", "HSA"),
+                    ("brokerage", "Brokerage"),
+                ],
+                default="traditional_401k",
+                max_length=20,
+            ),
         ),
     ]

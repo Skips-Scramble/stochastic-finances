@@ -346,9 +346,7 @@ def test_payment_item_zero_outside_active_window(base_assumptions):
     pmt_list = payment.calc_pmt_list
     # Before age 40 the payment should be zero
     pre_payment_values = [
-        pmt_list[i]
-        for i, age in enumerate(scenario.age_by_year_list)
-        if age < 40
+        pmt_list[i] for i, age in enumerate(scenario.age_by_year_list) if age < 40
     ]
     assert all(v == 0.0 for v in pre_payment_values)
 
@@ -378,9 +376,7 @@ def test_payment_item_non_zero_during_active_window(base_assumptions):
     pmt_list = payment.calc_pmt_list
     # During age 40-44 the payment should be non-zero
     active_values = [
-        pmt_list[i]
-        for i, age in enumerate(scenario.age_by_year_list)
-        if 40 <= age < 45
+        pmt_list[i] for i, age in enumerate(scenario.age_by_year_list) if 40 <= age < 45
     ]
     assert any(v > 0 for v in active_values)
 
@@ -437,7 +433,9 @@ def test_savings_goes_negative_with_high_bills_and_no_threshold(base_assumptions
     savings_list = scenario.savings_retirement_account_list[0]
     # After retirement with high bills, savings should eventually be negative
     post_retire_idx = scenario.months_until_retirement + 12
-    assert savings_list[post_retire_idx] < savings_list[scenario.months_until_retirement]
+    assert (
+        savings_list[post_retire_idx] < savings_list[scenario.months_until_retirement]
+    )
 
 
 # With high enough savings and low bills, savings should remain positive throughout retirement
@@ -457,7 +455,9 @@ def test_savings_stays_positive_with_high_savings_and_low_bills(base_assumptions
 
 
 # Retirement with later age should allow more time for retirement account to grow
-def test_later_retirement_age_produces_larger_401k_balance_at_retirement(base_assumptions):
+def test_later_retirement_age_produces_larger_401k_balance_at_retirement(
+    base_assumptions,
+):
     early_retire = {
         **base_assumptions,
         "retirement_age_yrs": 55,
@@ -512,12 +512,15 @@ def test_birthdate_parsed_from_string(base_assumptions):
 def test_death_date_is_birthdate_plus_115_years(base_assumptions):
     scenario = BaseScenario(assumptions=base_assumptions)
     from dateutil.relativedelta import relativedelta
+
     expected_death = (date(1990, 1, 1) + relativedelta(years=115)).replace(day=1)
     assert scenario.death_date == expected_death
 
 
 # The retirement_increase_list on BaseScenario should aggregate all retirement account contributions
-def test_base_scenario_retirement_increase_list_aggregates_all_accounts(base_assumptions):
+def test_base_scenario_retirement_increase_list_aggregates_all_accounts(
+    base_assumptions,
+):
     assumptions = {
         **base_assumptions,
         "retirement_accounts": [
@@ -541,6 +544,8 @@ def test_base_scenario_retirement_increase_list_aggregates_all_accounts(base_ass
 
 
 # The BaseScenario retirement_increase_list should be all zeros when no accounts exist
-def test_base_scenario_retirement_increase_list_all_zero_with_no_accounts(base_assumptions):
+def test_base_scenario_retirement_increase_list_all_zero_with_no_accounts(
+    base_assumptions,
+):
     scenario = BaseScenario(assumptions=base_assumptions)
     assert all(v == 0.0 for v in scenario.retirement_increase_list)

@@ -83,7 +83,9 @@ def test_base_bills_list_higher_inflation_produces_larger_bills(base_assumptions
 
 
 # With positive inflation, base_bills_list should be strictly monotonically increasing
-def test_base_bills_list_monotonically_increasing_with_positive_inflation(base_assumptions):
+def test_base_bills_list_monotonically_increasing_with_positive_inflation(
+    base_assumptions,
+):
     scenario = BaseScenario(assumptions=base_assumptions)
     bills = scenario.base_bills_list
     assert all(bills[i] < bills[i + 1] for i in range(len(bills) - 1))
@@ -138,7 +140,9 @@ def test_post_retire_extra_bills_list_length_equals_total_months(base_assumption
 
 
 # With positive retirement_extra_expenses, at least some entries should be non-zero
-def test_post_retire_extra_bills_non_zero_with_positive_extra_expenses(base_assumptions):
+def test_post_retire_extra_bills_non_zero_with_positive_extra_expenses(
+    base_assumptions,
+):
     assumptions = {**base_assumptions, "retirement_extra_expenses": 12000.0}
     scenario = BaseScenario(assumptions=assumptions)
     assert any(v > 0 for v in scenario.post_retire_extra_bills_list)
@@ -146,11 +150,19 @@ def test_post_retire_extra_bills_non_zero_with_positive_extra_expenses(base_assu
 
 # The first entry of post_retire_extra_bills_list should equal retirement_extra_expenses / 12
 # (no inflation applied at month 0 since count_list starts at 0)
-def test_post_retire_extra_bills_first_entry_equals_annual_divided_by_twelve(base_assumptions):
+def test_post_retire_extra_bills_first_entry_equals_annual_divided_by_twelve(
+    base_assumptions,
+):
     extra = 12000.0
-    assumptions = {**base_assumptions, "retirement_extra_expenses": extra, "base_inflation_per_yr": 0.0}
+    assumptions = {
+        **base_assumptions,
+        "retirement_extra_expenses": extra,
+        "base_inflation_per_yr": 0.0,
+    }
     scenario = BaseScenario(assumptions=assumptions)
-    assert scenario.post_retire_extra_bills_list[0] == pytest.approx(extra / 12, rel=1e-5)
+    assert scenario.post_retire_extra_bills_list[0] == pytest.approx(
+        extra / 12, rel=1e-5
+    )
 
 
 # With positive inflation and extra expenses, post_retire_extra_bills_list should grow over time
@@ -208,7 +220,11 @@ def test_savings_threshold_all_zero_when_lower_limit_zero(base_assumptions):
 # The first entry of monthly_savings_threshold_list should equal savings_lower_limit
 # (no inflation at month 0)
 def test_savings_threshold_first_entry_equals_lower_limit(base_assumptions):
-    assumptions = {**base_assumptions, "savings_lower_limit": 5000.0, "base_inflation_per_yr": 0.0}
+    assumptions = {
+        **base_assumptions,
+        "savings_lower_limit": 5000.0,
+        "base_inflation_per_yr": 0.0,
+    }
     scenario = BaseScenario(assumptions=assumptions)
     assert scenario.monthly_savings_threshold_list[0] == pytest.approx(5000.0, rel=1e-5)
 

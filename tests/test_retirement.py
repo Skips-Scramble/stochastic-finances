@@ -144,28 +144,52 @@ def test_trad_401k_higher_interest_rate_produces_larger_balance(base_assumptions
 
 # An early retiree (age 50) should have fewer pre-retirement months than a standard retiree (age 65)
 def test_early_retiree_has_fewer_pre_retirement_months(base_assumptions):
-    early_retire = {**base_assumptions, "retirement_age_yrs": 50, "retirement_age_mos": 0}
-    standard_retire = {**base_assumptions, "retirement_age_yrs": 65, "retirement_age_mos": 0}
+    early_retire = {
+        **base_assumptions,
+        "retirement_age_yrs": 50,
+        "retirement_age_mos": 0,
+    }
+    standard_retire = {
+        **base_assumptions,
+        "retirement_age_yrs": 65,
+        "retirement_age_mos": 0,
+    }
 
     early_scenario = BaseScenario(assumptions=early_retire)
     standard_scenario = BaseScenario(assumptions=standard_retire)
 
-    early_pre_retire = sum(1 for v in early_scenario.pre_retire_month_count_list if v != 0)
-    standard_pre_retire = sum(1 for v in standard_scenario.pre_retire_month_count_list if v != 0)
+    early_pre_retire = sum(
+        1 for v in early_scenario.pre_retire_month_count_list if v != 0
+    )
+    standard_pre_retire = sum(
+        1 for v in standard_scenario.pre_retire_month_count_list if v != 0
+    )
 
     assert early_pre_retire < standard_pre_retire
 
 
 # A late retiree (age 70) should have more pre-retirement months than a standard retiree (age 65)
 def test_late_retiree_has_more_pre_retirement_months(base_assumptions):
-    late_retire = {**base_assumptions, "retirement_age_yrs": 70, "retirement_age_mos": 0}
-    standard_retire = {**base_assumptions, "retirement_age_yrs": 65, "retirement_age_mos": 0}
+    late_retire = {
+        **base_assumptions,
+        "retirement_age_yrs": 70,
+        "retirement_age_mos": 0,
+    }
+    standard_retire = {
+        **base_assumptions,
+        "retirement_age_yrs": 65,
+        "retirement_age_mos": 0,
+    }
 
     late_scenario = BaseScenario(assumptions=late_retire)
     standard_scenario = BaseScenario(assumptions=standard_retire)
 
-    late_pre_retire = sum(1 for v in late_scenario.pre_retire_month_count_list if v != 0)
-    standard_pre_retire = sum(1 for v in standard_scenario.pre_retire_month_count_list if v != 0)
+    late_pre_retire = sum(
+        1 for v in late_scenario.pre_retire_month_count_list if v != 0
+    )
+    standard_pre_retire = sum(
+        1 for v in standard_scenario.pre_retire_month_count_list if v != 0
+    )
 
     assert late_pre_retire > standard_pre_retire
 
@@ -173,16 +197,22 @@ def test_late_retiree_has_more_pre_retirement_months(base_assumptions):
 # Retirement age in months should shift the retirement date by the correct number of months
 def test_retirement_age_months_shifts_retirement_date(base_assumptions):
     no_months = {**base_assumptions, "retirement_age_yrs": 65, "retirement_age_mos": 0}
-    with_months = {**base_assumptions, "retirement_age_yrs": 65, "retirement_age_mos": 6}
+    with_months = {
+        **base_assumptions,
+        "retirement_age_yrs": 65,
+        "retirement_age_mos": 6,
+    }
 
     no_months_scenario = BaseScenario(assumptions=no_months)
     with_months_scenario = BaseScenario(assumptions=with_months)
 
     # The retirement date should be 6 months later
     diff_months = (
-        (with_months_scenario.retirement_date.year - no_months_scenario.retirement_date.year)
-        * 12
-        + (with_months_scenario.retirement_date.month - no_months_scenario.retirement_date.month)
+        with_months_scenario.retirement_date.year
+        - no_months_scenario.retirement_date.year
+    ) * 12 + (
+        with_months_scenario.retirement_date.month
+        - no_months_scenario.retirement_date.month
     )
     assert diff_months == 6
 
@@ -261,8 +291,14 @@ def test_roth_401k_contributions_increase_balance(base_assumptions):
             }
         ],
     }
-    no_list = BaseScenario(assumptions=no_contrib).retirement_list[0].retirement_account_list
-    with_list = BaseScenario(assumptions=with_contrib).retirement_list[0].retirement_account_list
+    no_list = (
+        BaseScenario(assumptions=no_contrib).retirement_list[0].retirement_account_list
+    )
+    with_list = (
+        BaseScenario(assumptions=with_contrib)
+        .retirement_list[0]
+        .retirement_account_list
+    )
     assert with_list[12] > no_list[12]
 
 
@@ -329,8 +365,14 @@ def test_trad_ira_contributions_increase_balance(base_assumptions):
             }
         ],
     }
-    no_list = BaseScenario(assumptions=no_contrib).retirement_list[0].retirement_account_list
-    with_list = BaseScenario(assumptions=with_contrib).retirement_list[0].retirement_account_list
+    no_list = (
+        BaseScenario(assumptions=no_contrib).retirement_list[0].retirement_account_list
+    )
+    with_list = (
+        BaseScenario(assumptions=with_contrib)
+        .retirement_list[0]
+        .retirement_account_list
+    )
     assert with_list[12] > no_list[12]
 
 
@@ -397,8 +439,14 @@ def test_roth_ira_contributions_increase_balance(base_assumptions):
             }
         ],
     }
-    no_list = BaseScenario(assumptions=no_contrib).retirement_list[0].retirement_account_list
-    with_list = BaseScenario(assumptions=with_contrib).retirement_list[0].retirement_account_list
+    no_list = (
+        BaseScenario(assumptions=no_contrib).retirement_list[0].retirement_account_list
+    )
+    with_list = (
+        BaseScenario(assumptions=with_contrib)
+        .retirement_list[0]
+        .retirement_account_list
+    )
     assert with_list[12] > no_list[12]
 
 
@@ -465,8 +513,14 @@ def test_hsa_contributions_increase_balance(base_assumptions):
             }
         ],
     }
-    no_list = BaseScenario(assumptions=no_contrib).retirement_list[0].retirement_account_list
-    with_list = BaseScenario(assumptions=with_contrib).retirement_list[0].retirement_account_list
+    no_list = (
+        BaseScenario(assumptions=no_contrib).retirement_list[0].retirement_account_list
+    )
+    with_list = (
+        BaseScenario(assumptions=with_contrib)
+        .retirement_list[0]
+        .retirement_account_list
+    )
     assert with_list[12] > no_list[12]
 
 
@@ -533,8 +587,14 @@ def test_brokerage_contributions_increase_balance(base_assumptions):
             }
         ],
     }
-    no_list = BaseScenario(assumptions=no_contrib).retirement_list[0].retirement_account_list
-    with_list = BaseScenario(assumptions=with_contrib).retirement_list[0].retirement_account_list
+    no_list = (
+        BaseScenario(assumptions=no_contrib).retirement_list[0].retirement_account_list
+    )
+    with_list = (
+        BaseScenario(assumptions=with_contrib)
+        .retirement_list[0]
+        .retirement_account_list
+    )
     assert with_list[12] > no_list[12]
 
 
@@ -592,7 +652,9 @@ def test_multiple_retirement_accounts_each_tracked_independently(base_assumption
 
 
 # A retirement account starting with zero balance should remain near zero with no contributions
-def test_zero_balance_retirement_account_grows_to_zero_with_no_contributions(base_assumptions):
+def test_zero_balance_retirement_account_grows_to_zero_with_no_contributions(
+    base_assumptions,
+):
     assumptions = {
         **base_assumptions,
         "retirement_accounts": [
@@ -654,6 +716,7 @@ def test_retirement_date_matches_expected_from_birthdate_and_age(base_assumption
     scenario = BaseScenario(assumptions=base_assumptions)
     # birthdate = 1990-01-01, retirement_age_yrs = 65 → retirement_date = 2055-01-01
     from dateutil.relativedelta import relativedelta
+
     expected_date = (date(1990, 1, 1) + relativedelta(years=65)).replace(day=1)
     assert scenario.retirement_date == expected_date
 
