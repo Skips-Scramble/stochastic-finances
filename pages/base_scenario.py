@@ -124,8 +124,17 @@ class ScenarioCoreInfo:
     def birthdate(self) -> date:
         """Calculate birthdate"""
         if isinstance(self.assumptions["birthdate"], date):
-            return self.assumptions["birthdate"]
-        return datetime.strptime(self.assumptions["birthdate"], "%m/%d/%Y").date()
+            birthdate = self.assumptions["birthdate"]
+        else:
+            birthdate = datetime.strptime(
+                self.assumptions["birthdate"], "%m/%d/%Y"
+            ).date()
+
+        if birthdate.year < 1900:
+            raise ValueError("Please enter a birthdate after 1900")
+        if birthdate > date.today():
+            raise ValueError("Please do not enter a future birthdate")
+        return birthdate
 
     @cached_property
     def death_date(self) -> date:
