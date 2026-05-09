@@ -46,7 +46,7 @@
 - Take the total of those 35 highest years and divide by 35*12 = 420 months. This value is your Average Indexed Monthly Earnings (AIME)
 - To calculate your monthly check, follow this calculation:
   - 90% of your AIME below $1,174 +
-  - 32% of your AIME between $1,174 and $7,078 + 
+  - 32% of your AIME between $1,174 and $7,078 +
   - 15% of your AIME over $7,078
   - with a max total of $4,873 (as of 2024)
 
@@ -60,5 +60,3 @@
 - There are some different cases here: Are you claiming early but still working or not? Are you claiming late but still working or not?
   - If you are still working and you claim SS before early retirement, then it gets funky
   - If you are still working and you claim SS after FRA, just worry about taxes.
-
-

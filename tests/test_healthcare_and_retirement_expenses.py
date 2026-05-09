@@ -58,9 +58,7 @@ def test_healthcare_costs_length_equals_total_months(retired_assumptions):
 # Enabling healthcare should reduce the final savings balance compared to no healthcare
 def test_enabling_healthcare_reduces_savings_balance(retired_assumptions):
     no_hc = BaseScenario(assumptions=retired_assumptions)
-    with_hc = BaseScenario(
-        assumptions={**retired_assumptions, "add_healthcare": True}
-    )
+    with_hc = BaseScenario(assumptions={**retired_assumptions, "add_healthcare": True})
     savings_no_hc = no_hc.savings_retirement_account_list[0]
     savings_with_hc = with_hc.savings_retirement_account_list[0]
     assert savings_with_hc[-1] < savings_no_hc[-1]
