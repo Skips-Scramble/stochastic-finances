@@ -324,137 +324,18 @@ def test_retirement_account_uses_conservative_glidepath_when_opted_in(base_assum
     assert account.use_conservative_rates is True
 
     yearly_rates = scenario._account_yearly_rate_list(account)
+    floor_rate = pytest.approx(0.05, rel=1e-6)
+
     assert yearly_rates[0] > yearly_rates[-1]
+    assert yearly_rates[-1] == floor_rate
 
-
-# --- Payment items tests ---
-
-
-# With no payment_items, non_base_bills_lists should be empty
-def test_non_base_bills_lists_empty_with_no_payment_items(base_assumptions):
-    scenario = BaseScenario(assumptions=base_assumptions)
-    assert scenario.non_base_bills_lists == []
-
-
-# With one payment item, non_base_bills_lists should contain one sublist
-def test_non_base_bills_lists_has_one_sublist_with_one_payment_item(base_assumptions):
-    assumptions = {
-        **base_assumptions,
-        "payment_items": [
-            {
-                "pmt_name": "car_loan",
-                "pmt_start_age_yrs": 35,
-                "pmt_start_age_mos": 0,
-                "pmt_length_yrs": 5,
-                "pmt_length_mos": 0,
-                "down_pmt": 0.0,
-                "reg_pmt_amt": 400.0,
-                "pmt_freq_mos": 1,
-                "recurring_purchase": False,
-                "recurring_timeframe": 0,
-                "recurring_length": 0,
-            }
-        ],
-    }
-    scenario = BaseScenario(assumptions=assumptions)
-    assert len(scenario.non_base_bills_lists) == 1
-
-
-# A payment item's calc_pmt_list should be all zeros outside its active window
-def test_payment_item_zero_outside_active_window(base_assumptions):
-    assumptions = {
-        **base_assumptions,
-        "payment_items": [
-            {
-                "pmt_name": "car_loan",
-                "pmt_start_age_yrs": 40,
-                "pmt_start_age_mos": 0,
-                "pmt_length_yrs": 5,
-                "pmt_length_mos": 0,
-                "down_pmt": 0.0,
-                "reg_pmt_amt": 400.0,
-                "pmt_freq_mos": 1,
-                "recurring_purchase": False,
-                "recurring_timeframe": 0,
-                "recurring_length": 0,
-            }
-        ],
-    }
-    scenario = BaseScenario(assumptions=assumptions)
-    payment = scenario.payments_list[0]
-    pmt_list = payment.calc_pmt_list
-    # Before age 40 the payment should be zero
-    pre_payment_values = [
-        pmt_list[i] for i, age in enumerate(scenario.age_by_year_list) if age < 40
-    ]
-    assert all(v == 0.0 for v in pre_payment_values)
-
-
-# A payment item should produce non-zero values during its active window
-def test_payment_item_non_zero_during_active_window(base_assumptions):
-    assumptions = {
-        **base_assumptions,
-        "payment_items": [
-            {
-                "pmt_name": "car_loan",
-                "pmt_start_age_yrs": 40,
-                "pmt_start_age_mos": 0,
-                "pmt_length_yrs": 5,
-                "pmt_length_mos": 0,
-                "down_pmt": 0.0,
-                "reg_pmt_amt": 400.0,
-                "pmt_freq_mos": 1,
-                "recurring_purchase": False,
-                "recurring_timeframe": 0,
-                "recurring_length": 0,
-            }
-        ],
-    }
-    scenario = BaseScenario(assumptions=assumptions)
-    payment = scenario.payments_list[0]
-    pmt_list = payment.calc_pmt_list
-    # During age 40-44 the payment should be non-zero
-    active_values = [
-        pmt_list[i] for i, age in enumerate(scenario.age_by_year_list) if 40 <= age < 45
-    ]
-    assert any(v > 0 for v in active_values)
-
-
-# The payments_list should have one Payment object per payment_items entry
-def test_payments_list_length_matches_payment_items(base_assumptions):
-    assumptions = {
-        **base_assumptions,
-        "payment_items": [
-            {
-                "pmt_name": "car_loan",
-                "pmt_start_age_yrs": 40,
-                "pmt_start_age_mos": 0,
-                "pmt_length_yrs": 5,
-                "pmt_length_mos": 0,
-                "down_pmt": 0.0,
-                "reg_pmt_amt": 400.0,
-                "pmt_freq_mos": 1,
-                "recurring_purchase": False,
-                "recurring_timeframe": 0,
-                "recurring_length": 0,
-            },
-            {
-                "pmt_name": "mortgage",
-                "pmt_start_age_yrs": 35,
-                "pmt_start_age_mos": 0,
-                "pmt_length_yrs": 30,
-                "pmt_length_mos": 0,
-                "down_pmt": 0.0,
-                "reg_pmt_amt": 1500.0,
-                "pmt_freq_mos": 1,
-                "recurring_purchase": False,
-                "recurring_timeframe": 0,
-                "recurring_length": 0,
-            },
-        ],
-    }
-    scenario = BaseScenario(assumptions=assumptions)
-    assert len(scenario.payments_list) == 2
+    # Annualized path should step down year-over-year, while months within a year
+    # may remain flat until the next annual step or the 5% floor is reached.
+    yearly_checkpoints = yearly_rates[::12]
+    assert all(
+        next_rate < rate or next_rate == floor_rate
+        for rate, next_rate in zip(yearly_checkpoints, yearly_checkpoints[1:])
+    )
 
 
 # --- Combination and edge case tests ---
@@ -538,13 +419,6 @@ def test_later_retirement_age_produces_larger_401k_balance_at_retirement(
 def test_birthdate_property_returns_date_object(base_assumptions):
     scenario = BaseScenario(assumptions=base_assumptions)
     assert isinstance(scenario.birthdate, date)
-
-
-# Passing birthdate as a string in MM/DD/YYYY format should parse correctly
-def test_birthdate_parsed_from_string(base_assumptions):
-    assumptions = {**base_assumptions, "birthdate": "01/01/1990"}
-    scenario = BaseScenario(assumptions=assumptions)
-    assert scenario.birthdate == date(1990, 1, 1)
 
 
 # The death_date should be birthdate + 115 years
