@@ -15,7 +15,7 @@ Write focused, deterministic unit tests that validate business behavior and fail
 - Prefer small, behavior-focused tests with one clear assertion objective.
 - Keep arrange, act, assert phases explicit and readable.
 - Use descriptive test names that explain expected behavior and condition.
-- Add a simple comment as the first line inside each test function explaining what the test validates.
+- Add a simple comment directly above each test function definition explaining what the test validates.
 - Validate meaningful outcomes, not only type checks or trivial truthiness.
 - Keep tests independent and order-agnostic.
 
