@@ -326,7 +326,7 @@ class RetirementTrad401k(ScenarioCoreInfo):
     interest_rate_override: float | None = (
         None  # Optional per-account rate override (as percent)
     )
-    use_conservative_rates: bool = True
+    use_conservative_rates: bool = False
     rmd_age_mos = 0
 
     @cached_property
@@ -396,7 +396,7 @@ class RetirementRoth401k(ScenarioCoreInfo):
     interest_rate_override: float | None = (
         None  # Optional per-account rate override (as percent)
     )
-    use_conservative_rates: bool = True
+    use_conservative_rates: bool = False
 
     @cached_property
     def retirement_increase_list(self) -> list:
@@ -456,7 +456,7 @@ class RetirementTradIRA(ScenarioCoreInfo):
     interest_rate_override: float | None = (
         None  # Optional per-account rate override (as percent)
     )
-    use_conservative_rates: bool = True
+    use_conservative_rates: bool = False
 
     @cached_property
     def retirement_increase_list(self) -> list:
@@ -516,7 +516,7 @@ class RetirementRothIRA(ScenarioCoreInfo):
     interest_rate_override: float | None = (
         None  # Optional per-account rate override (as percent)
     )
-    use_conservative_rates: bool = True
+    use_conservative_rates: bool = False
 
     @cached_property
     def retirement_increase_list(self) -> list:
@@ -582,7 +582,7 @@ class RetirementHSA(ScenarioCoreInfo):
     interest_rate_override: float | None = (
         None  # Optional per-account rate override (as percent)
     )
-    use_conservative_rates: bool = True
+    use_conservative_rates: bool = False
 
     @cached_property
     def retirement_increase_list(self) -> list:
@@ -647,7 +647,7 @@ class RetirementBrokerage(ScenarioCoreInfo):
     interest_rate_override: float | None = (
         None  # Optional per-account rate override (as percent)
     )
-    use_conservative_rates: bool = True
+    use_conservative_rates: bool = False
 
     @cached_property
     def retirement_increase_list(self) -> list:
@@ -956,7 +956,7 @@ class BaseScenario(ScenarioCoreInfo):
         for item in self.assumptions["retirement_accounts"]:
             # Get the account's specific interest rate if provided, otherwise None
             account_rate_override = item.get("interest_rate_per_yr", None)
-            account_use_conservative = item.get("use_conservative_rates", True)
+            account_use_conservative = item.get("use_conservative_rates", False)
 
             if item["retirement_type"] == "traditional_401k":
                 retirement_list.append(

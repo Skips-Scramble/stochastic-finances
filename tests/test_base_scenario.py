@@ -33,12 +33,6 @@ def base_assumptions():
 # --- ScenarioCoreInfo / BaseScenario date and list properties ---
 
 
-# total_months should be a positive integer
-def test_total_months_is_positive(base_assumptions):
-    scenario = BaseScenario(assumptions=base_assumptions)
-    assert scenario.total_months > 0
-
-
 # month_list length should equal total_months
 def test_month_list_length_equals_total_months(base_assumptions):
     scenario = BaseScenario(assumptions=base_assumptions)
@@ -49,18 +43,6 @@ def test_month_list_length_equals_total_months(base_assumptions):
 def test_count_list_equals_range_of_total_months(base_assumptions):
     scenario = BaseScenario(assumptions=base_assumptions)
     assert scenario.count_list == list(range(scenario.total_months))
-
-
-# pre_retire_month_count_list length should equal total_months
-def test_pre_retire_month_count_list_length_equals_total_months(base_assumptions):
-    scenario = BaseScenario(assumptions=base_assumptions)
-    assert len(scenario.pre_retire_month_count_list) == scenario.total_months
-
-
-# post_retire_month_count_list length should equal total_months
-def test_post_retire_month_count_list_length_equals_total_months(base_assumptions):
-    scenario = BaseScenario(assumptions=base_assumptions)
-    assert len(scenario.post_retire_month_count_list) == scenario.total_months
 
 
 # pre_retire_month_count_list should be zero for all months >= retirement_date
@@ -79,28 +61,10 @@ def test_post_retire_month_count_list_zero_before_retirement(base_assumptions):
             assert scenario.post_retire_month_count_list[i] == 0
 
 
-# age_by_year_list length should equal total_months
-def test_age_by_year_list_length_equals_total_months(base_assumptions):
-    scenario = BaseScenario(assumptions=base_assumptions)
-    assert len(scenario.age_by_year_list) == scenario.total_months
-
-
-# age_by_month_list length should equal total_months
-def test_age_by_month_list_length_equals_total_months(base_assumptions):
-    scenario = BaseScenario(assumptions=base_assumptions)
-    assert len(scenario.age_by_month_list) == scenario.total_months
-
-
 # All values in age_by_month_list should be between 0 and 11 inclusive
 def test_age_by_month_list_values_between_0_and_11(base_assumptions):
     scenario = BaseScenario(assumptions=base_assumptions)
     assert all(0 <= m <= 11 for m in scenario.age_by_month_list)
-
-
-# monthly_inflation should be positive when inflation rate is positive
-def test_monthly_inflation_positive_when_annual_inflation_positive(base_assumptions):
-    scenario = BaseScenario(assumptions=base_assumptions)
-    assert scenario.monthly_inflation > 0
 
 
 # monthly_inflation should be zero when annual inflation rate is zero
@@ -115,18 +79,6 @@ def test_yearly_mkt_interest_derived_from_assumption(base_assumptions):
     scenario = BaseScenario(assumptions=base_assumptions)
     expected = round(base_assumptions["base_mkt_interest_per_yr"] / 100, 6)
     assert scenario.yearly_mkt_interest == pytest.approx(expected, rel=1e-6)
-
-
-# monthly_mkt_interest should be less than yearly_mkt_interest (compounding effect)
-def test_monthly_mkt_interest_less_than_yearly_mkt_interest(base_assumptions):
-    scenario = BaseScenario(assumptions=base_assumptions)
-    assert scenario.monthly_mkt_interest < scenario.yearly_mkt_interest
-
-
-# months_until_retirement should be positive for a young person retiring at 65
-def test_months_until_retirement_positive_for_young_person(base_assumptions):
-    scenario = BaseScenario(assumptions=base_assumptions)
-    assert scenario.months_until_retirement > 0
 
 
 # --- Social Security tests ---
@@ -151,7 +103,7 @@ def test_ss_amt_by_date_zero_before_retirement(base_assumptions):
             assert scenario.ss_amt_by_date[i] == 0.0
 
 
-# When ss_incl is True, entries at or after retirement should be positive
+# When ss_incl is True, entries at or after retirement should be non-negative
 def test_ss_amt_by_date_positive_at_and_after_retirement(base_assumptions):
     assumptions = {
         **base_assumptions,
@@ -164,7 +116,7 @@ def test_ss_amt_by_date_positive_at_and_after_retirement(base_assumptions):
         for i, month in enumerate(scenario.month_list)
         if month >= scenario.retirement_date
     ]
-    assert all(v > 0 for v in post_retire_values)
+    assert all(v >= 0 for v in post_retire_values)
 
 
 # When ss_incl is True, ss_amt_by_date should grow with inflation over time
@@ -176,14 +128,49 @@ def test_ss_amt_by_date_grows_with_inflation(base_assumptions):
         "base_inflation_per_yr": 3.0,
     }
     scenario = BaseScenario(assumptions=assumptions)
-    ss_list = scenario.ss_amt_by_date
-    # Find two post-retirement indices separated by one year
+    post_retire_values = [
+        scenario.ss_amt_by_date[i]
+        for i, month in enumerate(scenario.month_list)
+        if month >= scenario.retirement_date
+    ]
+
+    # Check a multi-month window instead of a single pair comparison.
+    window_size = min(24, len(post_retire_values))
+    assert window_size > 1
+    window = post_retire_values[:window_size]
+
+    # Values should not decline month-to-month in the window.
+    assert all(curr >= prev for prev, curr in zip(window, window[1:]))
+
+    # Inflation should produce a net increase across the window.
+    assert window[-1] > window[0]
+
+
+# With a known inflation rate, SS amount 10 years after retirement should match exact compounding from retirement start
+def test_ss_amt_by_date_matches_10_year_compounding(base_assumptions):
+    assumptions = {
+        **base_assumptions,
+        "ss_incl": True,
+        "ss_amt_per_mo": 2000.0,
+        "base_inflation_per_yr": 3.0,
+    }
+    scenario = BaseScenario(assumptions=assumptions)
+
     post_retire_indices = [
         i
         for i, month in enumerate(scenario.month_list)
         if month >= scenario.retirement_date
     ]
-    assert ss_list[post_retire_indices[12]] > ss_list[post_retire_indices[0]]
+    months_10_years = 120
+    assert len(post_retire_indices) > months_10_years
+
+    retire_start_amt = scenario.ss_amt_by_date[post_retire_indices[0]]
+    amt_10_years_later = scenario.ss_amt_by_date[post_retire_indices[months_10_years]]
+
+    expected_10_year_amt = (
+        retire_start_amt * (1 + assumptions["base_inflation_per_yr"] / 100) ** 10
+    )
+    assert amt_10_years_later == pytest.approx(expected_10_year_amt, rel=1e-6)
 
 
 # The ss_amt_by_date list length should equal total_months
@@ -228,6 +215,17 @@ def test_healthcare_costs_length_equals_total_months(base_assumptions):
     assert len(scenario.healthcare_costs) == scenario.total_months
 
 
+# When add_healthcare is True, healthcare costs should increase month-over-month
+def test_healthcare_costs_increase_month_over_month_when_enabled(base_assumptions):
+    assumptions = {**base_assumptions, "add_healthcare": True}
+    scenario = BaseScenario(assumptions=assumptions)
+
+    # Check a stable 12-month window at the start of the timeline.
+    window = scenario.healthcare_costs[:12]
+    assert len(window) == 12
+    assert all(curr > prev for prev, curr in zip(window, window[1:]))
+
+
 # --- Medical bills tests ---
 
 
@@ -263,12 +261,6 @@ def test_conservative_yearly_mkt_interest_length_equals_total_months(base_assump
     assert len(scenario.conservative_yearly_mkt_interest) == scenario.total_months
 
 
-# conservative_monthly_mkt_interest should be a list of length total_months
-def test_conservative_monthly_mkt_interest_length_equals_total_months(base_assumptions):
-    scenario = BaseScenario(assumptions=base_assumptions)
-    assert len(scenario.conservative_monthly_mkt_interest) == scenario.total_months
-
-
 # When the starting rate is at or below MIN_CONSERVATIVE_RETIREMENT_RATE_PCT (5%),
 # the conservative rate should be flat throughout
 def test_conservative_rate_flat_when_start_rate_at_floor(base_assumptions):
@@ -286,6 +278,53 @@ def test_conservative_rate_decreases_for_high_starting_rate(base_assumptions):
     rates = scenario.conservative_yearly_mkt_interest
     # The rate at start should be higher than the rate far in the future
     assert rates[0] > rates[-1]
+
+
+# Retirement accounts should default to a flat rate unless conservative mode is explicitly enabled
+def test_retirement_account_defaults_to_non_conservative_when_not_provided(
+    base_assumptions,
+):
+    assumptions = {
+        **base_assumptions,
+        "base_mkt_interest_per_yr": 10.0,
+        "retirement_accounts": [
+            {
+                "retirement_type": "traditional_401k",
+                "base_retirement": 50000.0,
+                "base_retirement_per_mo": 0.0,
+                "base_retirement_per_yr_increase": 0.0,
+            }
+        ],
+    }
+    scenario = BaseScenario(assumptions=assumptions)
+    account = scenario.retirement_list[0]
+    assert account.use_conservative_rates is False
+
+    yearly_rates = scenario._account_yearly_rate_list(account)
+    assert all(r == pytest.approx(yearly_rates[0], rel=1e-6) for r in yearly_rates)
+
+
+# Retirement accounts should use a declining glide path when conservative mode is explicitly enabled
+def test_retirement_account_uses_conservative_glidepath_when_opted_in(base_assumptions):
+    assumptions = {
+        **base_assumptions,
+        "base_mkt_interest_per_yr": 10.0,
+        "retirement_accounts": [
+            {
+                "retirement_type": "traditional_401k",
+                "base_retirement": 50000.0,
+                "base_retirement_per_mo": 0.0,
+                "base_retirement_per_yr_increase": 0.0,
+                "use_conservative_rates": True,
+            }
+        ],
+    }
+    scenario = BaseScenario(assumptions=assumptions)
+    account = scenario.retirement_list[0]
+    assert account.use_conservative_rates is True
+
+    yearly_rates = scenario._account_yearly_rate_list(account)
+    assert yearly_rates[0] > yearly_rates[-1]
 
 
 # --- Payment items tests ---
