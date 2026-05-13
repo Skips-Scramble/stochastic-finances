@@ -77,7 +77,8 @@ def main(assumptions) -> tuple[pd.DataFrame, pd.DataFrame]:
         account_type="savings",
     )
 
-    total_savings_df = total_savings_df.drop(columns=["account_0"], errors="ignore")
+    # account_0 is always created from the base path rename above and is intentionally excluded.
+    total_savings_df = total_savings_df.drop(columns=["account_0"])
 
     total_retirement_df = base_age_df.filter(
         regex="traditional_401k|traditional_ira|roth_401k|roth_ira|hsa|brokerage|^age"
