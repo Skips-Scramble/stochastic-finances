@@ -90,7 +90,6 @@ def main(assumptions) -> tuple[pd.DataFrame, pd.DataFrame]:
 
     total_retirement_df = total_retirement_df.drop(
         columns=[col for col in total_retirement_df.columns if col.endswith("_0")],
-        errors="ignore",
     )
 
     # Calculate averages only for retirement account types that exist
