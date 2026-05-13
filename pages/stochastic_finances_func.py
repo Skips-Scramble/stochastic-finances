@@ -5,6 +5,8 @@ from pages.random_scenario import RandomScenario
 
 # from assumption_validations import apply_validations
 
+NUM_SCENARIOS = 100
+
 
 def main(assumptions) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Main function to calculate the core dfs"""
@@ -32,7 +34,7 @@ def main(assumptions) -> tuple[pd.DataFrame, pd.DataFrame]:
         columns=rename_dict
     )
 
-    for i in range(100):  # Number of scenarios to generate
+    for i in range(NUM_SCENARIOS):
         new_scenario = RandomScenario(base_scenario)
         new_scenario.create_full_df().to_csv(f"./outputs/scen_{i+1}.csv", index=False)
 
@@ -51,16 +53,27 @@ def main(assumptions) -> tuple[pd.DataFrame, pd.DataFrame]:
             how="left",
         )
 
-    random_savings_cols = [f"account_{n}" for n in range(1, 101)]
-
     total_savings_df = (
         base_age_df.filter(regex="savings_account|^age").rename(
             columns=lambda x: (
                 x.replace("savings_", "") if x.startswith("savings_") else x
             )
         )
-    ).assign(
-        avg=lambda df: df[[col for col in random_savings_cols if col in df]].mean(axis=1),
+    )
+    existing_random_savings_cols = sorted(
+        [
+            col
+            for col in total_savings_df.columns
+            if col.startswith("account_") and col != "account_0"
+        ],
+        key=lambda col: int(col.split("_")[1]),
+    )
+    total_savings_df = total_savings_df.assign(
+        avg=(
+            total_savings_df[existing_random_savings_cols].mean(axis=1)
+            if existing_random_savings_cols
+            else 0
+        ),
         account_type="savings",
     )
 
@@ -76,11 +89,7 @@ def main(assumptions) -> tuple[pd.DataFrame, pd.DataFrame]:
     )
 
     total_retirement_df = total_retirement_df.drop(
-        columns=[
-            col
-            for col in total_retirement_df.columns
-            if col.rsplit("_", 1)[-1] == "0"
-        ],
+        columns=[col for col in total_retirement_df.columns if col.endswith("_0")],
         errors="ignore",
     )
 
