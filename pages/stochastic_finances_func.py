@@ -51,6 +51,8 @@ def main(assumptions) -> tuple[pd.DataFrame, pd.DataFrame]:
             how="left",
         )
 
+    random_savings_cols = [f"account_{n}" for n in range(1, 101)]
+
     total_savings_df = (
         base_age_df.filter(regex="savings_account|^age").rename(
             columns=lambda x: (
@@ -58,9 +60,12 @@ def main(assumptions) -> tuple[pd.DataFrame, pd.DataFrame]:
             )
         )
     ).assign(
-        avg=lambda df: df.filter(regex="^account").mean(axis=1),
+        avg=lambda df: df[[col for col in random_savings_cols if col in df]].mean(axis=1),
         account_type="savings",
     )
+
+    if "account_0" in total_savings_df:
+        total_savings_df = total_savings_df.drop(columns=["account_0"])
 
     total_retirement_df = base_age_df.filter(
         regex="traditional_401k|traditional_ira|roth_401k|roth_ira|hsa|brokerage|^age"
@@ -68,6 +73,15 @@ def main(assumptions) -> tuple[pd.DataFrame, pd.DataFrame]:
         columns=lambda x: (
             x.replace("retirement_", "") if x.startswith("retirement_") else x
         )
+    )
+
+    total_retirement_df = total_retirement_df.drop(
+        columns=[
+            col
+            for col in total_retirement_df.columns
+            if col.rsplit("_", 1)[-1] == "0"
+        ],
+        errors="ignore",
     )
 
     # Calculate averages only for retirement account types that exist
