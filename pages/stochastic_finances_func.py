@@ -77,8 +77,7 @@ def main(assumptions) -> tuple[pd.DataFrame, pd.DataFrame]:
         account_type="savings",
     )
 
-    if "account_0" in total_savings_df:
-        total_savings_df = total_savings_df.drop(columns=["account_0"])
+    total_savings_df = total_savings_df.drop(columns=["account_0"], errors="ignore")
 
     total_retirement_df = base_age_df.filter(
         regex="traditional_401k|traditional_ira|roth_401k|roth_ira|hsa|brokerage|^age"
