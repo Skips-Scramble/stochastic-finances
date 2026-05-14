@@ -158,7 +158,10 @@ def test_account_var_yearly_rate_equals_flat_base_rate_when_zero_variance(
     trad_401k = base.retirement_list[0]
     expected_rate = round(base.assumptions["base_mkt_interest_per_yr"] / 100, 6)
     account_rates = rand._account_var_yearly_rate_list(trad_401k)
-    assert all(r == expected_rate for r in account_rates)
+    for month_index, rate in enumerate(account_rates):
+        assert (
+            rate == expected_rate
+        ), f"Month {month_index}: expected {expected_rate}, got {rate}"
 
 
 # With zero variance, zero bills, zero contributions, and shared 6-decimal rate
@@ -170,7 +173,13 @@ def test_var_trad_401k_balance_matches_base_exactly_when_zero_variance_no_bills(
     rand, base = zero_variance_scenario
     rand_trad_401k = rand.var_savings_retirement_account_list[3]
     base_trad_401k = base.savings_retirement_account_list[3]
-    assert rand_trad_401k == base_trad_401k
+    assert len(rand_trad_401k) == len(base_trad_401k)
+    for month_index, (rand_value, base_value) in enumerate(
+        zip(rand_trad_401k, base_trad_401k)
+    ):
+        assert (
+            rand_value == base_value
+        ), f"Month {month_index}: expected {base_value}, got {rand_value}"
 
 
 # ── savings account balance test ───────────────────────────────────────────────
@@ -187,4 +196,10 @@ def test_var_savings_account_matches_base_savings_exactly_when_zero_variance_no_
     rand, base = zero_variance_scenario_savings_only
     rand_savings = rand.var_savings_retirement_account_list[0]
     base_savings = base.savings_retirement_account_list[0]
-    assert rand_savings == base_savings
+    assert len(rand_savings) == len(base_savings)
+    for month_index, (rand_value, base_value) in enumerate(
+        zip(rand_savings, base_savings)
+    ):
+        assert (
+            rand_value == base_value
+        ), f"Month {month_index}: expected {base_value}, got {rand_value}"
