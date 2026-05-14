@@ -23,6 +23,9 @@ from .base_scenario import (
 )
 
 RF_INTEREST_CHANGE_MOS = 6
+variance_1 = 0.1
+variance_2 = 0.5
+variance_3 = 1.5
 
 
 @dataclass
@@ -32,9 +35,6 @@ class RandomScenario:
     savings and retirement balances over time."""
 
     base_scenario: BaseScenario
-    variance_scale: float = 1.0
-    market_rate_volatility: float = 1.5
-    savings_increase_volatility: float = 0.5
 
     @cached_property
     def var_yearly_rf_interest(self) -> list:
@@ -79,7 +79,7 @@ class RandomScenario:
             round(
                 np.random.normal(
                     x,
-                    x * (0.5),
+                    x * variance_2,
                 ),
                 2,
             )
@@ -93,7 +93,7 @@ class RandomScenario:
             round(
                 np.random.normal(
                     x,
-                    x * (0.5),
+                    x * variance_2,
                 ),
                 2,
             )
@@ -113,7 +113,7 @@ class RandomScenario:
                 round(
                     np.random.normal(
                         x,
-                        x * 0.1,
+                        x * variance_1,
                     ),
                     2,
                 ),
@@ -128,7 +128,7 @@ class RandomScenario:
         Returns zeros when the toggle is off.
         """
         return [
-            max(0.0, round(np.random.normal(x, x * 0.1), 2))
+            max(0.0, round(np.random.normal(x, x * variance_1), 2))
             for x in self.base_scenario.healthcare_costs
         ]
 
@@ -139,7 +139,7 @@ class RandomScenario:
         Returns zeros for months before Medicare eligibility or when toggle is off.
         """
         return [
-            max(0.0, round(np.random.normal(x, x * 0.1), 2))
+            max(0.0, round(np.random.normal(x, x * variance_1), 2))
             for x in self.base_scenario.medicare_part_b_premium_costs
         ]
 
@@ -150,7 +150,7 @@ class RandomScenario:
         Returns zeros for months before Medicare eligibility or when toggle is off.
         """
         return [
-            max(0.0, round(np.random.normal(x, x * 0.1), 2))
+            max(0.0, round(np.random.normal(x, x * variance_1), 2))
             for x in self.base_scenario.medicare_part_d_premium_costs
         ]
 
@@ -161,7 +161,7 @@ class RandomScenario:
         Returns zeros when not applicable or when toggle is off.
         """
         return [
-            max(0.0, round(np.random.normal(x, x * 0.1), 2))
+            max(0.0, round(np.random.normal(x, x * variance_1), 2))
             for x in self.base_scenario.private_insurance_costs
         ]
 
@@ -173,7 +173,7 @@ class RandomScenario:
             round(
                 np.random.normal(
                     x,
-                    x * (self.savings_increase_volatility * self.variance_scale),
+                    x * variance_2,
                 ),
                 2,
             )
@@ -188,8 +188,7 @@ class RandomScenario:
             conservative_rate_pct = conservative_rate * 100
             sampled_rate_pct = np.random.normal(
                 conservative_rate_pct,
-                conservative_rate_pct
-                * (self.market_rate_volatility * self.variance_scale),
+                conservative_rate_pct * variance_3,
             )
             if conservative_rate_pct > MIN_CONSERVATIVE_RETIREMENT_RATE_PCT:
                 sampled_rate_pct = min(sampled_rate_pct, conservative_rate_pct)
@@ -213,7 +212,7 @@ class RandomScenario:
         for _ in self.base_scenario.month_list:
             sampled_rate_pct = np.random.normal(
                 flat_rate_pct,
-                flat_rate_pct * (self.market_rate_volatility * self.variance_scale),
+                flat_rate_pct * variance_3,
             )
             variable_mkt_list.append(round(sampled_rate_pct / 100, 6))
         return variable_mkt_list
@@ -265,8 +264,7 @@ class RandomScenario:
                 conservative_rate_pct = yearly_rate * 100
                 sampled_rate_pct = np.random.normal(
                     conservative_rate_pct,
-                    abs(conservative_rate_pct)
-                    * (self.market_rate_volatility * self.variance_scale),
+                    abs(conservative_rate_pct) * variance_3,
                 )
                 if conservative_rate_pct > MIN_CONSERVATIVE_RETIREMENT_RATE_PCT:
                     sampled_rate_pct = min(sampled_rate_pct, conservative_rate_pct)
@@ -275,8 +273,7 @@ class RandomScenario:
             for _ in self.base_scenario.month_list:
                 sampled_rate_pct = np.random.normal(
                     start_pct,
-                    abs(start_pct)
-                    * (self.market_rate_volatility * self.variance_scale),
+                    abs(start_pct) * variance_3,
                 )
                 yearly_rates.append(round(sampled_rate_pct / 100, 6))
 
