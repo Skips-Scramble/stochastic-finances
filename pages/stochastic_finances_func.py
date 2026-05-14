@@ -53,12 +53,8 @@ def main(assumptions) -> tuple[pd.DataFrame, pd.DataFrame]:
             how="left",
         )
 
-    total_savings_df = (
-        base_age_df.filter(regex="savings_account|^age").rename(
-            columns=lambda x: (
-                x.replace("savings_", "") if x.startswith("savings_") else x
-            )
-        )
+    total_savings_df = base_age_df.filter(regex="savings_account|^age").rename(
+        columns=lambda x: (x.replace("savings_", "") if x.startswith("savings_") else x)
     )
     existing_random_savings_cols = sorted(
         [

@@ -38,7 +38,10 @@ class StubRandomScenario:
         self._df = pd.DataFrame(
             {
                 "count": [0, 1],
-                "var_savings_account": [float(self.scenario_id), float(self.scenario_id)],
+                "var_savings_account": [
+                    float(self.scenario_id),
+                    float(self.scenario_id),
+                ],
                 "var_traditional_401k": [
                     float(self.scenario_id * 2),
                     float(self.scenario_id * 2),
