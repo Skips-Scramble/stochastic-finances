@@ -29,7 +29,7 @@ class StubBaseScenario:
 class StubRandomScenario:
     """Minimal RandomScenario stub with predictable per-scenario balances."""
 
-    def __init__(self, base_scenario):
+    def __init__(self, base_scenario, **_kwargs):
         self.base_scenario = base_scenario
         self.base_scenario.scenario_counter = (
             getattr(self.base_scenario, "scenario_counter", 0) + 1

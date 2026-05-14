@@ -7,6 +7,11 @@ from pages.random_scenario import RandomScenario
 
 NUM_SCENARIOS = 100
 
+# Stochastic variance controls (set these in one place to tune randomness)
+SCENARIO_VARIANCE_SCALE = 1.0
+MARKET_RATE_VOLATILITY = 1.5
+SAVINGS_INCREASE_VOLATILITY = 0.5
+
 
 def main(assumptions) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Main function to calculate the core dfs"""
@@ -35,7 +40,12 @@ def main(assumptions) -> tuple[pd.DataFrame, pd.DataFrame]:
     )
 
     for i in range(NUM_SCENARIOS):
-        new_scenario = RandomScenario(base_scenario)
+        new_scenario = RandomScenario(
+            base_scenario,
+            variance_scale=SCENARIO_VARIANCE_SCALE,
+            market_rate_volatility=MARKET_RATE_VOLATILITY,
+            savings_increase_volatility=SAVINGS_INCREASE_VOLATILITY,
+        )
         new_scenario.create_full_df().to_csv(f"./outputs/scen_{i+1}.csv", index=False)
 
         # Build column selection and rename for merge dynamically

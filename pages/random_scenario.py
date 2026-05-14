@@ -32,6 +32,9 @@ class RandomScenario:
     savings and retirement balances over time."""
 
     base_scenario: BaseScenario
+    variance_scale: float = 1.0
+    market_rate_volatility: float = 1.5
+    savings_increase_volatility: float = 0.5
 
     @cached_property
     def var_yearly_rf_interest(self) -> list:
@@ -170,7 +173,7 @@ class RandomScenario:
             round(
                 np.random.normal(
                     x,
-                    x * (0.5),
+                    x * (self.savings_increase_volatility * self.variance_scale),
                 ),
                 2,
             )
@@ -185,7 +188,8 @@ class RandomScenario:
             conservative_rate_pct = conservative_rate * 100
             sampled_rate_pct = np.random.normal(
                 conservative_rate_pct,
-                conservative_rate_pct * 1.5,
+                conservative_rate_pct
+                * (self.market_rate_volatility * self.variance_scale),
             )
             if conservative_rate_pct > MIN_CONSERVATIVE_RETIREMENT_RATE_PCT:
                 sampled_rate_pct = min(sampled_rate_pct, conservative_rate_pct)
@@ -207,7 +211,10 @@ class RandomScenario:
         flat_rate_pct = self.base_scenario.yearly_mkt_interest * 100
         variable_mkt_list = []
         for _ in self.base_scenario.month_list:
-            sampled_rate_pct = np.random.normal(flat_rate_pct, flat_rate_pct * 1.5)
+            sampled_rate_pct = np.random.normal(
+                flat_rate_pct,
+                flat_rate_pct * (self.market_rate_volatility * self.variance_scale),
+            )
             variable_mkt_list.append(round(sampled_rate_pct / 100, 6))
         return variable_mkt_list
 
@@ -258,14 +265,19 @@ class RandomScenario:
                 conservative_rate_pct = yearly_rate * 100
                 sampled_rate_pct = np.random.normal(
                     conservative_rate_pct,
-                    abs(conservative_rate_pct) * 1.5,
+                    abs(conservative_rate_pct)
+                    * (self.market_rate_volatility * self.variance_scale),
                 )
                 if conservative_rate_pct > MIN_CONSERVATIVE_RETIREMENT_RATE_PCT:
                     sampled_rate_pct = min(sampled_rate_pct, conservative_rate_pct)
                 yearly_rates.append(round(sampled_rate_pct / 100, 6))
         else:
             for _ in self.base_scenario.month_list:
-                sampled_rate_pct = np.random.normal(start_pct, abs(start_pct) * 1.5)
+                sampled_rate_pct = np.random.normal(
+                    start_pct,
+                    abs(start_pct)
+                    * (self.market_rate_volatility * self.variance_scale),
+                )
                 yearly_rates.append(round(sampled_rate_pct / 100, 6))
 
         self._var_yearly_rate_cache[cache_key] = yearly_rates
