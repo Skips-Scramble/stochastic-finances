@@ -18,7 +18,7 @@
             <div class="card shadow border-dark px-3 py-3 mb-3 text-black" style="border-width: 3px;">
                 <div class="card-body">
                     {% for field in form %}
-                            <div class="mb-3">
+                            <div class="mb-3{% if field.name == 'monthly_medical_bills' %} ms-4 ps-3{% if not form.add_medical_bills.value and not field.errors %} d-none{% endif %}{% endif %}"{% if field.name == "monthly_medical_bills" %} id="monthly-medical-bills-field"{% endif %}>
                                 <div class="tooltip-container" data-toggle="tooltip" data-placement="right" title="{{descriptions|dict_lookup:field.name}}">
                                     <label class="form-label">
                                         {{field.label_tag}}
@@ -39,7 +39,6 @@
                             </div>
                             {% if field.name == "add_healthcare" %}
                             <div id="medicare-info" class="mb-3 ms-2{% if not field.value %} d-none{% endif %}">
-                                <small class="text-muted">Medicare coverage: <strong>Standard Medicare (Parts A, B, D)</strong> premiums will be automatically included for months at age 65+.</small>
                             </div>
                             {% endif %}
                     {% endfor %}
@@ -52,26 +51,45 @@
 
 </form>
 <script>
-    $(function () {
-        $('[data-toggle="tooltip"]').tooltip()
-      })
+    if (window.$ && typeof window.$.fn.tooltip === 'function') {
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    }
 
     // Toggle Medicare info blurb and pre-Medicare insurance checkbox when add_healthcare changes
     const healthcareCheckbox = document.getElementById('id_add_healthcare');
     const medicareInfo = document.getElementById('medicare-info');
-    const preMedicareField = document.getElementById('id_include_pre_medicare_insurance')?.closest('.mb-3');
+    const preMedicareInput = document.getElementById('id_include_pre_medicare_insurance');
+    const preMedicareField = preMedicareInput ? preMedicareInput.closest('.mb-3') : null;
+    const medicalBillsCheckbox = document.getElementById('id_add_medical_bills');
+    const monthlyMedicalBillsField = document.getElementById('monthly-medical-bills-field');
+
     function syncHealthcareFields(checked) {
         if (medicareInfo) medicareInfo.classList.toggle('d-none', !checked);
         if (preMedicareField) preMedicareField.classList.toggle('d-none', !checked);
-        if (!checked && document.getElementById('id_include_pre_medicare_insurance')) {
-            document.getElementById('id_include_pre_medicare_insurance').checked = false;
+        if (!checked && preMedicareInput) {
+            preMedicareInput.checked = false;
         }
     }
+
+    function syncMedicalBillsField(checked) {
+        if (monthlyMedicalBillsField) monthlyMedicalBillsField.classList.toggle('d-none', !checked);
+    }
+
     if (healthcareCheckbox) {
         // Set initial state
         syncHealthcareFields(healthcareCheckbox.checked);
         healthcareCheckbox.addEventListener('change', function () {
             syncHealthcareFields(this.checked);
+        });
+    }
+
+    if (medicalBillsCheckbox) {
+        // Set initial state
+        syncMedicalBillsField(medicalBillsCheckbox.checked);
+        medicalBillsCheckbox.addEventListener('change', function () {
+            syncMedicalBillsField(this.checked);
         });
     }
 </script>
