@@ -12,6 +12,12 @@ inputs_by_model_dict = {
         "retirement_extra_expenses",
     ],
     "savings": [
+        "use_time_period",
+        "time_period_mode",
+        "period_start_age_yrs",
+        "period_start_age_mos",
+        "period_end_age_yrs",
+        "period_end_age_mos",
         "base_savings",
         "base_saved_per_mo",
         "base_savings_per_yr_increase",
@@ -66,3 +72,44 @@ def model_to_dict(active_inputs: typing.Any, model: str) -> dict[str, typing.Any
 def ensure_active_inputs(active_inputs: typing.Any, expected_active: int) -> bool:
     """Functtion to ensure inputs are acceptable"""
     return len(active_inputs) == expected_active
+
+
+def build_savings_inputs_dict(
+    active_savings_inputs: typing.Iterable[typing.Any],
+) -> tuple[dict[str, typing.Any] | None, list[typing.Any]]:
+    """Build savings assumptions with optional period overrides.
+
+    Returns (savings_inputs_dict, base_inputs). A valid payload requires exactly
+    one non-time-period active savings input in ``base_inputs``.
+    """
+    active_inputs_list = list(active_savings_inputs)
+    base_inputs = [
+        item for item in active_inputs_list if not getattr(item, "use_time_period", False)
+    ]
+    if len(base_inputs) != 1:
+        return None, base_inputs
+
+    savings_inputs_dict = {
+        field_name: getattr(base_inputs[0], field_name)
+        for field_name in inputs_by_model_dict["savings"]
+    }
+    savings_inputs_dict["savings_time_periods"] = []
+
+    for item in active_inputs_list:
+        if not getattr(item, "use_time_period", False):
+            continue
+
+        time_period_dict: dict[str, typing.Any] = {
+            "base_saved_per_mo": item.base_saved_per_mo,
+            "base_monthly_bills": item.base_monthly_bills,
+        }
+        if item.period_start_age_yrs is not None or item.period_start_age_mos is not None:
+            time_period_dict["start_age_yrs"] = int(item.period_start_age_yrs or 0)
+            time_period_dict["start_age_mos"] = int(item.period_start_age_mos or 0)
+        if item.period_end_age_yrs is not None or item.period_end_age_mos is not None:
+            time_period_dict["end_age_yrs"] = int(item.period_end_age_yrs or 0)
+            time_period_dict["end_age_mos"] = int(item.period_end_age_mos or 0)
+
+        savings_inputs_dict["savings_time_periods"].append(time_period_dict)
+
+    return savings_inputs_dict, base_inputs

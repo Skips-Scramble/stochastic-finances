@@ -21,7 +21,7 @@ from .models import (
     RetirementInputsModel,
     SavingsInputsModel,
 )
-from .utils import model_to_dict
+from .utils import build_savings_inputs_dict, model_to_dict
 
 logger = logging.getLogger(__name__)
 
@@ -460,15 +460,17 @@ def calculations(request):
 
         # print(f"{general_inputs_dict = }")
 
-        savings_inputs_model = SavingsInputsModel.objects.filter(
-            created_by=request.user, is_active=True
+        savings_inputs_model = list(
+            SavingsInputsModel.objects.filter(
+                created_by=request.user, is_active=True
+            )
         )
 
-        if len(savings_inputs_model) == 1:
-            savings_inputs_dict = model_to_dict(savings_inputs_model[0], "savings")
-            # print(f"{savings_inputs_dict =}")
-        else:
-            bad_active_dict["Savings"] = len(savings_inputs_model)
+        savings_inputs_dict, base_savings_inputs = build_savings_inputs_dict(
+            savings_inputs_model
+        )
+        if savings_inputs_dict is None:
+            bad_active_dict["Savings"] = len(base_savings_inputs)
 
         # Non-base bills
         payments_inputs_model = PaymentsInputsModel.objects.filter(
@@ -527,8 +529,8 @@ def calculations(request):
 
         # Apply per-account rate overrides
         # Override savings rate if account has a specific rate set
-        if savings_inputs_model[0].interest_rate_per_yr is not None:
-            rates_inputs_dict["base_rf_interest_per_yr"] = savings_inputs_model[
+        if base_savings_inputs[0].interest_rate_per_yr is not None:
+            rates_inputs_dict["base_rf_interest_per_yr"] = base_savings_inputs[
                 0
             ].interest_rate_per_yr
 

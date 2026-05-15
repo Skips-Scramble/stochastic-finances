@@ -62,10 +62,70 @@ class GeneralInputsForm(forms.ModelForm):
 class SavingsInputsForm(forms.ModelForm):
     """Class to contain all pertinent savings information"""
 
+    def clean(self):
+        cleaned_data = super().clean()
+        use_time_period = cleaned_data.get("use_time_period", False)
+        time_period_mode = cleaned_data.get("time_period_mode")
+        start_age_yrs = cleaned_data.get("period_start_age_yrs")
+        start_age_mos = cleaned_data.get("period_start_age_mos")
+        end_age_yrs = cleaned_data.get("period_end_age_yrs")
+        end_age_mos = cleaned_data.get("period_end_age_mos")
+
+        if not use_time_period:
+            cleaned_data["time_period_mode"] = None
+            cleaned_data["period_start_age_yrs"] = None
+            cleaned_data["period_start_age_mos"] = None
+            cleaned_data["period_end_age_yrs"] = None
+            cleaned_data["period_end_age_mos"] = None
+            return cleaned_data
+
+        if not time_period_mode:
+            self.add_error(
+                "time_period_mode",
+                "Select how this savings assumption should be time-scoped.",
+            )
+            return cleaned_data
+
+        start_months = None
+        end_months = None
+        if start_age_yrs is not None or start_age_mos is not None:
+            start_months = (int(start_age_yrs or 0) * 12) + int(start_age_mos or 0)
+        if end_age_yrs is not None or end_age_mos is not None:
+            end_months = (int(end_age_yrs or 0) * 12) + int(end_age_mos or 0)
+
+        if time_period_mode in {"from", "during"} and start_months is None:
+            self.add_error(
+                "period_start_age_yrs",
+                "Enter a start age (years/months) for this time period.",
+            )
+        if time_period_mode in {"until", "during"} and end_months is None:
+            self.add_error(
+                "period_end_age_yrs",
+                "Enter an end age (years/months) for this time period.",
+            )
+        if (
+            time_period_mode == "during"
+            and start_months is not None
+            and end_months is not None
+            and end_months <= start_months
+        ):
+            self.add_error(
+                "period_end_age_yrs",
+                "End age must be later than start age for 'Use this during'.",
+            )
+
+        return cleaned_data
+
     class Meta:
         model = SavingsInputsModel
         fields = [
             "is_active",
+            "use_time_period",
+            "time_period_mode",
+            "period_start_age_yrs",
+            "period_start_age_mos",
+            "period_end_age_yrs",
+            "period_end_age_mos",
             "base_savings",
             "base_saved_per_mo",
             "base_savings_per_yr_increase",
@@ -75,6 +135,12 @@ class SavingsInputsForm(forms.ModelForm):
         ]
         labels = {
             "is_active": "Use this for calculations",
+            "use_time_period": "Only use these assumptions for a given time period",
+            "time_period_mode": "Time period mode",
+            "period_start_age_yrs": "Start age (years)",
+            "period_start_age_mos": "Start age (months)",
+            "period_end_age_yrs": "End age (years)",
+            "period_end_age_mos": "End age (months)",
             "base_savings": "Current savings account",
             "base_saved_per_mo": "Savings per month",
             "base_savings_per_yr_increase": "Yearly savings contribution increase (%)",
@@ -84,6 +150,12 @@ class SavingsInputsForm(forms.ModelForm):
         }
         widgets = {
             "is_active": forms.CheckboxInput(),
+            "use_time_period": forms.CheckboxInput(),
+            "time_period_mode": forms.Select(attrs={"class": INPUT_CLASSES}),
+            "period_start_age_yrs": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
+            "period_start_age_mos": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
+            "period_end_age_yrs": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
+            "period_end_age_mos": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
             "base_savings": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
             "base_saved_per_mo": forms.NumberInput(attrs={"class": INPUT_CLASSES}),
             "base_savings_per_yr_increase": forms.NumberInput(
