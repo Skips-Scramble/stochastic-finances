@@ -91,3 +91,4 @@ djlint templates --reformat
 - Keep assumptions shape compatibility when passing dictionaries into scenario constructors.
 - Preserve existing column names in DataFrame outputs unless a migration/update is requested.
 - When changing calculations-tab behavior, verify parity against stochastic CSV scenario outputs and update tests accordingly.
+- For GitHub issue/PR updates or comments, prefer MCP GitHub tools directly (for example: add issue comment/review comment tools) instead of terminal-based gh commands unless MCP is unavailable.
