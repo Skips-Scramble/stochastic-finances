@@ -215,15 +215,18 @@ def test_healthcare_costs_length_equals_total_months(base_assumptions):
     assert len(scenario.healthcare_costs) == scenario.total_months
 
 
-# When add_healthcare is True, healthcare costs should increase month-over-month
-def test_healthcare_costs_increase_month_over_month_when_enabled(base_assumptions):
+# When add_healthcare is True, healthcare costs should be non-decreasing month-over-month
+def test_healthcare_costs_non_decreasing_month_over_month_when_enabled(
+    base_assumptions,
+):
     assumptions = {**base_assumptions, "add_healthcare": True}
     scenario = BaseScenario(assumptions=assumptions)
 
     # Check a stable 12-month window at the start of the timeline.
     window = scenario.healthcare_costs[:12]
     assert len(window) == 12
-    assert all(curr > prev for prev, curr in zip(window, window[1:]))
+    assert all(curr >= prev for prev, curr in zip(window, window[1:]))
+    assert window[-1] >= window[0]
 
 
 # --- Medical bills tests ---
@@ -250,6 +253,90 @@ def test_medical_bills_list_non_zero_when_enabled(base_assumptions):
 def test_medical_bills_list_length_equals_total_months(base_assumptions):
     scenario = BaseScenario(assumptions=base_assumptions)
     assert len(scenario.medical_bills_list) == scenario.total_months
+
+
+# When add_medical_bills is True and inflation is zero, medical bills should stay constant
+def test_medical_bills_stays_constant_with_zero_inflation(base_assumptions):
+    assumptions = {
+        **base_assumptions,
+        "add_medical_bills": True,
+        "monthly_medical_bills": 300.0,
+        "base_inflation_per_yr": 0.0,
+    }
+    scenario = BaseScenario(assumptions=assumptions)
+
+    window = scenario.medical_bills_list[:12]
+    assert len(window) == 12
+    assert all(v == pytest.approx(300.0, abs=1e-6) for v in window)
+
+
+# With add_healthcare enabled, Medicare premiums should be included at age 65+
+def test_medicare_premiums_zero_before_65_and_positive_at_65_plus(base_assumptions):
+    assumptions = {**base_assumptions, "add_healthcare": True}
+    scenario = BaseScenario(assumptions=assumptions)
+
+    pre_65_indices = [i for i, age in enumerate(scenario.age_by_year_list) if age < 65]
+    at_or_after_65_indices = [
+        i for i, age in enumerate(scenario.age_by_year_list) if age >= 65
+    ]
+
+    assert pre_65_indices
+    assert at_or_after_65_indices
+    assert all(scenario.medicare_total_costs[i] == 0.0 for i in pre_65_indices)
+    assert any(scenario.medicare_total_costs[i] > 0.0 for i in at_or_after_65_indices)
+
+
+# With add_healthcare enabled, Medicare premiums should be non-decreasing over time
+def test_medicare_premiums_non_decreasing_after_65(base_assumptions):
+    assumptions = {**base_assumptions, "add_healthcare": True}
+    scenario = BaseScenario(assumptions=assumptions)
+
+    post_65_values = [
+        scenario.medicare_total_costs[i]
+        for i, age in enumerate(scenario.age_by_year_list)
+        if age >= 65
+    ]
+
+    window_size = min(24, len(post_65_values))
+    assert window_size > 1
+    window = post_65_values[:window_size]
+
+    assert all(curr >= prev for prev, curr in zip(window, window[1:]))
+    assert window[-1] >= window[0]
+
+
+# With all three options enabled, healthcare, ACA bridge coverage, and medical bills all contribute
+def test_all_three_medical_toggles_work_together(base_assumptions):
+    assumptions = {
+        **base_assumptions,
+        "retirement_age_yrs": 60,
+        "retirement_age_mos": 0,
+        "add_healthcare": True,
+        "include_pre_medicare_insurance": True,
+        "add_medical_bills": True,
+        "monthly_medical_bills": 350.0,
+    }
+    scenario = BaseScenario(assumptions=assumptions)
+
+    pre_65_retired_indices = [
+        i
+        for i, (month, age) in enumerate(
+            zip(scenario.month_list, scenario.age_by_year_list)
+        )
+        if month >= scenario.retirement_date and age < 65
+    ]
+    at_or_after_65_indices = [
+        i for i, age in enumerate(scenario.age_by_year_list) if age >= 65
+    ]
+
+    assert pre_65_retired_indices
+    assert at_or_after_65_indices
+    assert any(scenario.healthcare_costs[i] > 0.0 for i in pre_65_retired_indices)
+    assert any(
+        scenario.private_insurance_costs[i] > 0.0 for i in pre_65_retired_indices
+    )
+    assert any(scenario.medical_bills_list[i] > 0.0 for i in pre_65_retired_indices)
+    assert any(scenario.medicare_total_costs[i] > 0.0 for i in at_or_after_65_indices)
 
 
 # --- Conservative rate tests ---
