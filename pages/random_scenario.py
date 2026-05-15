@@ -23,9 +23,9 @@ from .base_scenario import (
 )
 
 RF_INTEREST_CHANGE_MOS = 6
-variance_1 = 0.1
-variance_2 = 0.5
-variance_3 = 1.5
+variance_1 = 0  # 0.1
+variance_2 = 0  # 0.5
+variance_3 = 0  # 1.5
 
 
 @dataclass
