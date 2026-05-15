@@ -1,0 +1,66 @@
+{
+  "birthdate": "12/22/1986",
+  "retirement_age_yrs": 60,
+  "retirement_age_mos": 0,
+  "add_healthcare": true,
+  "include_aca_insurance": true,
+  "retirement_extra_expenses": 3000,
+  "base_savings": 160000,
+  "base_saved_per_mo": 1000,
+  "base_savings_per_yr_increase": 3.0,
+  "savings_lower_limit": 30000,
+  "base_monthly_bills": 1300,
+  "base_rf_interest_per_yr": 3.25,
+  "base_mkt_interest_per_yr": 6.5,
+  "base_inflation_per_yr": 2.75,
+  "retirement_accounts": [
+    {
+      "retirement_type": "traditional_401k",
+      "base_retirement": 160000,
+      "base_retirement_per_mo": 1020,
+      "base_retirement_per_yr_increase": 100,
+      "use_conservative_rates": true,
+      "is_active": true
+    },
+    {
+      "retirement_type": "roth_401k",
+      "base_retirement": 160000,
+      "base_retirement_per_mo": 1021,
+      "base_retirement_per_yr_increase": 150,
+      "use_conservative_rates": true,
+      "is_active": true
+    },
+    {
+      "retirement_type": "roth_ira",
+      "base_retirement": 56000,
+      "base_retirement_per_mo": 625,
+      "base_retirement_per_yr_increase": 100,
+      "use_conservative_rates": true,
+      "is_active": false
+    },
+    {
+      "retirement_type": "hsa",
+      "base_retirement": 25000,
+      "base_retirement_per_mo": 150,
+      "base_retirement_per_yr_increase": 50,
+      "use_conservative_rates": true,
+      "is_active": true
+    }
+  ],
+  "payment_items": [
+    {
+      "pmt_name": "Car",
+      "pmt_start_age_yrs": 40,
+      "pmt_start_age_mos": 0,
+      "pmt_length_yrs": 5,
+      "pmt_length_mos": 0,
+      "down_pmt": 11000,
+      "reg_pmt_amt": 550,
+      "pmt_freq_mos": 1,
+      "recurring_purchase": true,
+      "recurring_timeframe": 120,
+      "recurring_length": 4,
+      "is_active": false
+    }
+  ]
+}

@@ -18,11 +18,13 @@ from .base_scenario import (
     HSA_WITHDRAWAL_AGE_YRS,
     TRAD_401K_TAX_RATE,
     BROKERAGE_TAX_RATE,
-    MIN_CONSERVATIVE_RETIREMENT_RATE_PCT,
     uniform_lifetime_table,
 )
 
 RF_INTEREST_CHANGE_MOS = 6
+variance_1 = 0.1
+variance_2 = 0.5
+variance_3 = 1.5
 
 
 @dataclass
@@ -76,7 +78,7 @@ class RandomScenario:
             round(
                 np.random.normal(
                     x,
-                    x * (0.5),
+                    x * variance_2,
                 ),
                 2,
             )
@@ -90,7 +92,7 @@ class RandomScenario:
             round(
                 np.random.normal(
                     x,
-                    x * (0.5),
+                    x * variance_2,
                 ),
                 2,
             )
@@ -110,7 +112,7 @@ class RandomScenario:
                 round(
                     np.random.normal(
                         x,
-                        x * 0.1,
+                        x * variance_1,
                     ),
                     2,
                 ),
@@ -125,7 +127,7 @@ class RandomScenario:
         Returns zeros when the toggle is off.
         """
         return [
-            max(0.0, round(np.random.normal(x, x * 0.1), 2))
+            max(0.0, round(np.random.normal(x, x * variance_1), 2))
             for x in self.base_scenario.healthcare_costs
         ]
 
@@ -136,7 +138,7 @@ class RandomScenario:
         Returns zeros for months before Medicare eligibility or when toggle is off.
         """
         return [
-            max(0.0, round(np.random.normal(x, x * 0.1), 2))
+            max(0.0, round(np.random.normal(x, x * variance_1), 2))
             for x in self.base_scenario.medicare_part_b_premium_costs
         ]
 
@@ -147,7 +149,7 @@ class RandomScenario:
         Returns zeros for months before Medicare eligibility or when toggle is off.
         """
         return [
-            max(0.0, round(np.random.normal(x, x * 0.1), 2))
+            max(0.0, round(np.random.normal(x, x * variance_1), 2))
             for x in self.base_scenario.medicare_part_d_premium_costs
         ]
 
@@ -158,7 +160,7 @@ class RandomScenario:
         Returns zeros when not applicable or when toggle is off.
         """
         return [
-            max(0.0, round(np.random.normal(x, x * 0.1), 2))
+            max(0.0, round(np.random.normal(x, x * variance_1), 2))
             for x in self.base_scenario.private_insurance_costs
         ]
 
@@ -170,7 +172,7 @@ class RandomScenario:
             round(
                 np.random.normal(
                     x,
-                    x * (0.5),
+                    x * variance_2,
                 ),
                 2,
             )
@@ -185,11 +187,9 @@ class RandomScenario:
             conservative_rate_pct = conservative_rate * 100
             sampled_rate_pct = np.random.normal(
                 conservative_rate_pct,
-                conservative_rate_pct * 1.5,
+                conservative_rate_pct * variance_3,
             )
-            if conservative_rate_pct > MIN_CONSERVATIVE_RETIREMENT_RATE_PCT:
-                sampled_rate_pct = min(sampled_rate_pct, conservative_rate_pct)
-            variable_mkt_list.append(round(sampled_rate_pct / 100, 4))
+            variable_mkt_list.append(round(sampled_rate_pct / 100, 6))
 
         return variable_mkt_list
 
@@ -197,7 +197,7 @@ class RandomScenario:
     def var_monthly_mkt_interest(self) -> list:
         """Docstring"""
         return [
-            round(((1 + x) ** (1 / 12) - 1), 4) for x in self.var_yearly_mkt_interest
+            round(((1 + x) ** (1 / 12) - 1), 6) for x in self.var_yearly_mkt_interest
         ]
 
     @cached_property
@@ -207,15 +207,18 @@ class RandomScenario:
         flat_rate_pct = self.base_scenario.yearly_mkt_interest * 100
         variable_mkt_list = []
         for _ in self.base_scenario.month_list:
-            sampled_rate_pct = np.random.normal(flat_rate_pct, flat_rate_pct * 1.5)
-            variable_mkt_list.append(round(sampled_rate_pct / 100, 4))
+            sampled_rate_pct = np.random.normal(
+                flat_rate_pct,
+                flat_rate_pct * variance_3,
+            )
+            variable_mkt_list.append(round(sampled_rate_pct / 100, 6))
         return variable_mkt_list
 
     @cached_property
     def var_monthly_mkt_interest_flat(self) -> list:
         """Per-month varying monthly rates derived from the flat yearly rates."""
         return [
-            round(((1 + x) ** (1 / 12) - 1), 4)
+            round(((1 + x) ** (1 / 12) - 1), 6)
             for x in self.var_yearly_mkt_interest_flat
         ]
 
@@ -238,7 +241,7 @@ class RandomScenario:
         """
         if account is None:
             # Derive yearly equivalent from the cached global monthly list
-            return [round((1 + m) ** 12 - 1, 4) for m in self.var_monthly_mkt_interest]
+            return [round((1 + m) ** 12 - 1, 6) for m in self.var_monthly_mkt_interest]
 
         cache_key = account.name
         if cache_key in self._var_yearly_rate_cache:
@@ -258,15 +261,16 @@ class RandomScenario:
                 conservative_rate_pct = yearly_rate * 100
                 sampled_rate_pct = np.random.normal(
                     conservative_rate_pct,
-                    abs(conservative_rate_pct) * 1.5,
+                    abs(conservative_rate_pct) * variance_3,
                 )
-                if conservative_rate_pct > MIN_CONSERVATIVE_RETIREMENT_RATE_PCT:
-                    sampled_rate_pct = min(sampled_rate_pct, conservative_rate_pct)
-                yearly_rates.append(round(sampled_rate_pct / 100, 4))
+                yearly_rates.append(round(sampled_rate_pct / 100, 6))
         else:
             for _ in self.base_scenario.month_list:
-                sampled_rate_pct = np.random.normal(start_pct, abs(start_pct) * 1.5)
-                yearly_rates.append(round(sampled_rate_pct / 100, 4))
+                sampled_rate_pct = np.random.normal(
+                    start_pct,
+                    abs(start_pct) * variance_3,
+                )
+                yearly_rates.append(round(sampled_rate_pct / 100, 6))
 
         self._var_yearly_rate_cache[cache_key] = yearly_rates
         return yearly_rates
@@ -278,7 +282,7 @@ class RandomScenario:
         so that both the computation loop and CSV export use the same random sample.
         """
         return [
-            round(((1 + yr) ** (1 / 12) - 1), 4)
+            round(((1 + yr) ** (1 / 12) - 1), 6)
             for yr in self._account_var_yearly_rate_list(account)
         ]
 

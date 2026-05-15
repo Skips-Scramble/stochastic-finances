@@ -5,6 +5,8 @@ from pages.random_scenario import RandomScenario
 
 # from assumption_validations import apply_validations
 
+NUM_SCENARIOS = 100
+
 
 def main(assumptions) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Main function to calculate the core dfs"""
@@ -32,7 +34,7 @@ def main(assumptions) -> tuple[pd.DataFrame, pd.DataFrame]:
         columns=rename_dict
     )
 
-    for i in range(100):  # Number of scenarios to generate
+    for i in range(NUM_SCENARIOS):
         new_scenario = RandomScenario(base_scenario)
         new_scenario.create_full_df().to_csv(f"./outputs/scen_{i+1}.csv", index=False)
 
@@ -51,16 +53,28 @@ def main(assumptions) -> tuple[pd.DataFrame, pd.DataFrame]:
             how="left",
         )
 
-    total_savings_df = (
-        base_age_df.filter(regex="savings_account|^age").rename(
-            columns=lambda x: (
-                x.replace("savings_", "") if x.startswith("savings_") else x
-            )
-        )
-    ).assign(
-        avg=lambda df: df.filter(regex="^account").mean(axis=1),
+    total_savings_df = base_age_df.filter(regex="savings_account|^age").rename(
+        columns=lambda x: (x.replace("savings_", "") if x.startswith("savings_") else x)
+    )
+    existing_random_savings_cols = sorted(
+        [
+            col
+            for col in total_savings_df.columns
+            if col.startswith("account_") and col != "account_0"
+        ],
+        key=lambda col: int(col.split("_")[1]),
+    )
+    total_savings_df = total_savings_df.assign(
+        avg=(
+            total_savings_df[existing_random_savings_cols].mean(axis=1)
+            if existing_random_savings_cols
+            else 0
+        ),
         account_type="savings",
     )
+
+    # account_0 is always created from the base path rename above and is intentionally excluded.
+    total_savings_df = total_savings_df.drop(columns=["account_0"])
 
     total_retirement_df = base_age_df.filter(
         regex="traditional_401k|traditional_ira|roth_401k|roth_ira|hsa|brokerage|^age"
@@ -68,6 +82,10 @@ def main(assumptions) -> tuple[pd.DataFrame, pd.DataFrame]:
         columns=lambda x: (
             x.replace("retirement_", "") if x.startswith("retirement_") else x
         )
+    )
+
+    total_retirement_df = total_retirement_df.drop(
+        columns=[col for col in total_retirement_df.columns if col.endswith("_0")],
     )
 
     # Calculate averages only for retirement account types that exist
