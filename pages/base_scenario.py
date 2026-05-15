@@ -18,6 +18,7 @@ TRAD_401K_TAX_RATE = 0.20
 BROKERAGE_TAX_RATE = 0.15
 HEALTHCARE_BINS = [0, 19, 45, 65, 85, float("inf")]
 HEALTHCARE_LABELS = ["0-18", "19-44", "45-64", "65-84", "85+"]
+PREMIUM_ZERO_THRESHOLD = 0.01
 
 
 MEDICARE_ELIGIBILITY_AGE_YRS = 65
@@ -1118,7 +1119,22 @@ class BaseScenario(ScenarioCoreInfo):
             how="left",
         ).fillna({"medicare_cost": 0.0})
 
-        return [float(round(v, 2)) for v in merged_df["medicare_cost"]]
+        stepped_costs: list[float] = []
+        for index, (month, medicare_cost) in enumerate(
+            zip(merged_df["month"], merged_df["medicare_cost"])
+        ):
+            cost = float(round(medicare_cost, 2))
+            if (
+                index == 0
+                or month.month == 1
+                # Allow the first non-zero Medicare month even if eligibility starts mid-year.
+                or (stepped_costs[index - 1] < PREMIUM_ZERO_THRESHOLD and cost > 0.0)
+            ):
+                stepped_costs.append(cost)
+            else:
+                stepped_costs.append(stepped_costs[index - 1])
+
+        return stepped_costs
 
     @cached_property
     def medicare_part_b_premium_costs(self) -> list:
