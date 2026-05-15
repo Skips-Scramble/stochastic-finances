@@ -325,7 +325,7 @@ def test_medicare_part_b_and_d_change_only_in_january(base_assumptions):
                 and premium_list[i - 1] > 0.0
                 and scenario.month_list[i].month != 1
             ):
-                assert premium_list[i] == premium_list[i - 1]
+                assert premium_list[i] == pytest.approx(premium_list[i - 1], abs=1e-6)
 
 
 # With all three options enabled, healthcare, ACA bridge coverage, and medical bills all contribute

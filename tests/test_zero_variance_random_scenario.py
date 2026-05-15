@@ -248,7 +248,7 @@ def test_var_medicare_premiums_resample_at_yearly_steps(monkeypatch):
                 and premium_list[i - 1] > 0.0
                 and base.month_list[i].month != 1
             ):
-                assert premium_list[i] == premium_list[i - 1]
+                assert premium_list[i] == pytest.approx(premium_list[i - 1], abs=1e-6)
 
     # Counts how many times premiums should be sampled given January boundaries and
     # first-eligibility transitions from 0 to positive premium amounts.

@@ -1127,7 +1127,7 @@ class BaseScenario(ScenarioCoreInfo):
                 index == 0
                 or month.month == 1
                 # Allow the first non-zero Medicare month even if eligibility starts mid-year.
-                or (stepped_costs[index - 1] == 0.0 and cost > 0.0)
+                or (stepped_costs[index - 1] < 0.01 and cost > 0.0)
             ):
                 stepped_costs.append(cost)
             else:
