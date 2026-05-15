@@ -250,7 +250,7 @@ def test_var_medicare_premiums_resample_only_in_january(monkeypatch):
             ):
                 assert premium_list[i] == premium_list[i - 1]
 
-    def count_expected_resamples(base_premium_list):
+    def _count_expected_resamples(base_premium_list):
         expected = 0
         for i, (month, cost) in enumerate(zip(base.month_list, base_premium_list)):
             if cost <= 0.0:
@@ -259,7 +259,7 @@ def test_var_medicare_premiums_resample_only_in_january(monkeypatch):
                 expected += 1
         return expected
 
-    expected_call_count = count_expected_resamples(
+    expected_call_count = _count_expected_resamples(
         base.medicare_part_b_premium_costs
-    ) + count_expected_resamples(base.medicare_part_d_premium_costs)
+    ) + _count_expected_resamples(base.medicare_part_d_premium_costs)
     assert call_count["value"] == expected_call_count

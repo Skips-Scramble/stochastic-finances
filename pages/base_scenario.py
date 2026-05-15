@@ -1123,11 +1123,11 @@ class BaseScenario(ScenarioCoreInfo):
             zip(merged_df["month"], merged_df["medicare_cost"])
         ):
             cost = float(round(medicare_cost, 2))
-            if index == 0:
-                stepped_costs.append(cost)
-            elif month.month == 1:
-                stepped_costs.append(cost)
-            elif stepped_costs[index - 1] == 0.0 and cost > 0.0:
+            if (
+                index == 0
+                or month.month == 1
+                or (stepped_costs[index - 1] == 0.0 and cost > 0.0)
+            ):
                 stepped_costs.append(cost)
             else:
                 stepped_costs.append(stepped_costs[index - 1])

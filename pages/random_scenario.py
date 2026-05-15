@@ -36,7 +36,12 @@ class RandomScenario:
     base_scenario: BaseScenario
 
     def _yearly_step_medicare_premium_list(self, base_costs: list[float]) -> list[float]:
-        """Sample Medicare premium costs when a new calendar-year premium takes effect."""
+        """Sample Medicare premiums when a yearly step takes effect.
+
+        Premiums are held flat between January boundaries.
+        A mid-year transition from 0 to positive (first Medicare-eligible month)
+        is sampled once, then also held flat until the next January.
+        """
         variable_costs: list[float] = []
         for index, (month, cost) in enumerate(
             zip(self.base_scenario.month_list, base_costs)
