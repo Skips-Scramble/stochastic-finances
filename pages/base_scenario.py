@@ -829,14 +829,88 @@ class BaseScenario(ScenarioCoreInfo):
         ]
 
     @cached_property
+    def savings_time_periods(self) -> list[dict]:
+        """Optional age-scoped overrides for savings and base bills inputs."""
+        return self.assumptions.get("savings_time_periods", [])
+
+    @staticmethod
+    def _age_to_months(age_yrs: int, age_mos: int) -> int:
+        """Convert age years/months to total months."""
+        return (age_yrs * 12) + age_mos
+
+    def _period_age_months(
+        self, period: dict, age_yrs_key: str, age_mos_key: str
+    ) -> int | None:
+        """Return boundary age in months for a period key pair."""
+        age_yrs = period.get(age_yrs_key)
+        age_mos = period.get(age_mos_key)
+
+        if age_yrs is None and age_mos is None:
+            return None
+
+        return self._age_to_months(int(age_yrs or 0), int(age_mos or 0))
+
+    def _period_value_for_month(
+        self,
+        month_index: int,
+        assumption_key: str,
+        default_value: float,
+    ) -> float:
+        """Resolve an assumption value for a month using optional age-scoped periods."""
+        if not self.savings_time_periods:
+            return default_value
+
+        current_age_months = self._age_to_months(
+            self.age_by_year_list[month_index],
+            self.age_by_month_list[month_index],
+        )
+
+        for period in self.savings_time_periods:
+            period_value = period.get(assumption_key)
+            if period_value is None:
+                continue
+
+            start_age_months = self._period_age_months(
+                period, "start_age_yrs", "start_age_mos"
+            )
+            end_age_months = self._period_age_months(
+                period, "end_age_yrs", "end_age_mos"
+            )
+            at_or_after_start = (
+                True if start_age_months is None else current_age_months >= start_age_months
+            )
+            before_end = True if end_age_months is None else current_age_months < end_age_months
+
+            if at_or_after_start and before_end:
+                return float(period_value)
+
+        return default_value
+
+    @cached_property
     def savings_increase_list(self) -> list:
         """List of how much your savings will increase each month (with assumed increase factor)"""
         savings_increase_list = []
         for index, value in enumerate(self.pre_retire_month_count_list):
+            base_saved_per_mo = self._period_value_for_month(
+                index,
+                "base_saved_per_mo",
+                float(self.assumptions["base_saved_per_mo"]),
+            )
+            previous_base_saved_per_mo = (
+                self._period_value_for_month(
+                    index - 1,
+                    "base_saved_per_mo",
+                    float(self.assumptions["base_saved_per_mo"]),
+                )
+                if index > 0
+                else base_saved_per_mo
+            )
             if index == 0:
-                savings_increase_list.append(self.assumptions["base_saved_per_mo"])
+                savings_increase_list.append(base_saved_per_mo)
             elif value == 0:
                 savings_increase_list.append(0)
+            elif base_saved_per_mo != previous_base_saved_per_mo:
+                savings_increase_list.append(base_saved_per_mo)
             elif index % 12 == 11:
                 savings_increase_list.append(
                     savings_increase_list[index - 1]
@@ -858,7 +932,13 @@ class BaseScenario(ScenarioCoreInfo):
         )
         return [
             round(
-                self.assumptions["base_monthly_bills"] * (1 + monthly_inflation) ** i, 6
+                self._period_value_for_month(
+                    i,
+                    "base_monthly_bills",
+                    float(self.assumptions["base_monthly_bills"]),
+                )
+                * (1 + monthly_inflation) ** i,
+                6,
             )
             for i in range(self.total_months)
         ]

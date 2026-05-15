@@ -242,3 +242,112 @@ def test_savings_threshold_length_equals_total_months(base_assumptions):
     assumptions = {**base_assumptions, "savings_lower_limit": 5000.0}
     scenario = BaseScenario(assumptions=assumptions)
     assert len(scenario.monthly_savings_threshold_list) == scenario.total_months
+
+
+# Savings/base-bill period overrides should switch values from the configured start age onward.
+def test_savings_and_bills_use_from_period_override(base_assumptions):
+    baseline_assumptions = {
+        **base_assumptions,
+        "base_saved_per_mo": 500.0,
+        "base_savings_per_yr_increase": 0.0,
+    }
+    baseline = BaseScenario(assumptions=baseline_assumptions)
+    switch_index = 12
+    switch_age_yrs = baseline.age_by_year_list[switch_index]
+    switch_age_mos = baseline.age_by_month_list[switch_index]
+
+    assumptions = {
+        **baseline_assumptions,
+        "savings_time_periods": [
+            {
+                "start_age_yrs": switch_age_yrs,
+                "start_age_mos": switch_age_mos,
+                "base_saved_per_mo": 750.0,
+                "base_monthly_bills": 3000.0,
+            }
+        ],
+    }
+    scenario = BaseScenario(assumptions=assumptions)
+    monthly_inflation = scenario.monthly_inflation
+
+    assert scenario.savings_increase_list[switch_index - 1] == 500.0
+    assert scenario.savings_increase_list[switch_index] == 750.0
+    assert scenario.base_bills_list[switch_index - 1] == round(
+        2000.0 * (1 + monthly_inflation) ** (switch_index - 1), 6
+    )
+    assert scenario.base_bills_list[switch_index] == round(
+        3000.0 * (1 + monthly_inflation) ** switch_index, 6
+    )
+
+
+# Savings/base-bill period overrides should apply only within a start/end range.
+def test_savings_and_bills_use_during_period_override(base_assumptions):
+    baseline_assumptions = {
+        **base_assumptions,
+        "base_saved_per_mo": 500.0,
+        "base_savings_per_yr_increase": 0.0,
+    }
+    baseline = BaseScenario(assumptions=baseline_assumptions)
+    start_index = 6
+    end_index = 9
+
+    assumptions = {
+        **baseline_assumptions,
+        "savings_time_periods": [
+            {
+                "start_age_yrs": baseline.age_by_year_list[start_index],
+                "start_age_mos": baseline.age_by_month_list[start_index],
+                "end_age_yrs": baseline.age_by_year_list[end_index],
+                "end_age_mos": baseline.age_by_month_list[end_index],
+                "base_saved_per_mo": 900.0,
+                "base_monthly_bills": 2500.0,
+            }
+        ],
+    }
+    scenario = BaseScenario(assumptions=assumptions)
+    monthly_inflation = scenario.monthly_inflation
+
+    assert scenario.savings_increase_list[start_index - 1] == 500.0
+    assert scenario.savings_increase_list[start_index] == 900.0
+    assert scenario.savings_increase_list[end_index] == 500.0
+    assert scenario.base_bills_list[start_index] == round(
+        2500.0 * (1 + monthly_inflation) ** start_index, 6
+    )
+    assert scenario.base_bills_list[end_index] == round(
+        2000.0 * (1 + monthly_inflation) ** end_index, 6
+    )
+
+
+# Savings/base-bill period overrides with only an end age should apply until that age.
+def test_savings_and_bills_use_until_period_override(base_assumptions):
+    baseline_assumptions = {
+        **base_assumptions,
+        "base_saved_per_mo": 400.0,
+        "base_savings_per_yr_increase": 0.0,
+    }
+    baseline = BaseScenario(assumptions=baseline_assumptions)
+    end_index = 4
+
+    assumptions = {
+        **baseline_assumptions,
+        "savings_time_periods": [
+            {
+                "end_age_yrs": baseline.age_by_year_list[end_index],
+                "end_age_mos": baseline.age_by_month_list[end_index],
+                "base_saved_per_mo": 1000.0,
+                "base_monthly_bills": 1500.0,
+            }
+        ],
+    }
+    scenario = BaseScenario(assumptions=assumptions)
+    monthly_inflation = scenario.monthly_inflation
+
+    assert scenario.savings_increase_list[0] == 1000.0
+    assert scenario.savings_increase_list[end_index - 1] == 1000.0
+    assert scenario.savings_increase_list[end_index] == 400.0
+    assert scenario.base_bills_list[end_index - 1] == round(
+        1500.0 * (1 + monthly_inflation) ** (end_index - 1), 6
+    )
+    assert scenario.base_bills_list[end_index] == round(
+        2000.0 * (1 + monthly_inflation) ** end_index, 6
+    )
