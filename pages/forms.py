@@ -36,7 +36,7 @@ class GeneralInputsForm(forms.ModelForm):
             "birthdate": "Birthdate (MM/DD/YYYY)",
             "retirement_age_yrs": "Retirement age (years)",
             "retirement_age_mos": "Retirement age (months)",
-            "add_healthcare": "Please automatically include healthcare costs for me",
+            "add_healthcare": "Include healthcare costs for me",
             "include_pre_medicare_insurance": "Include ACA insurance cost when retired and under 65",
             "add_medical_bills": "Include your own monthly medical bills estimate",
             "monthly_medical_bills": "Monthly medical bills amount ($)",

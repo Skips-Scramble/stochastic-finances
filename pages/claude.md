@@ -4,7 +4,7 @@
 
 This document explains the three General tab healthcare options and their interactions.
 
-### Option 1: "Please automatically include healthcare costs for me" (`add_healthcare`)
+### Option 1: "Include healthcare costs for me" (`add_healthcare`)
 - Master healthcare toggle.
 - When enabled, model-driven healthcare costs are included.
 - Medicare premiums (Part B and Part D) are also included for age 65+.
