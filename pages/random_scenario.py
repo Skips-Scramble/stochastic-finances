@@ -18,14 +18,13 @@ from .base_scenario import (
     HSA_WITHDRAWAL_AGE_YRS,
     TRAD_401K_TAX_RATE,
     BROKERAGE_TAX_RATE,
-    MIN_CONSERVATIVE_RETIREMENT_RATE_PCT,
     uniform_lifetime_table,
 )
 
 RF_INTEREST_CHANGE_MOS = 6
-variance_1 = 0  # 0.1
-variance_2 = 0  # 0.5
-variance_3 = 0  # 1.5
+variance_1 = 0.1
+variance_2 = 0.5
+variance_3 = 1.5
 
 
 @dataclass
@@ -190,8 +189,6 @@ class RandomScenario:
                 conservative_rate_pct,
                 conservative_rate_pct * variance_3,
             )
-            if conservative_rate_pct > MIN_CONSERVATIVE_RETIREMENT_RATE_PCT:
-                sampled_rate_pct = min(sampled_rate_pct, conservative_rate_pct)
             variable_mkt_list.append(round(sampled_rate_pct / 100, 6))
 
         return variable_mkt_list
@@ -266,8 +263,6 @@ class RandomScenario:
                     conservative_rate_pct,
                     abs(conservative_rate_pct) * variance_3,
                 )
-                if conservative_rate_pct > MIN_CONSERVATIVE_RETIREMENT_RATE_PCT:
-                    sampled_rate_pct = min(sampled_rate_pct, conservative_rate_pct)
                 yearly_rates.append(round(sampled_rate_pct / 100, 6))
         else:
             for _ in self.base_scenario.month_list:
