@@ -18,6 +18,7 @@ TRAD_401K_TAX_RATE = 0.20
 BROKERAGE_TAX_RATE = 0.15
 HEALTHCARE_BINS = [0, 19, 45, 65, 85, float("inf")]
 HEALTHCARE_LABELS = ["0-18", "19-44", "45-64", "65-84", "85+"]
+PREMIUM_ZERO_THRESHOLD = 0.01
 
 
 MEDICARE_ELIGIBILITY_AGE_YRS = 65
@@ -1127,7 +1128,7 @@ class BaseScenario(ScenarioCoreInfo):
                 index == 0
                 or month.month == 1
                 # Allow the first non-zero Medicare month even if eligibility starts mid-year.
-                or (stepped_costs[index - 1] < 0.01 and cost > 0.0)
+                or (stepped_costs[index - 1] < PREMIUM_ZERO_THRESHOLD and cost > 0.0)
             ):
                 stepped_costs.append(cost)
             else:

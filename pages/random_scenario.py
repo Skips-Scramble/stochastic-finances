@@ -25,6 +25,7 @@ RF_INTEREST_CHANGE_MOS = 6
 variance_1 = 0.1
 variance_2 = 0.5
 variance_3 = 1.5
+PREMIUM_ZERO_THRESHOLD = 0.01
 
 
 @dataclass
@@ -48,7 +49,11 @@ class RandomScenario:
         ):
             if cost <= 0.0:
                 variable_costs.append(0.0)
-            elif index == 0 or month.month == 1 or variable_costs[index - 1] < 0.01:
+            elif (
+                index == 0
+                or month.month == 1
+                or variable_costs[index - 1] < PREMIUM_ZERO_THRESHOLD
+            ):
                 variable_costs.append(
                     max(0.0, round(np.random.normal(cost, cost * variance_1), 2))
                 )
