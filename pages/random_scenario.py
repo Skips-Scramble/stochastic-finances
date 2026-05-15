@@ -35,6 +35,22 @@ class RandomScenario:
 
     base_scenario: BaseScenario
 
+    def _yearly_step_medicare_premium_list(self, base_costs: list[float]) -> list[float]:
+        """Sample Medicare premium costs when a new calendar-year premium takes effect."""
+        variable_costs: list[float] = []
+        for index, (month, cost) in enumerate(
+            zip(self.base_scenario.month_list, base_costs)
+        ):
+            if cost <= 0.0:
+                variable_costs.append(0.0)
+            elif index == 0 or month.month == 1 or variable_costs[index - 1] == 0.0:
+                variable_costs.append(
+                    max(0.0, round(np.random.normal(cost, cost * variance_1), 2))
+                )
+            else:
+                variable_costs.append(variable_costs[index - 1])
+        return variable_costs
+
     @cached_property
     def var_yearly_rf_interest(self) -> list:
         """Create list of risk free APYs by adjusting by random small amounts
@@ -137,10 +153,9 @@ class RandomScenario:
         Uses low volatility (std = 10% of mean) and clamps to non-negative.
         Returns zeros for months before Medicare eligibility or when toggle is off.
         """
-        return [
-            max(0.0, round(np.random.normal(x, x * variance_1), 2))
-            for x in self.base_scenario.medicare_part_b_premium_costs
-        ]
+        return self._yearly_step_medicare_premium_list(
+            self.base_scenario.medicare_part_b_premium_costs
+        )
 
     @cached_property
     def var_medicare_part_d_premium_costs_list(self) -> list:
@@ -148,10 +163,9 @@ class RandomScenario:
         Uses low volatility (std = 10% of mean) and clamps to non-negative.
         Returns zeros for months before Medicare eligibility or when toggle is off.
         """
-        return [
-            max(0.0, round(np.random.normal(x, x * variance_1), 2))
-            for x in self.base_scenario.medicare_part_d_premium_costs
-        ]
+        return self._yearly_step_medicare_premium_list(
+            self.base_scenario.medicare_part_d_premium_costs
+        )
 
     @cached_property
     def var_private_insurance_costs_list(self) -> list:

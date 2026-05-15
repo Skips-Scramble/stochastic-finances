@@ -305,6 +305,28 @@ def test_medicare_premiums_non_decreasing_after_65(base_assumptions):
     assert window[-1] >= window[0]
 
 
+# Medicare Part B and Part D premiums should only change in January once Medicare is active
+def test_medicare_part_b_and_d_change_only_in_january(base_assumptions):
+    assumptions = {
+        **base_assumptions,
+        "birthdate": date(1950, 1, 1),
+        "add_healthcare": True,
+    }
+    scenario = BaseScenario(assumptions=assumptions)
+
+    for premium_list in (
+        scenario.medicare_part_b_premium_costs,
+        scenario.medicare_part_d_premium_costs,
+    ):
+        for i in range(1, len(premium_list)):
+            if (
+                premium_list[i] > 0.0
+                and premium_list[i - 1] > 0.0
+                and scenario.month_list[i].month != 1
+            ):
+                assert premium_list[i] == premium_list[i - 1]
+
+
 # With all three options enabled, healthcare, ACA bridge coverage, and medical bills all contribute
 def test_all_three_medical_toggles_work_together(base_assumptions):
     assumptions = {

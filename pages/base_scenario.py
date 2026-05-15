@@ -1118,7 +1118,20 @@ class BaseScenario(ScenarioCoreInfo):
             how="left",
         ).fillna({"medicare_cost": 0.0})
 
-        return [float(round(v, 2)) for v in merged_df["medicare_cost"]]
+        stepped_costs: list[float] = []
+        for index, row in merged_df.iterrows():
+            cost = float(round(row["medicare_cost"], 2))
+            month = row["month"]
+            if index == 0:
+                stepped_costs.append(cost)
+            elif month.month == 1:
+                stepped_costs.append(cost)
+            elif stepped_costs[index - 1] == 0.0 and cost > 0.0:
+                stepped_costs.append(cost)
+            else:
+                stepped_costs.append(stepped_costs[index - 1])
+
+        return stepped_costs
 
     @cached_property
     def medicare_part_b_premium_costs(self) -> list:
