@@ -307,6 +307,7 @@ def test_medicare_premiums_non_decreasing_after_65(base_assumptions):
 
 # Medicare Part B and Part D premiums should only change in January once Medicare is active
 def test_medicare_part_b_and_d_change_only_in_january(base_assumptions):
+    """Validate Medicare premium amounts stay flat between January boundaries."""
     assumptions = {
         **base_assumptions,
         "birthdate": date(1950, 1, 1),

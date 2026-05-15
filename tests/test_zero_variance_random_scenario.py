@@ -207,6 +207,7 @@ def test_var_savings_account_matches_base_savings_exactly_when_zero_variance_no_
 
 # Variable Medicare Part B and Part D premiums should only re-sample at January boundaries.
 def test_var_medicare_premiums_resample_only_in_january(monkeypatch):
+    """Validate stochastic Medicare premiums are re-sampled only at yearly step points."""
     assumptions = {
         "birthdate": date(1950, 1, 1),
         "retirement_age_yrs": 65,
