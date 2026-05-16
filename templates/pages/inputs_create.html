@@ -52,7 +52,7 @@
                                 <small class="text-muted">Time period age range</small>
                             </div>
                             {% endif %}
-                            <div class="mb-3{% if field.name == 'monthly_medical_bills' %} ms-4 ps-3{% if not form.add_medical_bills.value and not field.errors %} d-none{% endif %}{% elif field.name == 'period_start_age_yrs' or field.name == 'period_start_age_mos' or field.name == 'period_end_age_yrs' or field.name == 'period_end_age_mos' %} ms-3 ps-3 border-start border-2{% if not field.errors %}{% if not form.use_time_period.value %} d-none{% elif form.time_period_mode.value == 'until' and field.name == 'period_start_age_yrs' or form.time_period_mode.value == 'until' and field.name == 'period_start_age_mos' %} d-none{% elif form.time_period_mode.value == 'from' and field.name == 'period_end_age_yrs' or form.time_period_mode.value == 'from' and field.name == 'period_end_age_mos' %} d-none{% endif %}{% endif %}{% elif field.name == "base_savings" %}{% if not field.errors %}{% if form.use_time_period.value and form.time_period_mode.value == "from" or form.use_time_period.value and form.time_period_mode.value == "during" %} d-none{% endif %}{% endif %}{% endif %}"{% if field.name == "monthly_medical_bills" %} id="monthly-medical-bills-field"{% elif field.name == "period_start_age_yrs" %} id="period-start-age-yrs-field" data-savings-time-field="start"{% elif field.name == "period_start_age_mos" %} id="period-start-age-mos-field" data-savings-time-field="start"{% elif field.name == "period_end_age_yrs" %} id="period-end-age-yrs-field" data-savings-time-field="end"{% elif field.name == "period_end_age_mos" %} id="period-end-age-mos-field" data-savings-time-field="end"{% elif field.name == "base_savings" %} id="base-savings-field"{% endif %}>
+                            <div class="mb-3{% if field.name == 'monthly_medical_bills' %} ms-4 ps-3{% if not form.add_medical_bills.value and not field.errors %} d-none{% endif %}{% elif field.name == 'period_start_age_yrs' or field.name == 'period_start_age_mos' or field.name == 'period_end_age_yrs' or field.name == 'period_end_age_mos' %} ms-3 ps-3 border-start border-2{% if not field.errors %}{% if not form.use_time_period.value %} d-none{% elif form.time_period_mode.value == 'until' and field.name == 'period_start_age_yrs' or form.time_period_mode.value == 'until' and field.name == 'period_start_age_mos' %} d-none{% elif form.time_period_mode.value == 'from' and field.name == 'period_end_age_yrs' or form.time_period_mode.value == 'from' and field.name == 'period_end_age_mos' %} d-none{% endif %}{% endif %}{% elif field.name == "base_savings" or field.name == "savings_lower_limit" %}{% if not field.errors %}{% if form.use_time_period.value and form.time_period_mode.value == "from" or form.use_time_period.value and form.time_period_mode.value == "during" %} d-none{% endif %}{% endif %}{% endif %}"{% if field.name == "monthly_medical_bills" %} id="monthly-medical-bills-field"{% elif field.name == "period_start_age_yrs" %} id="period-start-age-yrs-field" data-savings-time-field="start"{% elif field.name == "period_start_age_mos" %} id="period-start-age-mos-field" data-savings-time-field="start"{% elif field.name == "period_end_age_yrs" %} id="period-end-age-yrs-field" data-savings-time-field="end"{% elif field.name == "period_end_age_mos" %} id="period-end-age-mos-field" data-savings-time-field="end"{% elif field.name == "base_savings" %} id="base-savings-field"{% elif field.name == "savings_lower_limit" %} id="savings-lower-limit-field"{% endif %}>
                                 <div class="tooltip-container" data-toggle="tooltip" data-placement="right" title="{{descriptions|dict_lookup:field.name}}">
                                     <label class="form-label">
                                         {{field.label_tag}}
@@ -106,6 +106,7 @@
     const savingsTimePeriodEndFields = document.querySelectorAll('[data-savings-time-field="end"]');
     const savingsTimePeriodChoices = document.querySelectorAll('[data-time-period-choice]');
     const baseSavingsField = document.getElementById('base-savings-field');
+    const savingsLowerLimitField = document.getElementById('savings-lower-limit-field');
 
     function syncHealthcareFields(checked) {
         if (medicareInfo) medicareInfo.classList.toggle('d-none', !checked);
@@ -129,6 +130,9 @@
         }
         if (baseSavingsField) {
             baseSavingsField.classList.toggle('d-none', choice === 'from' || choice === 'during');
+        }
+        if (savingsLowerLimitField) {
+            savingsLowerLimitField.classList.toggle('d-none', choice === 'from' || choice === 'during');
         }
 
         savingsTimePeriodStartFields.forEach((field) => {

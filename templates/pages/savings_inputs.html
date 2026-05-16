@@ -34,10 +34,10 @@
                     {% endif %}
                     {% if not item.use_time_period or item.time_period_mode == "until" %}
                     <p class="card-text">Current savings account: ${{ item.base_savings|floatformat:"0g" }}</p>
+                    <p class="card-text">Savings lower limit: ${{ item.savings_lower_limit|floatformat:"0g" }}</p>
                     {% endif %}
                     <p class="card-text">Savings per month: ${{ item.base_saved_per_mo|floatformat:"0g" }}</p>
                     <p class="card-text">Yearly contribution increase: {{ item.base_savings_per_yr_increase|floatformat:"2" }}%</p>
-                    <p class="card-text">Savings lower limit: ${{ item.savings_lower_limit|floatformat:"0g" }}</p>
                     <p class="card-text">Usual monthly expenses: ${{ item.base_monthly_bills|floatformat:"0g" }}</p>
                     <a href="{% url 'savings_inputs_edit' item.id %}" class="btn btn-primary">Edit</a>
                     <a href="{% url 'savings_inputs_delete' item.id %}" class="btn btn-secondary">Delete</a>

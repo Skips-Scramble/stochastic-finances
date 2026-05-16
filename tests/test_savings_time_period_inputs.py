@@ -493,6 +493,7 @@ def test_savings_edit_from_hides_base_savings_field(client, django_user_model):
     assert response.status_code == 200
     html = response.content.decode()
     assert "d-none" in _field_wrapper_classes(html, "base-savings-field")
+    assert "d-none" in _field_wrapper_classes(html, "savings-lower-limit-field")
 
 
 # "during" form edit page should render base_savings field wrapper with d-none class.
@@ -522,6 +523,7 @@ def test_savings_edit_during_hides_base_savings_field(client, django_user_model)
     assert response.status_code == 200
     html = response.content.decode()
     assert "d-none" in _field_wrapper_classes(html, "base-savings-field")
+    assert "d-none" in _field_wrapper_classes(html, "savings-lower-limit-field")
 
 
 # "until" form edit page should show base_savings field (it applies from the start).
@@ -549,6 +551,7 @@ def test_savings_edit_until_shows_base_savings_field(client, django_user_model):
     assert response.status_code == 200
     html = response.content.decode()
     assert "d-none" not in _field_wrapper_classes(html, "base-savings-field")
+    assert "d-none" not in _field_wrapper_classes(html, "savings-lower-limit-field")
 
 
 # Dashboard card should not show "Current savings account" for "from" scenarios.
@@ -578,6 +581,7 @@ def test_savings_dashboard_hides_base_savings_for_from_scenario(
     assert response.status_code == 200
     html = response.content.decode()
     assert "Current savings account" not in html
+    assert "Savings lower limit" not in html
 
 
 # Dashboard card should not show "Current savings account" for "during" scenarios.
@@ -609,6 +613,7 @@ def test_savings_dashboard_hides_base_savings_for_during_scenario(
     assert response.status_code == 200
     html = response.content.decode()
     assert "Current savings account" not in html
+    assert "Savings lower limit" not in html
 
 
 # Dashboard card should show "Current savings account" for "until" scenarios.
@@ -638,6 +643,7 @@ def test_savings_dashboard_shows_base_savings_for_until_scenario(
     assert response.status_code == 200
     html = response.content.decode()
     assert "Current savings account" in html
+    assert "Savings lower limit" in html
 
 
 # Dashboard card should show "Current savings account" for all-time scenarios.
@@ -664,6 +670,7 @@ def test_savings_dashboard_shows_base_savings_for_all_time_scenario(
     assert response.status_code == 200
     html = response.content.decode()
     assert "Current savings account" in html
+    assert "Savings lower limit" in html
 
 
 # A "from" period should not reset savings; it should inherit the running balance.
