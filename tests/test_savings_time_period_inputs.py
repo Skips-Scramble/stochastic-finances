@@ -7,7 +7,12 @@ from types import SimpleNamespace
 
 from pages.base_scenario import BaseScenario
 from pages.forms import SavingsInputsForm
-from pages.models import GeneralInputsModel, RatesInputsModel, SavingsInputsModel
+from pages.models import (
+    GeneralInputsModel,
+    RatesInputsModel,
+    RetirementInputsModel,
+    SavingsInputsModel,
+)
 from pages.utils import build_savings_inputs_dict
 
 
@@ -137,9 +142,9 @@ def test_build_savings_inputs_dict_requires_exactly_one_base_row():
     assert len(base_inputs) == 2
 
 
-# Having only scoped savings rows (no all-time base row) should be rejected as incomplete coverage.
-def test_build_savings_inputs_dict_rejects_only_scoped_rows():
-    scoped_row = SimpleNamespace(
+# Fully covering scoped rows should be accepted even without an all-time base row.
+def test_build_savings_inputs_dict_accepts_fully_covering_scoped_rows():
+    scoped_until_row = SimpleNamespace(
         use_time_period=True,
         time_period_mode="until",
         period_start_age_yrs=None,
@@ -153,14 +158,154 @@ def test_build_savings_inputs_dict_rejects_only_scoped_rows():
         base_monthly_bills=1800.0,
         interest_rate_per_yr=None,
     )
+    scoped_from_row = SimpleNamespace(
+        use_time_period=True,
+        time_period_mode="from",
+        period_start_age_yrs=60,
+        period_start_age_mos=0,
+        period_end_age_yrs=None,
+        period_end_age_mos=None,
+        base_savings=None,
+        base_saved_per_mo=900.0,
+        base_savings_per_yr_increase=0.0,
+        savings_lower_limit=0.0,
+        base_monthly_bills=2000.0,
+        interest_rate_per_yr=None,
+    )
 
-    savings_inputs_dict, base_inputs = build_savings_inputs_dict([scoped_row])
+    savings_inputs_dict, base_inputs = build_savings_inputs_dict(
+        [scoped_until_row, scoped_from_row]
+    )
+
+    assert savings_inputs_dict is not None
+    assert len(base_inputs) == 1
+    assert savings_inputs_dict["base_savings"] == 10000.0
+    assert savings_inputs_dict["savings_time_periods"] == [
+        {
+            "base_saved_per_mo": 800.0,
+            "base_monthly_bills": 1800.0,
+            "end_age_yrs": 60,
+            "end_age_mos": 0,
+        },
+        {
+            "base_saved_per_mo": 900.0,
+            "base_monthly_bills": 2000.0,
+            "start_age_yrs": 60,
+            "start_age_mos": 0,
+        },
+    ]
+
+
+# Scoped rows with a gap should be rejected as incomplete coverage.
+def test_build_savings_inputs_dict_rejects_scoped_rows_with_gap():
+    scoped_until_row = SimpleNamespace(
+        use_time_period=True,
+        time_period_mode="until",
+        period_start_age_yrs=None,
+        period_start_age_mos=None,
+        period_end_age_yrs=60,
+        period_end_age_mos=0,
+        base_savings=10000.0,
+        base_saved_per_mo=800.0,
+        base_savings_per_yr_increase=0.0,
+        savings_lower_limit=0.0,
+        base_monthly_bills=1800.0,
+        interest_rate_per_yr=None,
+    )
+    scoped_from_row = SimpleNamespace(
+        use_time_period=True,
+        time_period_mode="from",
+        period_start_age_yrs=60,
+        period_start_age_mos=1,
+        period_end_age_yrs=None,
+        period_end_age_mos=None,
+        base_savings=None,
+        base_saved_per_mo=900.0,
+        base_savings_per_yr_increase=0.0,
+        savings_lower_limit=0.0,
+        base_monthly_bills=2000.0,
+        interest_rate_per_yr=None,
+    )
+
+    savings_inputs_dict, base_inputs = build_savings_inputs_dict(
+        [scoped_until_row, scoped_from_row]
+    )
 
     assert savings_inputs_dict is None
     assert len(base_inputs) == 0
 
 
-# Calculations should show an incomplete coverage error when savings rows are active but no all-time base row exists.
+# Calculations should run when scoped savings rows cover all ages without a base row.
+def test_calculations_accepts_fully_covering_scoped_rows_without_base_row(
+    client, django_user_model
+):
+    user = django_user_model.objects.create_user(
+        username="savings-scoped-coverage-ok", password="pass1234"
+    )
+    client.force_login(user)
+
+    GeneralInputsModel.objects.create(
+        created_by=user,
+        is_active=True,
+        birthdate=date(1990, 1, 1),
+        retirement_age_yrs=65,
+        retirement_age_mos=0,
+        add_healthcare=False,
+        include_pre_medicare_insurance=False,
+        add_medical_bills=False,
+        monthly_medical_bills=0,
+        retirement_extra_expenses=0,
+    )
+    RatesInputsModel.objects.create(
+        created_by=user,
+        is_active=True,
+        base_rf_interest_per_yr=2.0,
+        base_mkt_interest_per_yr=7.0,
+        base_inflation_per_yr=3.0,
+    )
+    RetirementInputsModel.objects.create(
+        created_by=user,
+        is_active=True,
+        retirement_type="traditional_401k",
+        base_retirement=10000,
+        base_retirement_per_mo=500,
+        base_retirement_per_yr_increase=1,
+    )
+    SavingsInputsModel.objects.create(
+        created_by=user,
+        is_active=True,
+        use_time_period=True,
+        time_period_mode="until",
+        period_end_age_yrs=60,
+        period_end_age_mos=0,
+        base_savings=15000,
+        base_saved_per_mo=700,
+        base_savings_per_yr_increase=1,
+        savings_lower_limit=1000,
+        base_monthly_bills=2100,
+    )
+    SavingsInputsModel.objects.create(
+        created_by=user,
+        is_active=True,
+        use_time_period=True,
+        time_period_mode="from",
+        period_start_age_yrs=60,
+        period_start_age_mos=0,
+        base_saved_per_mo=900,
+        base_savings_per_yr_increase=0,
+        savings_lower_limit=1000,
+        base_monthly_bills=2300,
+    )
+
+    response = client.get("/calculations")
+
+    assert response.status_code == 200
+    html = response.content.decode()
+    assert "Please address the following configuration issues:" not in html
+    assert "Probability of having enough for your life" in html
+
+
+# Calculations should show an incomplete coverage error when scoped rows leave an age gap.
 def test_calculations_shows_incomplete_coverage_for_only_scoped_rows(
     client, django_user_model
 ):
