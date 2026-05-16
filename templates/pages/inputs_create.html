@@ -18,7 +18,7 @@
             <div class="card shadow border-dark px-3 py-3 mb-3 text-black" style="border-width: 3px;">
                 <div class="card-body">
                     {% for field in form %}
-                            <div class="mb-3{% if field.name == 'monthly_medical_bills' %} ms-4 ps-3{% if not form.add_medical_bills.value and not field.errors %} d-none{% endif %}{% endif %}"{% if field.name == "monthly_medical_bills" %} id="monthly-medical-bills-field"{% endif %}>
+                            <div class="mb-3{% if field.name == 'monthly_medical_bills' %} ms-4 ps-3{% if not form.add_medical_bills.value and not field.errors %} d-none{% endif %}{% elif field.name == 'time_period_mode' or field.name == 'period_start_age_yrs' or field.name == 'period_start_age_mos' or field.name == 'period_end_age_yrs' or field.name == 'period_end_age_mos' %}{% if not form.use_time_period.value and not field.errors %} d-none{% endif %}{% endif %}"{% if field.name == "monthly_medical_bills" %} id="monthly-medical-bills-field"{% elif field.name == "time_period_mode" %} id="time-period-mode-field" data-savings-time-field="true"{% elif field.name == "period_start_age_yrs" %} id="period-start-age-yrs-field" data-savings-time-field="true"{% elif field.name == "period_start_age_mos" %} id="period-start-age-mos-field" data-savings-time-field="true"{% elif field.name == "period_end_age_yrs" %} id="period-end-age-yrs-field" data-savings-time-field="true"{% elif field.name == "period_end_age_mos" %} id="period-end-age-mos-field" data-savings-time-field="true"{% endif %}>
                                 <div class="tooltip-container" data-toggle="tooltip" data-placement="right" title="{{descriptions|dict_lookup:field.name}}">
                                     <label class="form-label">
                                         {{field.label_tag}}
@@ -64,6 +64,8 @@
     const preMedicareField = preMedicareInput ? preMedicareInput.closest('.mb-3') : null;
     const medicalBillsCheckbox = document.getElementById('id_add_medical_bills');
     const monthlyMedicalBillsField = document.getElementById('monthly-medical-bills-field');
+    const savingsTimePeriodCheckbox = document.getElementById('id_use_time_period');
+    const savingsTimePeriodFields = document.querySelectorAll('[data-savings-time-field="true"]');
 
     function syncHealthcareFields(checked) {
         if (medicareInfo) medicareInfo.classList.toggle('d-none', !checked);
@@ -75,6 +77,12 @@
 
     function syncMedicalBillsField(checked) {
         if (monthlyMedicalBillsField) monthlyMedicalBillsField.classList.toggle('d-none', !checked);
+    }
+
+    function syncSavingsTimePeriodFields(checked) {
+        savingsTimePeriodFields.forEach((field) => {
+            field.classList.toggle('d-none', !checked);
+        });
     }
 
     if (healthcareCheckbox) {
@@ -90,6 +98,14 @@
         syncMedicalBillsField(medicalBillsCheckbox.checked);
         medicalBillsCheckbox.addEventListener('change', function () {
             syncMedicalBillsField(this.checked);
+        });
+    }
+
+    if (savingsTimePeriodCheckbox) {
+        // Set initial state
+        syncSavingsTimePeriodFields(savingsTimePeriodCheckbox.checked);
+        savingsTimePeriodCheckbox.addEventListener('change', function () {
+            syncSavingsTimePeriodFields(this.checked);
         });
     }
 </script>
