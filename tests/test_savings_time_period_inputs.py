@@ -162,10 +162,12 @@ def test_savings_create_hides_time_period_fields_by_default(client, django_user_
     assert "Use this until" in html
     assert "Use this during" in html
     assert "Use this from" in html
+    assert "Time period age range (only for Until/During/From)" in html
     assert "checked" in _checkbox_tag(html, "time-period-all")
     assert "checked" not in _checkbox_tag(html, "time-period-until")
     assert "checked" not in _checkbox_tag(html, "time-period-during")
     assert "checked" not in _checkbox_tag(html, "time-period-from")
+    assert "d-none" in _field_wrapper_classes(html, "savings-time-period-date-header")
     assert "d-none" in _field_wrapper_classes(html, "time-period-mode-field")
     assert "d-none" in _field_wrapper_classes(html, "period-start-age-yrs-field")
     assert "d-none" in _field_wrapper_classes(html, "period-end-age-yrs-field")
@@ -199,6 +201,8 @@ def test_savings_edit_shows_time_period_fields_when_enabled(client, django_user_
     assert "checked" not in _checkbox_tag(html, "time-period-until")
     assert "checked" in _checkbox_tag(html, "time-period-during")
     assert "checked" not in _checkbox_tag(html, "time-period-from")
+    assert "d-none" not in _field_wrapper_classes(html, "savings-time-period-date-header")
     assert "d-none" in _field_wrapper_classes(html, "time-period-mode-field")
     assert "d-none" not in _field_wrapper_classes(html, "period-start-age-yrs-field")
     assert "d-none" not in _field_wrapper_classes(html, "period-end-age-yrs-field")
+    assert "border-start" in _field_wrapper_classes(html, "period-start-age-yrs-field")
