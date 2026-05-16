@@ -473,9 +473,8 @@ def calculations(request):
                 bad_active_dict["Savings"] = 0
             elif len(base_savings_inputs) == 0:
                 incomplete_coverage_dict["Savings"] = (
-                    "Active scenarios exist, but they do not cover all ages. "
-                    "Add one active 'Use for all time periods' savings scenario "
-                    "to cover the full timeline."
+                    "Savings time periods do not cover all ages. "
+                    'Add one active scenario to cover all ages, or use the current savings scenario and select "Use for all time periods" to cover all ages'
                 )
             else:
                 bad_active_dict["Savings"] = len(base_savings_inputs)

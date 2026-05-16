@@ -62,6 +62,12 @@ class GeneralInputsForm(forms.ModelForm):
 class SavingsInputsForm(forms.ModelForm):
     """Class to contain all pertinent savings information"""
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # base_savings is not applicable for "from"/"during" periods, so never mark
+        # it required at the HTML/field level; clean() enforces context-appropriate nulling.
+        self.fields["base_savings"].required = False
+
     def clean(self):
         cleaned_data = super().clean()
         use_time_period = cleaned_data.get("use_time_period", False)
@@ -77,6 +83,10 @@ class SavingsInputsForm(forms.ModelForm):
             cleaned_data["period_start_age_mos"] = None
             cleaned_data["period_end_age_yrs"] = None
             cleaned_data["period_end_age_mos"] = None
+            if cleaned_data.get("base_savings") is None:
+                self.add_error(
+                    "base_savings", "Enter a current savings account amount."
+                )
             return cleaned_data
 
         if not time_period_mode:
@@ -113,6 +123,13 @@ class SavingsInputsForm(forms.ModelForm):
                 "period_end_age_yrs",
                 "End age must be later than start age for 'Use this during'.",
             )
+
+        # "from" and "during" periods start mid-simulation; the savings balance is
+        # inherited from the running total, so base_savings is not applicable.
+        if time_period_mode in {"from", "during"}:
+            cleaned_data["base_savings"] = None
+        elif cleaned_data.get("base_savings") is None:
+            self.add_error("base_savings", "Enter a current savings account amount.")
 
         return cleaned_data
 

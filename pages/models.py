@@ -120,7 +120,9 @@ class SavingsInputsModel(models.Model):
         validators=[validate_range_age_mos],
     )
     base_savings = models.FloatField(
-        validators=[validate_base_savings, decimal_validator]
+        null=True,
+        blank=True,
+        validators=[validate_base_savings, decimal_validator],
     )
     base_saved_per_mo = models.FloatField(
         validators=[validate_base_saved_per_mo, decimal_validator],

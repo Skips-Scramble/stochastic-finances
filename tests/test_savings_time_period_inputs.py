@@ -4,6 +4,8 @@ from datetime import date
 import re
 from types import SimpleNamespace
 
+
+from pages.base_scenario import BaseScenario
 from pages.forms import SavingsInputsForm
 from pages.models import GeneralInputsModel, RatesInputsModel, SavingsInputsModel
 from pages.utils import build_savings_inputs_dict
@@ -206,7 +208,10 @@ def test_calculations_shows_incomplete_coverage_for_only_scoped_rows(
     html = response.content.decode()
     assert "Categories With Incomplete Time Coverage" in html
     assert "Savings" in html
-    assert "do not cover all ages" in html
+    assert (
+        'Savings time periods do not cover all ages. Add one active scenario to cover all ages, or use the current savings scenario and select "Use for all time periods" to cover all ages'
+        in html
+    )
     assert "Categories Missing Active Scenarios" not in html
 
 
@@ -385,3 +390,325 @@ def test_savings_edit_from_shows_start_fields_only(client, django_user_model):
     assert "checked" in _checkbox_tag(html, "time-period-from")
     assert "d-none" not in _field_wrapper_classes(html, "period-start-age-yrs-field")
     assert "d-none" in _field_wrapper_classes(html, "period-end-age-yrs-field")
+
+
+# --- base_savings visibility for from/during modes ---
+
+
+# "from" mode form should be valid even when base_savings is omitted.
+def test_savings_form_from_mode_valid_without_base_savings():
+    form_data = _valid_form_data() | {
+        "time_period_mode": "from",
+        "period_start_age_yrs": 45,
+        "period_start_age_mos": 0,
+        "period_end_age_yrs": None,
+        "period_end_age_mos": None,
+        "base_savings": "",
+    }
+    form = SavingsInputsForm(data=form_data)
+    assert form.is_valid(), form.errors
+
+
+# "during" mode form should be valid even when base_savings is omitted.
+def test_savings_form_during_mode_valid_without_base_savings():
+    form_data = _valid_form_data() | {
+        "time_period_mode": "during",
+        "base_savings": "",
+    }
+    form = SavingsInputsForm(data=form_data)
+    assert form.is_valid(), form.errors
+
+
+# "from" mode should clean base_savings to None even when a value is provided.
+def test_savings_form_from_mode_clears_base_savings():
+    form_data = _valid_form_data() | {
+        "time_period_mode": "from",
+        "period_start_age_yrs": 45,
+        "period_start_age_mos": 0,
+        "period_end_age_yrs": None,
+        "period_end_age_mos": None,
+        "base_savings": 25000,
+    }
+    form = SavingsInputsForm(data=form_data)
+    assert form.is_valid(), form.errors
+    assert form.cleaned_data["base_savings"] is None
+
+
+# "during" mode should clean base_savings to None even when a value is provided.
+def test_savings_form_during_mode_clears_base_savings():
+    form_data = _valid_form_data() | {
+        "time_period_mode": "during",
+        "base_savings": 25000,
+    }
+    form = SavingsInputsForm(data=form_data)
+    assert form.is_valid(), form.errors
+    assert form.cleaned_data["base_savings"] is None
+
+
+# "all time periods" mode (use_time_period=False) requires base_savings.
+def test_savings_form_all_mode_requires_base_savings():
+    form_data = _valid_form_data() | {"use_time_period": False, "base_savings": ""}
+    form = SavingsInputsForm(data=form_data)
+    assert not form.is_valid()
+    assert "base_savings" in form.errors
+
+
+# "until" mode requires base_savings since it starts at the beginning.
+def test_savings_form_until_mode_requires_base_savings():
+    form_data = _valid_form_data() | {
+        "time_period_mode": "until",
+        "period_start_age_yrs": None,
+        "period_start_age_mos": None,
+        "period_end_age_yrs": 62,
+        "period_end_age_mos": 0,
+        "base_savings": "",
+    }
+    form = SavingsInputsForm(data=form_data)
+    assert not form.is_valid()
+    assert "base_savings" in form.errors
+
+
+# "from" form edit page should render base_savings field wrapper with d-none class.
+def test_savings_edit_from_hides_base_savings_field(client, django_user_model):
+    user = django_user_model.objects.create_user(
+        username="savings-from-hide", password="pass1234"
+    )
+    savings = SavingsInputsModel.objects.create(
+        created_by=user,
+        is_active=True,
+        use_time_period=True,
+        time_period_mode="from",
+        period_start_age_yrs=50,
+        period_start_age_mos=0,
+        base_savings=None,
+        base_saved_per_mo=600,
+        base_savings_per_yr_increase=2,
+        savings_lower_limit=1000,
+        base_monthly_bills=2500,
+    )
+    client.force_login(user)
+
+    response = client.get(f"/savings/{savings.pk}/edit/")
+
+    assert response.status_code == 200
+    html = response.content.decode()
+    assert "d-none" in _field_wrapper_classes(html, "base-savings-field")
+
+
+# "during" form edit page should render base_savings field wrapper with d-none class.
+def test_savings_edit_during_hides_base_savings_field(client, django_user_model):
+    user = django_user_model.objects.create_user(
+        username="savings-during-hide", password="pass1234"
+    )
+    savings = SavingsInputsModel.objects.create(
+        created_by=user,
+        is_active=True,
+        use_time_period=True,
+        time_period_mode="during",
+        period_start_age_yrs=45,
+        period_start_age_mos=0,
+        period_end_age_yrs=60,
+        period_end_age_mos=0,
+        base_savings=None,
+        base_saved_per_mo=600,
+        base_savings_per_yr_increase=2,
+        savings_lower_limit=1000,
+        base_monthly_bills=2500,
+    )
+    client.force_login(user)
+
+    response = client.get(f"/savings/{savings.pk}/edit/")
+
+    assert response.status_code == 200
+    html = response.content.decode()
+    assert "d-none" in _field_wrapper_classes(html, "base-savings-field")
+
+
+# "until" form edit page should show base_savings field (it applies from the start).
+def test_savings_edit_until_shows_base_savings_field(client, django_user_model):
+    user = django_user_model.objects.create_user(
+        username="savings-until-show", password="pass1234"
+    )
+    savings = SavingsInputsModel.objects.create(
+        created_by=user,
+        is_active=True,
+        use_time_period=True,
+        time_period_mode="until",
+        period_end_age_yrs=62,
+        period_end_age_mos=0,
+        base_savings=20000,
+        base_saved_per_mo=600,
+        base_savings_per_yr_increase=2,
+        savings_lower_limit=1000,
+        base_monthly_bills=2500,
+    )
+    client.force_login(user)
+
+    response = client.get(f"/savings/{savings.pk}/edit/")
+
+    assert response.status_code == 200
+    html = response.content.decode()
+    assert "d-none" not in _field_wrapper_classes(html, "base-savings-field")
+
+
+# Dashboard card should not show "Current savings account" for "from" scenarios.
+def test_savings_dashboard_hides_base_savings_for_from_scenario(
+    client, django_user_model
+):
+    user = django_user_model.objects.create_user(
+        username="savings-from-card", password="pass1234"
+    )
+    SavingsInputsModel.objects.create(
+        created_by=user,
+        is_active=True,
+        use_time_period=True,
+        time_period_mode="from",
+        period_start_age_yrs=50,
+        period_start_age_mos=0,
+        base_savings=None,
+        base_saved_per_mo=700,
+        base_savings_per_yr_increase=2,
+        savings_lower_limit=1000,
+        base_monthly_bills=2500,
+    )
+    client.force_login(user)
+
+    response = client.get("/savings/")
+
+    assert response.status_code == 200
+    html = response.content.decode()
+    assert "Current savings account" not in html
+
+
+# Dashboard card should not show "Current savings account" for "during" scenarios.
+def test_savings_dashboard_hides_base_savings_for_during_scenario(
+    client, django_user_model
+):
+    user = django_user_model.objects.create_user(
+        username="savings-during-card", password="pass1234"
+    )
+    SavingsInputsModel.objects.create(
+        created_by=user,
+        is_active=True,
+        use_time_period=True,
+        time_period_mode="during",
+        period_start_age_yrs=45,
+        period_start_age_mos=0,
+        period_end_age_yrs=60,
+        period_end_age_mos=0,
+        base_savings=None,
+        base_saved_per_mo=700,
+        base_savings_per_yr_increase=2,
+        savings_lower_limit=1000,
+        base_monthly_bills=2500,
+    )
+    client.force_login(user)
+
+    response = client.get("/savings/")
+
+    assert response.status_code == 200
+    html = response.content.decode()
+    assert "Current savings account" not in html
+
+
+# Dashboard card should show "Current savings account" for "until" scenarios.
+def test_savings_dashboard_shows_base_savings_for_until_scenario(
+    client, django_user_model
+):
+    user = django_user_model.objects.create_user(
+        username="savings-until-card", password="pass1234"
+    )
+    SavingsInputsModel.objects.create(
+        created_by=user,
+        is_active=True,
+        use_time_period=True,
+        time_period_mode="until",
+        period_end_age_yrs=62,
+        period_end_age_mos=0,
+        base_savings=20000,
+        base_saved_per_mo=700,
+        base_savings_per_yr_increase=2,
+        savings_lower_limit=1000,
+        base_monthly_bills=2500,
+    )
+    client.force_login(user)
+
+    response = client.get("/savings/")
+
+    assert response.status_code == 200
+    html = response.content.decode()
+    assert "Current savings account" in html
+
+
+# Dashboard card should show "Current savings account" for all-time scenarios.
+def test_savings_dashboard_shows_base_savings_for_all_time_scenario(
+    client, django_user_model
+):
+    user = django_user_model.objects.create_user(
+        username="savings-all-card", password="pass1234"
+    )
+    SavingsInputsModel.objects.create(
+        created_by=user,
+        is_active=True,
+        use_time_period=False,
+        base_savings=15000,
+        base_saved_per_mo=700,
+        base_savings_per_yr_increase=2,
+        savings_lower_limit=1000,
+        base_monthly_bills=2500,
+    )
+    client.force_login(user)
+
+    response = client.get("/savings/")
+
+    assert response.status_code == 200
+    html = response.content.decode()
+    assert "Current savings account" in html
+
+
+# A "from" period should not reset savings; it should inherit the running balance.
+def test_from_period_savings_is_continuous_across_transition():
+    assumptions = {
+        "birthdate": date(1990, 1, 1),
+        "retirement_age_yrs": 65,
+        "retirement_age_mos": 0,
+        "add_healthcare": False,
+        "retirement_extra_expenses": 0,
+        "base_savings": 10000.0,
+        "base_saved_per_mo": 500.0,
+        "base_savings_per_yr_increase": 0.0,
+        "savings_lower_limit": 0.0,
+        "base_monthly_bills": 0.0,
+        "payment_items": [],
+        "retirement_accounts": [],
+        "ss_incl": False,
+        "base_rf_interest_per_yr": 0.0,
+        "base_mkt_interest_per_yr": 7.0,
+        "base_inflation_per_yr": 0.0,
+        "savings_time_periods": [
+            {
+                "base_saved_per_mo": 800.0,
+                "base_monthly_bills": 0.0,
+                "start_age_yrs": 25,
+                "start_age_mos": 0,
+            }
+        ],
+    }
+    scenario = BaseScenario(assumptions=assumptions)
+    savings_list = scenario.savings_retirement_account_list[0]
+
+    # Find the index where age transitions to 25y 0m
+    transition_index = next(
+        i
+        for i, (y, m) in enumerate(
+            zip(scenario.age_by_year_list, scenario.age_by_month_list)
+        )
+        if y == 25 and m == 0
+    )
+
+    before = savings_list[transition_index - 1]
+    at_transition = savings_list[transition_index]
+
+    # Savings must not drop or jump discontinuously; the "from" period picks up
+    # from whatever balance accumulated, not from a stored base_savings value.
+    assert at_transition >= before or abs(at_transition - before) < 1.0
