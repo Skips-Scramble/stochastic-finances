@@ -668,7 +668,7 @@ def test_savings_dashboard_shows_base_savings_for_all_time_scenario(
 
 # A "from" period should not reset savings; it should inherit the running balance.
 def test_from_period_savings_is_continuous_across_transition():
-    assumptions = {
+    base_assumptions = {
         "birthdate": date(1990, 1, 1),
         "retirement_age_yrs": 65,
         "retirement_age_mos": 0,
@@ -685,25 +685,33 @@ def test_from_period_savings_is_continuous_across_transition():
         "base_rf_interest_per_yr": 0.0,
         "base_mkt_interest_per_yr": 7.0,
         "base_inflation_per_yr": 0.0,
+    }
+    baseline_scenario = BaseScenario(assumptions=base_assumptions)
+    start_age_yrs = baseline_scenario.age_by_year_list[0]
+    start_age_mos = baseline_scenario.age_by_month_list[0]
+    transition_age_yrs = start_age_yrs + (1 if start_age_mos == 11 else 0)
+    transition_age_mos = (start_age_mos + 1) % 12
+
+    assumptions = base_assumptions | {
         "savings_time_periods": [
             {
                 "base_saved_per_mo": 800.0,
                 "base_monthly_bills": 0.0,
-                "start_age_yrs": 25,
-                "start_age_mos": 0,
+                "start_age_yrs": transition_age_yrs,
+                "start_age_mos": transition_age_mos,
             }
         ],
     }
     scenario = BaseScenario(assumptions=assumptions)
     savings_list = scenario.savings_retirement_account_list[0]
 
-    # Find the index where age transitions to 25y 0m
+    # Find the index where age transitions to the first future month.
     transition_index = next(
         i
         for i, (y, m) in enumerate(
             zip(scenario.age_by_year_list, scenario.age_by_month_list)
         )
-        if y == 25 and m == 0
+        if y == transition_age_yrs and m == transition_age_mos
     )
 
     before = savings_list[transition_index - 1]
