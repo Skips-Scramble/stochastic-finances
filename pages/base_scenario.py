@@ -877,9 +877,13 @@ class BaseScenario(ScenarioCoreInfo):
                 period, "end_age_yrs", "end_age_mos"
             )
             at_or_after_start = (
-                True if start_age_months is None else current_age_months >= start_age_months
+                True
+                if start_age_months is None
+                else current_age_months >= start_age_months
             )
-            before_end = True if end_age_months is None else current_age_months < end_age_months
+            before_end = (
+                True if end_age_months is None else current_age_months < end_age_months
+            )
 
             if at_or_after_start and before_end:
                 return float(period_value)

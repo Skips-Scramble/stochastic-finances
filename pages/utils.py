@@ -84,7 +84,9 @@ def build_savings_inputs_dict(
     """
     active_inputs_list = list(active_savings_inputs)
     base_inputs = [
-        item for item in active_inputs_list if not getattr(item, "use_time_period", False)
+        item
+        for item in active_inputs_list
+        if not getattr(item, "use_time_period", False)
     ]
     if len(base_inputs) != 1:
         return None, base_inputs
@@ -103,7 +105,10 @@ def build_savings_inputs_dict(
             "base_saved_per_mo": item.base_saved_per_mo,
             "base_monthly_bills": item.base_monthly_bills,
         }
-        if item.period_start_age_yrs is not None or item.period_start_age_mos is not None:
+        if (
+            item.period_start_age_yrs is not None
+            or item.period_start_age_mos is not None
+        ):
             time_period_dict["start_age_yrs"] = int(item.period_start_age_yrs or 0)
             time_period_dict["start_age_mos"] = int(item.period_start_age_mos or 0)
         if item.period_end_age_yrs is not None or item.period_end_age_mos is not None:

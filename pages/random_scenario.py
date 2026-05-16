@@ -36,7 +36,9 @@ class RandomScenario:
 
     base_scenario: BaseScenario
 
-    def _yearly_step_medicare_premium_list(self, base_costs: list[float]) -> list[float]:
+    def _yearly_step_medicare_premium_list(
+        self, base_costs: list[float]
+    ) -> list[float]:
         """Sample Medicare premiums when a yearly step takes effect.
 
         Premiums are held flat between January boundaries.

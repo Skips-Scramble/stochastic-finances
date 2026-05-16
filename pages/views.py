@@ -461,9 +461,7 @@ def calculations(request):
         # print(f"{general_inputs_dict = }")
 
         savings_inputs_model = list(
-            SavingsInputsModel.objects.filter(
-                created_by=request.user, is_active=True
-            )
+            SavingsInputsModel.objects.filter(created_by=request.user, is_active=True)
         )
 
         savings_inputs_dict, base_savings_inputs = build_savings_inputs_dict(

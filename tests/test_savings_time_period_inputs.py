@@ -124,7 +124,9 @@ def test_build_savings_inputs_dict_requires_exactly_one_base_row():
         interest_rate_per_yr=None,
     )
 
-    savings_inputs_dict, base_inputs = build_savings_inputs_dict([base_row_a, base_row_b])
+    savings_inputs_dict, base_inputs = build_savings_inputs_dict(
+        [base_row_a, base_row_b]
+    )
 
     assert savings_inputs_dict is None
     assert len(base_inputs) == 2
