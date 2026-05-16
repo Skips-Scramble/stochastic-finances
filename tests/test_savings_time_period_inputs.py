@@ -143,6 +143,12 @@ def _field_wrapper_classes(html: str, wrapper_id: str) -> str:
     return match.group(1)
 
 
+def _checkbox_tag(html: str, checkbox_id: str) -> str:
+    match = re.search(rf'<input[^>]*id="{checkbox_id}"[^>]*>', html)
+    assert match is not None
+    return match.group(0)
+
+
 # Savings period fields should be hidden by default on create when use_time_period is unchecked.
 def test_savings_create_hides_time_period_fields_by_default(client, django_user_model):
     user = django_user_model.objects.create_user(username="savings-create", password="pass1234")
@@ -152,6 +158,14 @@ def test_savings_create_hides_time_period_fields_by_default(client, django_user_
 
     assert response.status_code == 200
     html = response.content.decode()
+    assert "Use for all time periods" in html
+    assert "Use this until" in html
+    assert "Use this during" in html
+    assert "Use this from" in html
+    assert "checked" in _checkbox_tag(html, "time-period-all")
+    assert "checked" not in _checkbox_tag(html, "time-period-until")
+    assert "checked" not in _checkbox_tag(html, "time-period-during")
+    assert "checked" not in _checkbox_tag(html, "time-period-from")
     assert "d-none" in _field_wrapper_classes(html, "time-period-mode-field")
     assert "d-none" in _field_wrapper_classes(html, "period-start-age-yrs-field")
     assert "d-none" in _field_wrapper_classes(html, "period-end-age-yrs-field")
@@ -181,6 +195,10 @@ def test_savings_edit_shows_time_period_fields_when_enabled(client, django_user_
 
     assert response.status_code == 200
     html = response.content.decode()
-    assert "d-none" not in _field_wrapper_classes(html, "time-period-mode-field")
+    assert "checked" not in _checkbox_tag(html, "time-period-all")
+    assert "checked" not in _checkbox_tag(html, "time-period-until")
+    assert "checked" in _checkbox_tag(html, "time-period-during")
+    assert "checked" not in _checkbox_tag(html, "time-period-from")
+    assert "d-none" in _field_wrapper_classes(html, "time-period-mode-field")
     assert "d-none" not in _field_wrapper_classes(html, "period-start-age-yrs-field")
     assert "d-none" not in _field_wrapper_classes(html, "period-end-age-yrs-field")
