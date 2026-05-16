@@ -448,6 +448,7 @@ def calculations(request):
     else:
         # print("Get request")
         bad_active_dict = {}
+        incomplete_coverage_dict = {}
         general_inputs_model = GeneralInputsModel.objects.filter(
             created_by=request.user, is_active=True
         )
@@ -468,7 +469,16 @@ def calculations(request):
             savings_inputs_model
         )
         if savings_inputs_dict is None:
-            bad_active_dict["Savings"] = len(base_savings_inputs)
+            if len(savings_inputs_model) == 0:
+                bad_active_dict["Savings"] = 0
+            elif len(base_savings_inputs) == 0:
+                incomplete_coverage_dict["Savings"] = (
+                    "Active scenarios exist, but they do not cover all ages. "
+                    "Add one active 'Use for all time periods' savings scenario "
+                    "to cover the full timeline."
+                )
+            else:
+                bad_active_dict["Savings"] = len(base_savings_inputs)
 
         # Non-base bills
         payments_inputs_model = PaymentsInputsModel.objects.filter(
@@ -510,9 +520,9 @@ def calculations(request):
             # print(f"{rates_inputs_dict =}")
         else:
             bad_active_dict["Rates"] = len(rates_inputs_model)
-        if bad_active_dict:
+        if bad_active_dict or incomplete_coverage_dict:
             # print("There were some bad active inputs")
-            # Separate the errors into two categories
+            # Separate the errors into categories
             missing_scenarios = {k: v for k, v in bad_active_dict.items() if v == 0}
             multiple_scenarios = {k: v for k, v in bad_active_dict.items() if v > 1}
 
@@ -522,6 +532,7 @@ def calculations(request):
                 {
                     "missing_scenarios": missing_scenarios,
                     "multiple_scenarios": multiple_scenarios,
+                    "incomplete_coverage_scenarios": incomplete_coverage_dict,
                 },
             )
 

@@ -351,3 +351,101 @@ def test_savings_and_bills_use_until_period_override(base_assumptions):
     assert scenario.base_bills_list[end_index] == round(
         2000.0 * (1 + monthly_inflation) ** end_index, 6
     )
+
+
+# Splicing identical savings/bills values across time periods should match all-time baseline outputs.
+def test_savings_and_bills_spliced_same_values_match_all_time_values(base_assumptions):
+    baseline_assumptions = {
+        **base_assumptions,
+        "base_saved_per_mo": 650.0,
+        "base_savings_per_yr_increase": 0.0,
+        "base_monthly_bills": 2200.0,
+    }
+    baseline = BaseScenario(assumptions=baseline_assumptions)
+
+    split_index = 18
+    split_age_yrs = baseline.age_by_year_list[split_index]
+    split_age_mos = baseline.age_by_month_list[split_index]
+
+    spliced_assumptions = {
+        **baseline_assumptions,
+        "savings_time_periods": [
+            {
+                "end_age_yrs": split_age_yrs,
+                "end_age_mos": split_age_mos,
+                "base_saved_per_mo": 650.0,
+                "base_monthly_bills": 2200.0,
+            },
+            {
+                "start_age_yrs": split_age_yrs,
+                "start_age_mos": split_age_mos,
+                "base_saved_per_mo": 650.0,
+                "base_monthly_bills": 2200.0,
+            },
+        ],
+    }
+    spliced = BaseScenario(assumptions=spliced_assumptions)
+
+    assert spliced.savings_increase_list == baseline.savings_increase_list
+    assert spliced.base_bills_list == baseline.base_bills_list
+
+
+# A period with only savings override should leave base bills unchanged at baseline values.
+def test_savings_period_only_changes_savings_when_no_bills_override(base_assumptions):
+    baseline_assumptions = {
+        **base_assumptions,
+        "base_saved_per_mo": 500.0,
+        "base_savings_per_yr_increase": 0.0,
+        "base_monthly_bills": 2400.0,
+    }
+    baseline = BaseScenario(assumptions=baseline_assumptions)
+    start_index = 10
+
+    assumptions = {
+        **baseline_assumptions,
+        "savings_time_periods": [
+            {
+                "start_age_yrs": baseline.age_by_year_list[start_index],
+                "start_age_mos": baseline.age_by_month_list[start_index],
+                "base_saved_per_mo": 900.0,
+            }
+        ],
+    }
+    scenario = BaseScenario(assumptions=assumptions)
+
+    assert scenario.savings_increase_list[start_index - 1] == 500.0
+    assert scenario.savings_increase_list[start_index] == 900.0
+    assert scenario.base_bills_list == baseline.base_bills_list
+
+
+# A period with only bills override should leave savings contributions unchanged at baseline values.
+def test_savings_period_only_changes_bills_when_no_savings_override(base_assumptions):
+    baseline_assumptions = {
+        **base_assumptions,
+        "base_saved_per_mo": 550.0,
+        "base_savings_per_yr_increase": 0.0,
+        "base_monthly_bills": 2000.0,
+    }
+    baseline = BaseScenario(assumptions=baseline_assumptions)
+    end_index = 8
+
+    assumptions = {
+        **baseline_assumptions,
+        "savings_time_periods": [
+            {
+                "end_age_yrs": baseline.age_by_year_list[end_index],
+                "end_age_mos": baseline.age_by_month_list[end_index],
+                "base_monthly_bills": 1500.0,
+            }
+        ],
+    }
+    scenario = BaseScenario(assumptions=assumptions)
+    monthly_inflation = scenario.monthly_inflation
+
+    assert scenario.savings_increase_list == baseline.savings_increase_list
+    assert scenario.base_bills_list[end_index - 1] == round(
+        1500.0 * (1 + monthly_inflation) ** (end_index - 1), 6
+    )
+    assert scenario.base_bills_list[end_index] == round(
+        2000.0 * (1 + monthly_inflation) ** end_index, 6
+    )
