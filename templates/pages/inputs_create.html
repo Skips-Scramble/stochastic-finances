@@ -18,7 +18,41 @@
             <div class="card shadow border-dark px-3 py-3 mb-3 text-black" style="border-width: 3px;">
                 <div class="card-body">
                     {% for field in form %}
-                            <div class="mb-3{% if field.name == 'monthly_medical_bills' %} ms-4 ps-3{% if not form.add_medical_bills.value and not field.errors %} d-none{% endif %}{% endif %}"{% if field.name == "monthly_medical_bills" %} id="monthly-medical-bills-field"{% endif %}>
+                            {% if field.name == "use_time_period" %}
+                            <div class="mb-3" id="savings-time-period-choice-field">
+                                <label class="form-label">Time period selection</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="time-period-all" data-time-period-choice="all"{% if not form.use_time_period.value %} checked{% endif %}>
+                                    <label class="form-check-label" for="time-period-all">Use for all time periods</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="time-period-until" data-time-period-choice="until"{% if form.use_time_period.value and form.time_period_mode.value == "until" %} checked{% endif %}>
+                                    <label class="form-check-label" for="time-period-until">Use this until</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="time-period-during" data-time-period-choice="during"{% if form.use_time_period.value and form.time_period_mode.value == "during" %} checked{% endif %}>
+                                    <label class="form-check-label" for="time-period-during">Use this during</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="time-period-from" data-time-period-choice="from"{% if form.use_time_period.value and form.time_period_mode.value == "from" %} checked{% endif %}>
+                                    <label class="form-check-label" for="time-period-from">Use this from</label>
+                                </div>
+                                {% if form.time_period_mode.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.time_period_mode.errors|striptags }}
+                                </div>
+                                {% endif %}
+                                <div class="d-none">{{ field }}</div>
+                            </div>
+                            {% elif field.name == "time_period_mode" %}
+                            <div class="d-none" id="time-period-mode-field">{{ field }}</div>
+                            {% else %}
+                            {% if field.name == "period_start_age_yrs" %}
+                            <div class="mb-2 mt-3 pt-3 border-top{% if not form.use_time_period.value and not form.period_start_age_yrs.errors and not form.period_start_age_mos.errors and not form.period_end_age_yrs.errors and not form.period_end_age_mos.errors %} d-none{% endif %}" id="savings-time-period-date-header" data-savings-time-field="header">
+                                <small class="text-muted">Time period age range</small>
+                            </div>
+                            {% endif %}
+                            <div class="mb-3{% if field.name == 'monthly_medical_bills' %} ms-4 ps-3{% if not form.add_medical_bills.value and not field.errors %} d-none{% endif %}{% elif field.name == 'period_start_age_yrs' or field.name == 'period_start_age_mos' or field.name == 'period_end_age_yrs' or field.name == 'period_end_age_mos' %} ms-3 ps-3 border-start border-2{% if not field.errors %}{% if not form.use_time_period.value %} d-none{% elif form.time_period_mode.value == 'until' and field.name == 'period_start_age_yrs' or form.time_period_mode.value == 'until' and field.name == 'period_start_age_mos' %} d-none{% elif form.time_period_mode.value == 'from' and field.name == 'period_end_age_yrs' or form.time_period_mode.value == 'from' and field.name == 'period_end_age_mos' %} d-none{% endif %}{% endif %}{% elif field.name == "base_savings" or field.name == "savings_lower_limit" %}{% if not field.errors %}{% if form.use_time_period.value and form.time_period_mode.value == "from" or form.use_time_period.value and form.time_period_mode.value == "during" %} d-none{% endif %}{% endif %}{% endif %}"{% if field.name == "monthly_medical_bills" %} id="monthly-medical-bills-field"{% elif field.name == "period_start_age_yrs" %} id="period-start-age-yrs-field" data-savings-time-field="start"{% elif field.name == "period_start_age_mos" %} id="period-start-age-mos-field" data-savings-time-field="start"{% elif field.name == "period_end_age_yrs" %} id="period-end-age-yrs-field" data-savings-time-field="end"{% elif field.name == "period_end_age_mos" %} id="period-end-age-mos-field" data-savings-time-field="end"{% elif field.name == "base_savings" %} id="base-savings-field"{% elif field.name == "savings_lower_limit" %} id="savings-lower-limit-field"{% endif %}>
                                 <div class="tooltip-container" data-toggle="tooltip" data-placement="right" title="{{descriptions|dict_lookup:field.name}}">
                                     <label class="form-label">
                                         {{field.label_tag}}
@@ -40,6 +74,7 @@
                             {% if field.name == "add_healthcare" %}
                             <div id="medicare-info" class="mb-3 ms-2{% if not field.value %} d-none{% endif %}">
                             </div>
+                            {% endif %}
                             {% endif %}
                     {% endfor %}
                 </div>
@@ -64,6 +99,14 @@
     const preMedicareField = preMedicareInput ? preMedicareInput.closest('.mb-3') : null;
     const medicalBillsCheckbox = document.getElementById('id_add_medical_bills');
     const monthlyMedicalBillsField = document.getElementById('monthly-medical-bills-field');
+    const savingsTimePeriodInput = document.getElementById('id_use_time_period');
+    const savingsTimePeriodModeInput = document.getElementById('id_time_period_mode');
+    const savingsTimePeriodHeader = document.querySelector('[data-savings-time-field="header"]');
+    const savingsTimePeriodStartFields = document.querySelectorAll('[data-savings-time-field="start"]');
+    const savingsTimePeriodEndFields = document.querySelectorAll('[data-savings-time-field="end"]');
+    const savingsTimePeriodChoices = document.querySelectorAll('[data-time-period-choice]');
+    const baseSavingsField = document.getElementById('base-savings-field');
+    const savingsLowerLimitField = document.getElementById('savings-lower-limit-field');
 
     function syncHealthcareFields(checked) {
         if (medicareInfo) medicareInfo.classList.toggle('d-none', !checked);
@@ -75,6 +118,48 @@
 
     function syncMedicalBillsField(checked) {
         if (monthlyMedicalBillsField) monthlyMedicalBillsField.classList.toggle('d-none', !checked);
+    }
+
+    function syncSavingsTimePeriodFields(choice) {
+        const showScopedFields = choice !== 'all';
+        const showStartFields = choice === 'from' || choice === 'during';
+        const showEndFields = choice === 'until' || choice === 'during';
+
+        if (savingsTimePeriodHeader) {
+            savingsTimePeriodHeader.classList.toggle('d-none', !showScopedFields);
+        }
+        if (baseSavingsField) {
+            baseSavingsField.classList.toggle('d-none', choice === 'from' || choice === 'during');
+        }
+        if (savingsLowerLimitField) {
+            savingsLowerLimitField.classList.toggle('d-none', choice === 'from' || choice === 'during');
+        }
+
+        savingsTimePeriodStartFields.forEach((field) => {
+            field.classList.toggle('d-none', !showStartFields);
+        });
+
+        savingsTimePeriodEndFields.forEach((field) => {
+            field.classList.toggle('d-none', !showEndFields);
+        });
+    }
+
+    function setSavingsTimePeriodChoice(choice) {
+        savingsTimePeriodChoices.forEach((option) => {
+            option.checked = option.dataset.timePeriodChoice === choice;
+        });
+
+        if (!savingsTimePeriodInput || !savingsTimePeriodModeInput) return;
+
+        if (choice === 'all') {
+            savingsTimePeriodInput.checked = false;
+            savingsTimePeriodModeInput.value = '';
+            syncSavingsTimePeriodFields('all');
+        } else {
+            savingsTimePeriodInput.checked = true;
+            savingsTimePeriodModeInput.value = choice;
+            syncSavingsTimePeriodFields(choice);
+        }
     }
 
     if (healthcareCheckbox) {
@@ -90,6 +175,22 @@
         syncMedicalBillsField(medicalBillsCheckbox.checked);
         medicalBillsCheckbox.addEventListener('change', function () {
             syncMedicalBillsField(this.checked);
+        });
+    }
+
+    if (savingsTimePeriodChoices.length > 0) {
+        // Set initial state
+        const initialMode = savingsTimePeriodInput && savingsTimePeriodInput.checked
+            ? savingsTimePeriodModeInput.value
+            : 'all';
+        const hasMode = ['until', 'during', 'from'].includes(initialMode);
+        setSavingsTimePeriodChoice(hasMode ? initialMode : 'all');
+
+        savingsTimePeriodChoices.forEach((option) => {
+            option.addEventListener('change', function () {
+                const selectedChoice = this.dataset.timePeriodChoice;
+                setSavingsTimePeriodChoice(this.checked ? selectedChoice : 'all');
+            });
         });
     }
 </script>

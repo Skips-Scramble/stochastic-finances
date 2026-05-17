@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import pandas as pd
 
 from pages.random_scenario import BaseScenario
@@ -6,6 +8,7 @@ from pages.random_scenario import RandomScenario
 # from assumption_validations import apply_validations
 
 NUM_SCENARIOS = 100
+OUTPUTS_DIR = Path(__file__).resolve().parent.parent / "outputs"
 
 
 def main(assumptions) -> tuple[pd.DataFrame, pd.DataFrame]:
@@ -33,10 +36,13 @@ def main(assumptions) -> tuple[pd.DataFrame, pd.DataFrame]:
     base_age_df = base_scenario.create_base_df()[select_cols].rename(
         columns=rename_dict
     )
+    OUTPUTS_DIR.mkdir(parents=True, exist_ok=True)
 
     for i in range(NUM_SCENARIOS):
         new_scenario = RandomScenario(base_scenario)
-        new_scenario.create_full_df().to_csv(f"./outputs/scen_{i+1}.csv", index=False)
+        new_scenario.create_full_df().to_csv(
+            OUTPUTS_DIR / f"scen_{i+1}.csv", index=False
+        )
 
         # Build column selection and rename for merge dynamically
         merge_cols = ["count", "var_savings_account"]

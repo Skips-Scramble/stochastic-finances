@@ -80,11 +80,49 @@ class GeneralInputsModel(models.Model):
 
 
 class SavingsInputsModel(models.Model):
+    TIME_PERIOD_CHOICES = [
+        ("until", "Use this until"),
+        ("during", "Use this during"),
+        ("from", "Use this from"),
+    ]
+
     is_active = models.BooleanField(
         default=False,
     )
+    use_time_period = models.BooleanField(
+        default=False,
+        help_text="Only use these assumptions for a given time period",
+    )
+    time_period_mode = models.CharField(
+        max_length=10,
+        choices=TIME_PERIOD_CHOICES,
+        null=True,
+        blank=True,
+    )
+    period_start_age_yrs = models.IntegerField(
+        null=True,
+        blank=True,
+        validators=[validate_range_age_yrs],
+    )
+    period_start_age_mos = models.IntegerField(
+        null=True,
+        blank=True,
+        validators=[validate_range_age_mos],
+    )
+    period_end_age_yrs = models.IntegerField(
+        null=True,
+        blank=True,
+        validators=[validate_range_age_yrs],
+    )
+    period_end_age_mos = models.IntegerField(
+        null=True,
+        blank=True,
+        validators=[validate_range_age_mos],
+    )
     base_savings = models.FloatField(
-        validators=[validate_base_savings, decimal_validator]
+        null=True,
+        blank=True,
+        validators=[validate_base_savings, decimal_validator],
     )
     base_saved_per_mo = models.FloatField(
         validators=[validate_base_saved_per_mo, decimal_validator],

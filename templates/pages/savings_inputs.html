@@ -21,10 +21,23 @@
                 <div class="card-header">Savings Inputs</div>
                 <div class="card-body">
                     <p class="card-text">Use this for calculations: {{ item.is_active|yesno|title }}</p>
+                    {% if item.use_time_period %}
+                        {% if item.time_period_mode == "until" %}
+                            <p class="card-text">Time period: Use until age {{ item.period_end_age_yrs }}y {{ item.period_end_age_mos }}m</p>
+                        {% elif item.time_period_mode == "during" %}
+                            <p class="card-text">Time period: Use from age {{ item.period_start_age_yrs }}y {{ item.period_start_age_mos }}m to {{ item.period_end_age_yrs }}y {{ item.period_end_age_mos }}m</p>
+                        {% elif item.time_period_mode == "from" %}
+                            <p class="card-text">Time period: Use from age {{ item.period_start_age_yrs }}y {{ item.period_start_age_mos }}m</p>
+                        {% endif %}
+                    {% else %}
+                        <p class="card-text">Time period: Use for all time periods</p>
+                    {% endif %}
+                    {% if not item.use_time_period or item.time_period_mode == "until" %}
                     <p class="card-text">Current savings account: ${{ item.base_savings|floatformat:"0g" }}</p>
+                    <p class="card-text">Savings lower limit: ${{ item.savings_lower_limit|floatformat:"0g" }}</p>
+                    {% endif %}
                     <p class="card-text">Savings per month: ${{ item.base_saved_per_mo|floatformat:"0g" }}</p>
                     <p class="card-text">Yearly contribution increase: {{ item.base_savings_per_yr_increase|floatformat:"2" }}%</p>
-                    <p class="card-text">Savings lower limit: ${{ item.savings_lower_limit|floatformat:"0g" }}</p>
                     <p class="card-text">Usual monthly expenses: ${{ item.base_monthly_bills|floatformat:"0g" }}</p>
                     <a href="{% url 'savings_inputs_edit' item.id %}" class="btn btn-primary">Edit</a>
                     <a href="{% url 'savings_inputs_delete' item.id %}" class="btn btn-secondary">Delete</a>
